@@ -1,0 +1,3 @@
+/home/zhangyc/cloud_storage/app/build/CMakeFiles/cloud_storage_server.dir
+/home/zhangyc/cloud_storage/app/build/CMakeFiles/edit_cache.dir
+/home/zhangyc/cloud_storage/app/build/CMakeFiles/rebuild_cache.dir
