@@ -121,7 +121,7 @@ make && make install
 
 ### MySQL / Redis
 为了方便，这里都是docker启动
-在对应的文件夹下有 docker-compose.yaml文件
+在lib/database分支下有对应的 docker-compose.yaml文件
 去对应文件夹执行
 ```
 docker-compose -d up
