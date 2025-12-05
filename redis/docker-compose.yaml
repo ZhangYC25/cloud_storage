@@ -1,0 +1,22 @@
+# /home/zhangyc/redis/docker-compose.yml
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.2
+    container_name: my-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ZYCzyc520@APEX!  # 🔐 你的密码
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data:/data                    # 持久化数据
+      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s

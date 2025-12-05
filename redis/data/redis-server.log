@@ -1,0 +1,182 @@
+1:C 19 Nov 2025 12:19:52.376 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 19 Nov 2025 12:19:52.376 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 19 Nov 2025 12:19:52.376 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 19 Nov 2025 12:19:52.376 * Configuration loaded
+1:M 19 Nov 2025 12:19:52.377 * monotonic clock: POSIX clock_gettime
+1:M 19 Nov 2025 12:19:52.377 * Running mode=standalone, port=6379.
+1:M 19 Nov 2025 12:19:52.377 * Server initialized
+1:M 19 Nov 2025 12:19:52.379 * Creating AOF base file appendonly.aof.1.base.rdb on server start
+1:M 19 Nov 2025 12:19:52.380 * Creating AOF incr file appendonly.aof.1.incr.aof on server start
+1:M 19 Nov 2025 12:19:52.380 * Ready to accept connections tcp
+1:C 19 Nov 2025 12:21:44.145 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 19 Nov 2025 12:21:44.145 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 19 Nov 2025 12:21:44.145 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 19 Nov 2025 12:21:44.145 * Configuration loaded
+1:M 19 Nov 2025 12:21:44.146 * monotonic clock: POSIX clock_gettime
+1:M 19 Nov 2025 12:21:44.146 * Running mode=standalone, port=6379.
+1:M 19 Nov 2025 12:21:44.146 * Server initialized
+1:M 19 Nov 2025 12:21:44.147 * Reading RDB base file on AOF loading...
+1:M 19 Nov 2025 12:21:44.147 * Loading RDB produced by version 7.2.12
+1:M 19 Nov 2025 12:21:44.147 * RDB age 112 seconds
+1:M 19 Nov 2025 12:21:44.147 * RDB memory usage when created 0.83 Mb
+1:M 19 Nov 2025 12:21:44.147 * RDB is base AOF
+1:M 19 Nov 2025 12:21:44.147 * Done loading RDB, keys loaded: 0, keys expired: 0.
+1:M 19 Nov 2025 12:21:44.147 * DB loaded from base file appendonly.aof.1.base.rdb: 0.000 seconds
+1:M 19 Nov 2025 12:21:44.147 * DB loaded from append only file: 0.000 seconds
+1:M 19 Nov 2025 12:21:44.147 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
+1:M 19 Nov 2025 12:21:44.147 * Ready to accept connections tcp
+1:M 19 Nov 2025 13:21:45.068 * 1 changes in 3600 seconds. Saving...
+1:M 19 Nov 2025 13:21:45.068 * Background saving started by pid 39
+39:C 19 Nov 2025 13:21:45.071 * DB saved on disk
+39:C 19 Nov 2025 13:21:45.071 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 19 Nov 2025 13:21:45.168 * Background saving terminated with success
+1:M 20 Nov 2025 01:04:50.948 * 1 changes in 3600 seconds. Saving...
+1:M 20 Nov 2025 01:04:50.949 * Background saving started by pid 46
+46:C 20 Nov 2025 01:04:50.951 * DB saved on disk
+46:C 20 Nov 2025 01:04:50.951 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 20 Nov 2025 01:04:51.049 * Background saving terminated with success
+1:signal-handler (1763640774) Received SIGTERM scheduling shutdown...
+1:M 20 Nov 2025 12:12:54.467 * User requested shutdown...
+1:M 20 Nov 2025 12:12:54.467 * Calling fsync() on the AOF file.
+1:M 20 Nov 2025 12:12:54.467 * Saving the final RDB snapshot before exiting.
+1:M 20 Nov 2025 12:12:54.470 * DB saved on disk
+1:M 20 Nov 2025 12:12:54.470 # Redis is now ready to exit, bye bye...
+1:C 20 Nov 2025 12:16:57.621 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:16:57.622 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:16:57.622 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:16:57.622 * Configuration loaded
+1:M 20 Nov 2025 12:16:57.622 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:16:57.623 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:16:57.623 * Server initialized
+1:M 20 Nov 2025 12:16:57.624 * Reading RDB base file on AOF loading...
+1:M 20 Nov 2025 12:16:57.624 * Loading RDB produced by version 7.2.12
+1:M 20 Nov 2025 12:16:57.624 * RDB age 86225 seconds
+1:M 20 Nov 2025 12:16:57.624 * RDB memory usage when created 0.83 Mb
+1:M 20 Nov 2025 12:16:57.624 * RDB is base AOF
+1:M 20 Nov 2025 12:16:57.624 * Done loading RDB, keys loaded: 0, keys expired: 0.
+1:M 20 Nov 2025 12:16:57.625 * DB loaded from base file appendonly.aof.1.base.rdb: 0.001 seconds
+1:M 20 Nov 2025 12:16:57.625 * DB loaded from incr file appendonly.aof.1.incr.aof: 0.000 seconds
+1:M 20 Nov 2025 12:16:57.625 * DB loaded from append only file: 0.001 seconds
+1:M 20 Nov 2025 12:16:57.625 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
+1:M 20 Nov 2025 12:16:57.625 * Ready to accept connections tcp
+1:signal-handler (1763641951) Received SIGTERM scheduling shutdown...
+1:M 20 Nov 2025 12:32:31.462 * User requested shutdown...
+1:M 20 Nov 2025 12:32:31.462 * Calling fsync() on the AOF file.
+1:M 20 Nov 2025 12:32:31.462 * Saving the final RDB snapshot before exiting.
+1:M 20 Nov 2025 12:32:31.464 * DB saved on disk
+1:M 20 Nov 2025 12:32:31.464 # Redis is now ready to exit, bye bye...
+1:C 20 Nov 2025 12:33:09.973 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:09.973 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:09.973 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:09.973 * Configuration loaded
+1:M 20 Nov 2025 12:33:09.973 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:09.973 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:09.973 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:09.973 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:10.356 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:10.356 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:10.356 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:10.356 * Configuration loaded
+1:M 20 Nov 2025 12:33:10.357 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:10.357 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:10.357 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:10.357 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:10.806 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:10.806 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:10.806 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:10.806 * Configuration loaded
+1:M 20 Nov 2025 12:33:10.806 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:10.807 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:10.807 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:10.807 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:11.425 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:11.425 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:11.425 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:11.425 * Configuration loaded
+1:M 20 Nov 2025 12:33:11.425 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:11.425 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:11.426 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:11.426 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:12.450 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:12.450 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:12.451 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:12.451 * Configuration loaded
+1:M 20 Nov 2025 12:33:12.451 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:12.451 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:12.451 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:12.451 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:14.297 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:14.297 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:14.297 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:14.297 * Configuration loaded
+1:M 20 Nov 2025 12:33:14.297 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:14.297 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:14.297 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:14.297 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:17.743 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:17.743 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:17.743 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:17.743 * Configuration loaded
+1:M 20 Nov 2025 12:33:17.743 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:17.744 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:17.744 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:17.744 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:24.372 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:24.373 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:24.373 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:24.373 * Configuration loaded
+1:M 20 Nov 2025 12:33:24.373 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:24.373 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:24.373 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:24.373 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:33:37.411 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:33:37.411 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:33:37.411 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:33:37.411 * Configuration loaded
+1:M 20 Nov 2025 12:33:37.411 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:33:37.412 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:33:37.412 # Warning: Could not create server TCP listening socket 146.56.194.96:6379: bind: Cannot assign requested address
+1:M 20 Nov 2025 12:33:37.412 # Failed listening on port 6379 (tcp), aborting.
+1:C 20 Nov 2025 12:34:45.038 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 20 Nov 2025 12:34:45.038 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 20 Nov 2025 12:34:45.038 * Redis version=7.2.12, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 20 Nov 2025 12:34:45.038 * Configuration loaded
+1:M 20 Nov 2025 12:34:45.039 * monotonic clock: POSIX clock_gettime
+1:M 20 Nov 2025 12:34:45.039 * Running mode=standalone, port=6379.
+1:M 20 Nov 2025 12:34:45.039 * Server initialized
+1:M 20 Nov 2025 12:34:45.039 * Reading RDB base file on AOF loading...
+1:M 20 Nov 2025 12:34:45.039 * Loading RDB produced by version 7.2.12
+1:M 20 Nov 2025 12:34:45.039 * RDB age 87293 seconds
+1:M 20 Nov 2025 12:34:45.039 * RDB memory usage when created 0.83 Mb
+1:M 20 Nov 2025 12:34:45.039 * RDB is base AOF
+1:M 20 Nov 2025 12:34:45.039 * Done loading RDB, keys loaded: 0, keys expired: 0.
+1:M 20 Nov 2025 12:34:45.039 * DB loaded from base file appendonly.aof.1.base.rdb: 0.000 seconds
+1:M 20 Nov 2025 12:34:45.039 * DB loaded from incr file appendonly.aof.1.incr.aof: 0.000 seconds
+1:M 20 Nov 2025 12:34:45.040 * DB loaded from append only file: 0.000 seconds
+1:M 20 Nov 2025 12:34:45.040 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
+1:M 20 Nov 2025 12:34:45.040 * Ready to accept connections tcp
+1:M 20 Nov 2025 13:34:46.036 * 1 changes in 3600 seconds. Saving...
+1:M 20 Nov 2025 13:34:46.036 * Background saving started by pid 750
+750:C 20 Nov 2025 13:34:46.039 * DB saved on disk
+750:C 20 Nov 2025 13:34:46.039 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 20 Nov 2025 13:34:46.136 * Background saving terminated with success
+1:M 04 Dec 2025 05:56:24.486 * 1 changes in 3600 seconds. Saving...
+1:M 04 Dec 2025 05:56:24.488 * Background saving started by pid 236942
+236942:C 04 Dec 2025 05:56:24.490 * DB saved on disk
+236942:C 04 Dec 2025 05:56:24.490 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 04 Dec 2025 05:56:24.589 * Background saving terminated with success
+1:M 04 Dec 2025 06:56:25.053 * 1 changes in 3600 seconds. Saving...
+1:M 04 Dec 2025 06:56:25.053 * Background saving started by pid 237658
+237658:C 04 Dec 2025 06:56:25.057 * DB saved on disk
+237658:C 04 Dec 2025 06:56:25.058 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 04 Dec 2025 06:56:25.153 * Background saving terminated with success
+1:M 04 Dec 2025 11:23:58.656 * 1 changes in 3600 seconds. Saving...
+1:M 04 Dec 2025 11:23:58.656 * Background saving started by pid 240886
+240886:C 04 Dec 2025 11:23:58.659 * DB saved on disk
+240886:C 04 Dec 2025 11:23:58.659 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 04 Dec 2025 11:23:58.757 * Background saving terminated with success
+1:M 04 Dec 2025 12:23:59.088 * 1 changes in 3600 seconds. Saving...
+1:M 04 Dec 2025 12:23:59.089 * Background saving started by pid 241614
+241614:C 04 Dec 2025 12:23:59.092 * DB saved on disk
+241614:C 04 Dec 2025 12:23:59.092 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+1:M 04 Dec 2025 12:23:59.189 * Background saving terminated with success

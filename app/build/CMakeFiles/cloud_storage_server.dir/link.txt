@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/cloud_storage_server.dir/main.cpp.o -o cloud_storage_server  -lmysqlclient -lpistache -lssl -lcrypto -lpthread -lredis -lfastcommon -lfdfsclient /home/zhangyc/cloud_storage/bcrypt/bcrypt.a
