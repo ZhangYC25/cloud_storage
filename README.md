@@ -127,6 +127,26 @@ make && make install
 docker-compose -d up
 ```
 也可以修改自行的 账户 密码
+
+### Pistache / bcrypt
+突然发现这两个文件夹下面是空的，只能手动下载一下了
+*pistache*
+```
+git clone https://github.com/pistacheio/pistache.git
+cd pistache
+mkdir build && cd build
+cmake -DPISTACHE_BUILD_TESTS=OFF ..
+make -j$(nproc)
+sudo make install
+```
+- 通常库文件在：/usr/local/lib
+- 头文件在：/usr/local/include/pistache
+
+*bcrypt*
+这个库不太好找，所以在 lib/database 分支里面
+我提供了 .a 与 .c文件，但只支持 加密 和 解密 两个操作。
+
+得到之后记得改改 CMakeLists里面的路径
 ### 代码编译
 ```
 cd app
