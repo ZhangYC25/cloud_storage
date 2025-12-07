@@ -12,33 +12,39 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # ========== 1. 头文件路径配置 ==========
-# MySQL头文件路径
-# include_directories(/usr/include/mysql)
-# Pistache头文件路径（源码编译的头文件通常在build/include或安装到/usr/local/include
-include_directories(/usr/local/include)
-# bcrypt头文件路径（你的bcrypt目录）
-include_directories(/home/zhangyc/cloud_storage/bcrypt)
-# nlohmann/json头文件路径（若手动下载到third_party）
-# include_directories(/usr/include/nlohmann)
+# 项目自身头文件（当前目录下的所有子目录）
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}          # 根目录（main.cpp所在）
+    ${CMAKE_CURRENT_SOURCE_DIR}/database # database子目录
+    ${CMAKE_CURRENT_SOURCE_DIR}/myfastdfs # myfastdfs子目录
+)
 
-# 添加fastcommon头文件目录
-include_directories(/usr/include/fastcommon)
-include_directories(/usr/include/fastdfs)
+# 系统/第三方头文件
+include_directories(
+    /usr/local/include                   # Pistache头文件
+    /usr/include/mysql                   # MySQL头文件
+    /usr/include/fastcommon              # fastcommon头文件
+    /usr/include/fastdfs                 # fastdfs头文件
+    /usr/local/include/bcrypt   # bcrypt头文件
+)
 
-
-# ========== 2. 库路径配置 ==========
-# MySQL库路径
-# link_directories(/usr/lib/x86_64-linux-gnu)
-# Pistache库路径（你本地编译的路径）
+# ========== 2. 库路径配置（可选，若库不在系统默认路径） ==========
+# 示例：若Pistache是手动编译到自定义路径，需添加
 # link_directories(/home/zhangyc/fastdfs-nginx/pistache/build/src)
-# OpenSSL库路径
-# link_directories(/usr/lib/x86_64-linux-gnu)
 
-
-# ========== 3. 源文件配置 ==========
+# ========== 3. 源文件配置（把所有.cpp文件加入） ==========
 set(SOURCES
-    main.cpp  # 你的主代码文件
-   )
+    main.cpp
+    server.cpp
+    api.cpp
+    # database子目录下的源文件
+    database/Mysql.cpp
+    database/mysqlConnPool.cpp
+    database/redis.cpp
+    # myfastdfs子目录下的源文件
+    myfastdfs/fdfsClient.cpp
+    myfastdfs/fdfsConnPool.cpp
+)
 
 
 # ========== 4. 生成可执行文件 ==========
@@ -48,19 +54,19 @@ add_executable(cloud_storage_server ${SOURCES})
 # ========== 5. 链接库 ==========
 target_link_libraries(cloud_storage_server
     PRIVATE
-        # 动态库（按你的路径）
         mysqlclient         # MySQL动态库
         pistache            # Pistache动态库
-        ssl                  # OpenSSL动态库
-        crypto               # OpenSSL动态库
-        pthread              # 线程库
-        redis                # Redis 动态库
-        fastcommon           # fastdfs
-	fdfsclient
-	/home/zhangyc/cloud_storage/bcrypt/bcrypt.a
+        ssl                 # OpenSSL动态库
+        crypto              # OpenSSL动态库
+        pthread             # 线程库
+        redis               # Redis动态库
+        fastcommon          # fastcommon库
+        fdfsclient          # fastdfs客户端库
+        /usr/local/lib/bcrypt.a # bcrypt静态库
 )
 
 
 # ========== 6. 输出构建信息（可选） ==========
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "Linked libraries: mysqlclient, pistache, ssl, crypto, pthread, bcrypt.a")
+message(STATUS "Project source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "Linked libraries: mysqlclient, pistache, ssl, crypto, pthread, redis, fastcommon, fdfsclient, bcrypt.a")

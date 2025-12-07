@@ -129,6 +129,102 @@ cloud_storage_server/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/build
 .PHONY : cloud_storage_server/fast
 
+api.o: api.cpp.o
+.PHONY : api.o
+
+# target to build an object file
+api.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/api.cpp.o
+.PHONY : api.cpp.o
+
+api.i: api.cpp.i
+.PHONY : api.i
+
+# target to preprocess a source file
+api.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/api.cpp.i
+.PHONY : api.cpp.i
+
+api.s: api.cpp.s
+.PHONY : api.s
+
+# target to generate assembly for a file
+api.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/api.cpp.s
+.PHONY : api.cpp.s
+
+database/Mysql.o: database/Mysql.cpp.o
+.PHONY : database/Mysql.o
+
+# target to build an object file
+database/Mysql.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.o
+.PHONY : database/Mysql.cpp.o
+
+database/Mysql.i: database/Mysql.cpp.i
+.PHONY : database/Mysql.i
+
+# target to preprocess a source file
+database/Mysql.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.i
+.PHONY : database/Mysql.cpp.i
+
+database/Mysql.s: database/Mysql.cpp.s
+.PHONY : database/Mysql.s
+
+# target to generate assembly for a file
+database/Mysql.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.s
+.PHONY : database/Mysql.cpp.s
+
+database/mysqlConnPool.o: database/mysqlConnPool.cpp.o
+.PHONY : database/mysqlConnPool.o
+
+# target to build an object file
+database/mysqlConnPool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.o
+.PHONY : database/mysqlConnPool.cpp.o
+
+database/mysqlConnPool.i: database/mysqlConnPool.cpp.i
+.PHONY : database/mysqlConnPool.i
+
+# target to preprocess a source file
+database/mysqlConnPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.i
+.PHONY : database/mysqlConnPool.cpp.i
+
+database/mysqlConnPool.s: database/mysqlConnPool.cpp.s
+.PHONY : database/mysqlConnPool.s
+
+# target to generate assembly for a file
+database/mysqlConnPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.s
+.PHONY : database/mysqlConnPool.cpp.s
+
+database/redis.o: database/redis.cpp.o
+.PHONY : database/redis.o
+
+# target to build an object file
+database/redis.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redis.cpp.o
+.PHONY : database/redis.cpp.o
+
+database/redis.i: database/redis.cpp.i
+.PHONY : database/redis.i
+
+# target to preprocess a source file
+database/redis.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redis.cpp.i
+.PHONY : database/redis.cpp.i
+
+database/redis.s: database/redis.cpp.s
+.PHONY : database/redis.s
+
+# target to generate assembly for a file
+database/redis.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redis.cpp.s
+.PHONY : database/redis.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -153,6 +249,78 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+myfastdfs/fdfsClient.o: myfastdfs/fdfsClient.cpp.o
+.PHONY : myfastdfs/fdfsClient.o
+
+# target to build an object file
+myfastdfs/fdfsClient.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o
+.PHONY : myfastdfs/fdfsClient.cpp.o
+
+myfastdfs/fdfsClient.i: myfastdfs/fdfsClient.cpp.i
+.PHONY : myfastdfs/fdfsClient.i
+
+# target to preprocess a source file
+myfastdfs/fdfsClient.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.i
+.PHONY : myfastdfs/fdfsClient.cpp.i
+
+myfastdfs/fdfsClient.s: myfastdfs/fdfsClient.cpp.s
+.PHONY : myfastdfs/fdfsClient.s
+
+# target to generate assembly for a file
+myfastdfs/fdfsClient.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.s
+.PHONY : myfastdfs/fdfsClient.cpp.s
+
+myfastdfs/fdfsConnPool.o: myfastdfs/fdfsConnPool.cpp.o
+.PHONY : myfastdfs/fdfsConnPool.o
+
+# target to build an object file
+myfastdfs/fdfsConnPool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o
+.PHONY : myfastdfs/fdfsConnPool.cpp.o
+
+myfastdfs/fdfsConnPool.i: myfastdfs/fdfsConnPool.cpp.i
+.PHONY : myfastdfs/fdfsConnPool.i
+
+# target to preprocess a source file
+myfastdfs/fdfsConnPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.i
+.PHONY : myfastdfs/fdfsConnPool.cpp.i
+
+myfastdfs/fdfsConnPool.s: myfastdfs/fdfsConnPool.cpp.s
+.PHONY : myfastdfs/fdfsConnPool.s
+
+# target to generate assembly for a file
+myfastdfs/fdfsConnPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.s
+.PHONY : myfastdfs/fdfsConnPool.cpp.s
+
+server.o: server.cpp.o
+.PHONY : server.o
+
+# target to build an object file
+server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server.cpp.o
+.PHONY : server.cpp.o
+
+server.i: server.cpp.i
+.PHONY : server.i
+
+# target to preprocess a source file
+server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server.cpp.i
+.PHONY : server.cpp.i
+
+server.s: server.cpp.s
+.PHONY : server.s
+
+# target to generate assembly for a file
+server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server.cpp.s
+.PHONY : server.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -162,9 +330,30 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... cloud_storage_server"
+	@echo "... api.o"
+	@echo "... api.i"
+	@echo "... api.s"
+	@echo "... database/Mysql.o"
+	@echo "... database/Mysql.i"
+	@echo "... database/Mysql.s"
+	@echo "... database/mysqlConnPool.o"
+	@echo "... database/mysqlConnPool.i"
+	@echo "... database/mysqlConnPool.s"
+	@echo "... database/redis.o"
+	@echo "... database/redis.i"
+	@echo "... database/redis.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... myfastdfs/fdfsClient.o"
+	@echo "... myfastdfs/fdfsClient.i"
+	@echo "... myfastdfs/fdfsClient.s"
+	@echo "... myfastdfs/fdfsConnPool.o"
+	@echo "... myfastdfs/fdfsConnPool.i"
+	@echo "... myfastdfs/fdfsConnPool.s"
+	@echo "... server.o"
+	@echo "... server.i"
+	@echo "... server.s"
 .PHONY : help
 
 

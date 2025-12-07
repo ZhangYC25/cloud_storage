@@ -1,5 +1,5 @@
-CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
- /home/zhangyc/cloud_storage/app/main.cpp /usr/include/stdc-predef.h \
+CMakeFiles/cloud_storage_server.dir/server.cpp.o: \
+ /home/zhangyc/cloud_storage/app/server.cpp /usr/include/stdc-predef.h \
  /home/zhangyc/cloud_storage/app/server.h \
  /home/zhangyc/cloud_storage/app/api.h \
  /usr/local/include/pistache/endpoint.h \

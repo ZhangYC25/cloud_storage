@@ -1,6 +1,5 @@
-CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
- /home/zhangyc/cloud_storage/app/main.cpp /usr/include/stdc-predef.h \
- /home/zhangyc/cloud_storage/app/server.h \
+CMakeFiles/cloud_storage_server.dir/api.cpp.o: \
+ /home/zhangyc/cloud_storage/app/api.cpp /usr/include/stdc-predef.h \
  /home/zhangyc/cloud_storage/app/api.h \
  /usr/local/include/pistache/endpoint.h \
  /usr/local/include/pistache/http.h /usr/include/c++/11/algorithm \
@@ -450,5 +449,4 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/fastdfs/storage_client1.h \
  /home/zhangyc/cloud_storage/app/database/redis.h \
  /usr/include/redis/hiredis.h /usr/include/redis/read.h \
- /usr/include/redis/sds.h /usr/include/c++/11/cstdarg \
- /usr/include/c++/11/csignal
+ /usr/include/redis/sds.h /usr/include/c++/11/cstdarg
