@@ -60,16 +60,20 @@ void Server::start() {
 void Server::shutdown() {
     if (m_server) {
         std::cout << "\nShutting down server..." << std::endl;
+        //_api -> destroyed();
         m_server->shutdown();
         m_server.reset(); // 释放资源
+        _api.reset();
+        exit(0);
     }
 }
 
 // 信号处理静态函数
 void Server::handleSignal(int sig) {
     if (sig == SIGINT) {
-        // 获取单例实例并关闭
+        // 获取单例实例并关闭,这里应该还要关闭连接池等
+        
         Server::getInstance().shutdown();
-        exit(0);
+        std::cout << "\nInstance shutdown..." << std::endl;
     }
 }

@@ -133,6 +133,8 @@ bool Mysql::getUserPasswordHash(const std::string& username, std::string& out_ha
 	return true;
 }
 
+//bool Mysql::queryUser(const std::string& username){}
+
 // for user_file_list table
 bool Mysql::insertUserFile(const std::string& md5, const std::string& username, const std::string& filename){
     int ret = 0;
@@ -198,6 +200,48 @@ bool Mysql::isInUserList(const std::string& md5, const std::string& username){
     mysql_free_result(res);
     return exists;
 }
+
+bool Mysql::addCount(const std::string& md5){
+    int ret = 0;
+    bool success = false;
+    try{
+        ret = mysql_query(conn, "START TRANSACTION");
+        if (ret != 0) {
+            throw std::runtime_error("开启事务失败: " + std::string(mysql_error(conn)));
+        }
+
+        const char* sql = "UPDATA file_info SET count = count + 1 WHERE md5 = ?";    
+        
+        // 3. 预处理SQL + 绑定参数（防止注入，不变）
+        MYSQL_STMT* stmt = mysql_stmt_init(conn);
+        if (!stmt || mysql_stmt_prepare(stmt, sql, strlen(sql)) != 0) {
+            throw std::runtime_error("SQL预处理失败: " + std::string(mysql_error(conn)));
+        }
+
+        // 绑定currentUser参数
+        MYSQL_BIND param_bind{};
+        param_bind.buffer_type = MYSQL_TYPE_STRING;
+        param_bind.buffer = (char*)md5.c_str();
+        param_bind.buffer_length = md5.size();
+        if (mysql_stmt_bind_param(stmt, &param_bind) != 0) {
+            throw std::runtime_error("参数绑定失败: " + std::string(mysql_stmt_error(stmt)));
+        }
+
+        if (mysql_stmt_execute(stmt) == 0) {
+            //throw std::runtime_error("count+1失败: " + std::string(mysql_stmt_error(stmt)));
+            success = true;
+            mysql_stmt_close(stmt);
+            return success;
+        }
+        throw std::runtime_error("count+1失败: " + std::string(mysql_stmt_error(stmt)));
+        return success;
+    }catch(const std::runtime_error& e){
+        std::cerr << "Failed to increment count for md5=" << md5 
+                  << ": " << e.what() << std::endl;
+        throw; // 或根据需求处理
+    }
+}
+
 
 // for file_info table
 bool Mysql::insertFileInfo(const std::string& md5, const std::string& url){
@@ -274,3 +318,71 @@ bool Mysql::isInMySQL(const std::string& md5){
 
     return exists;
 }
+
+void Mysql::queryUserFiles(const std::string& username, nlohmann::json& array){
+    // 2. 联表查询SQL（不变）
+        const char* sql = R"(
+            SELECT user_file_list.md5, user_file_list.filename, file_info.url 
+            FROM user_file_list
+            INNER JOIN file_info ON user_file_list.md5 = file_info.md5
+            WHERE user_file_list.user = ?
+        )";
+
+        // 3. 预处理SQL + 绑定参数（防止注入，不变）
+        MYSQL_STMT* stmt = mysql_stmt_init(conn);
+        if (!stmt || mysql_stmt_prepare(stmt, sql, strlen(sql)) != 0) {
+            throw std::runtime_error("SQL预处理失败: " + std::string(mysql_error(conn)));
+        }
+
+        // 绑定currentUser参数
+        MYSQL_BIND param_bind{};
+        param_bind.buffer_type = MYSQL_TYPE_STRING;
+        param_bind.buffer = (char*)username.c_str();
+        param_bind.buffer_length = username.size();
+        if (mysql_stmt_bind_param(stmt, &param_bind) != 0) {
+            throw std::runtime_error("参数绑定失败: " + std::string(mysql_stmt_error(stmt)));
+        }
+
+        // 4. 执行查询
+        if (mysql_stmt_execute(stmt) != 0) {
+            throw std::runtime_error("查询失败: " + std::string(mysql_stmt_error(stmt)));
+        }
+
+        // 5. 绑定结果集（只绑定前端需要的字段：md5(id)、filename、url）
+        // 注意：需要先分配足够的缓冲区，这里用动态数组避免长度问题
+        char md5[33] = {0};       // md5固定32位，加1存结束符
+        char filename[256] = {0}; // 文件名缓冲区
+        char url[512] = {0};      // 文件URL缓冲区
+
+        MYSQL_BIND result_bind[3]{};
+        // 绑定md5（对应SELECT的第一个字段，作为前端的id）
+        result_bind[0].buffer_type = MYSQL_TYPE_STRING;
+        result_bind[0].buffer = md5;
+        result_bind[0].buffer_length = sizeof(md5);
+        // 绑定filename（第二个字段）
+        result_bind[1].buffer_type = MYSQL_TYPE_STRING;
+        result_bind[1].buffer = filename;
+        result_bind[1].buffer_length = sizeof(filename);
+        // 绑定url（第三个字段）
+        result_bind[2].buffer_type = MYSQL_TYPE_STRING;
+        result_bind[2].buffer = url;
+        result_bind[2].buffer_length = sizeof(url);
+
+        if (mysql_stmt_bind_result(stmt, result_bind) != 0) {
+            throw std::runtime_error("结果集绑定失败: " + std::string(mysql_stmt_error(stmt)));
+        }
+
+        // 6. 遍历结果，直接组装JSON（核心：不用结构体，直接拼JSON）
+        while (mysql_stmt_fetch(stmt) == 0) {
+            // 临时JSON对象，存储一行数据
+            nlohmann::json fileItem;
+            fileItem["id"] = md5;          // 前端delete需要的唯一标识
+            fileItem["filename"] = filename; // 文件名
+            fileItem["url"] = url;         // 文件访问链接
+            array.push_back(fileItem); // 加入数组
+        }
+
+        // 7. 释放资源
+        mysql_stmt_close(stmt);
+}
+

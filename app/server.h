@@ -18,7 +18,7 @@ public:
     Server(Server&&) = delete;
     Server& operator=(Server&&) = delete;
 
-    void setApi(Api* api) {
+    void setApi(std::shared_ptr<Api> api) {
         std::lock_guard<std::mutex> lock(_mutex); // 线程安全
         if (!_api && api) { // 仅未初始化时注入
             _api = api;
@@ -48,7 +48,7 @@ private:
     ~Server() = default;
 
     // 成员变量（替代全局变量g_server）
-    Api* _api;
+    std::shared_ptr<Api> _api;
     std::shared_ptr<Pistache::Http::Endpoint> m_server;
     Pistache::Rest::Router m_router;
     static std::atomic<Server*> s_instance; // 原子指针保证线程安全

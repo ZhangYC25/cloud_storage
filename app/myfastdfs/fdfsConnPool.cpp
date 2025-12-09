@@ -8,7 +8,7 @@ FdfsConnPool::FdfsConnPool() : _currentConn(0), _minConn(3), _maxConn(10){}
 
 // 私有析构函数
 FdfsConnPool::~FdfsConnPool() {
-    destroyPool();
+    //destroyPool();
 }
 FdfsConnPool* FdfsConnPool::getInstance(){
         if (_poolInstance == nullptr) {
@@ -54,6 +54,7 @@ void FdfsConnPool::destroyPool() {
     _currentConn = 0;
     std::cout << "Info: Connection pool destroyed." << std::endl;
     
+    //delete _poolInstance;
     // 注意：如果是堆上创建的单例，需要 delete _poolInstance
     // 但在 C++ 中，单例的销毁时机通常由程序结束时自动管理
     // 这里我们只清理连接资源

@@ -1,9 +1,33 @@
 #include "api.h"
 
-Api::Api(){ _mysqlPool = MySQLConnPool::getInstance();}
+
+
+std::shared_ptr<Api> Api::_apiInstance = nullptr;
+
+std::shared_ptr<Api> Api::getInstance(){
+	if (_apiInstance == nullptr) {
+		static std::mutex instanceMutex;
+		std::lock_guard<std::mutex> lock(instanceMutex);
+		if (_apiInstance == nullptr) {
+                std::shared_ptr<Api> instance(new Api());
+				_apiInstance = instance;
+            }
+	}
+	return _apiInstance;
+}
+
+Api::Api(){ 
+	_mysqlPool = MySQLConnPool::getInstance();
+	_fdfsPool = FdfsConnPool::getInstance();
+}
 
 //合理吗？之后再说
-//Api::~Api() { _conPool = nullptr;}
+Api::~Api() {}
+
+// void Api::destroyed(){
+// 	_fdfsPool->destroyPool();
+// 	_mysqlPool->destroyPool();
+// }
 
 void Api::setupRoutes(){
 	// 方式1：结合std::bind（推荐，兼容性好）
@@ -35,6 +59,20 @@ void Api::setupRoutes(){
     Routes::Post(router, "/api/upload/check", 
         [this](const Request& req, ResponseWriter response) -> Route::Result {
             this->uploadCheck(req, std::move(response));
+            return Route::Result::Ok;
+        }
+    );
+
+	Routes::Get(router, "/api/files", 
+        [this](const Request& req, ResponseWriter response) -> Route::Result {
+            this->queryUserFiles(req, std::move(response));
+            return Route::Result::Ok;
+        }
+    );
+
+	Routes::Delete(router, "/api/delete", 
+        [this](const Request& req, ResponseWriter response) -> Route::Result {
+            this->deleteFiles(req, std::move(response));
             return Route::Result::Ok;
         }
     );
@@ -112,6 +150,8 @@ void Api::registerUser(const Pistache::Rest::Request& req, Pistache::Http::Respo
 			return;
 		}
 
+		// =============== add to set =======================
+		
 		_mysqlPool->releaseConnection(connPtr);
 
 		response.headers().add<Pistache::Http::Header::ContentType>(
@@ -142,7 +182,7 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
                 return;
 			} else { // in MySQL but Not in UserList
 				// 秒传：插入关系 + 引用计数+1
-                if (connPtr->insertUserFile(md5, user, filename)) {
+                if (connPtr->insertUserFile(md5, user, filename) && connPtr->addCount(md5)) {
 					response.send(Pistache::Http::Code::Ok,
 						R"({"success":true,"status":"instant_upload"})",
 						MIME(Application, Json));
@@ -306,7 +346,7 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 
 		// upload to Fastdfs
 		//write to tmp file /tmp/fastdfs_upload_XXXXXX
-		std::shared_ptr fdfs_ptr = FdfsConnPool::getInstance()->getConnection();
+		std::shared_ptr fdfs_ptr = _fdfsPool->getConnection();
 		std::string temp_path = fdfs_ptr -> create_temp_file(fileData);
 		if (temp_path.empty()) {
            response.send(Pistache::Http::Code::Bad_Request,
@@ -326,7 +366,8 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
         }
 		//delete tem file
 		std::filesystem::remove(temp_path);
-		
+		_fdfsPool -> releaseConnection(fdfs_ptr);
+
 		std::shared_ptr connPtr = _mysqlPool -> getConnection();
 		//入数据库
 		connPtr -> insertUserFile(md5, user, filename);
@@ -354,3 +395,38 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 	}
 }
 
+void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response){
+	try{
+
+		auto userOpt = req.query().get("user");
+		if (!userOpt.has_value()) {
+        	response.send(Pistache::Http::Code::Bad_Request, "Missing 'user' parameter");
+        	return;
+    	}
+    	std::string username = userOpt.value();
+		
+		json array = json::array();
+
+		std::shared_ptr<Mysql> connPtr = _mysqlPool->getConnection();
+
+		connPtr -> queryUserFiles(username, array);
+
+		_mysqlPool -> releaseConnection(connPtr);
+		// ✅ 转为字符串并返回
+        std::string jsonString = array.dump();
+		
+		// 3. 返回JSON给前端（前端loadFiles()可直接解析）
+		response.headers().add<Pistache::Http::Header::ContentType>(
+			Pistache::Http::Mime::MediaType("application/json"));
+    	response.send(Pistache::Http::Code::Ok, jsonString);
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Error in queryUserFiles: " << e.what() << std::endl;
+        response.send(Pistache::Http::Code::Internal_Server_Error, "Server error");
+	}
+}
+
+// ==================Delete / deleteFiles ================
+void Api::deleteFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response){
+
+}
