@@ -7,6 +7,7 @@ Redis::Redis(){
 Redis::~Redis(){
     if (this->redis_ctx != nullptr){
         redisFree(this -> redis_ctx);
+		std::cout<<"delete redis"<<std::endl;
     }
 }
 

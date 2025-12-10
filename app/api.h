@@ -57,7 +57,9 @@ public:
     void queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response);
 
     // ================== DELETE / delete
-    void deleteFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response);
+    void deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
+
+    void deleteFiles(const std::string& url, const std::string& md5);
 
     Pistache::Rest::Router& getRouter(){return this->router;};
 

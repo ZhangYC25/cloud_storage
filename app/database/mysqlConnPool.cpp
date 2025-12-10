@@ -8,7 +8,7 @@
 MySQLConnPool* MySQLConnPool::_poolInstance = nullptr;
 
 // 私有构造函数
-MySQLConnPool::MySQLConnPool() : _currentConn(0), _minConn(3), _maxConn(10){}
+MySQLConnPool::MySQLConnPool() : _minConn(2), _maxConn(10){}
 
 // 私有析构函数
 MySQLConnPool::~MySQLConnPool() {
@@ -79,6 +79,7 @@ std::shared_ptr<Mysql> MySQLConnPool::getConnection() {
     if (!_connQueue.empty()) {
         connPtr = _connQueue.front();
         _connQueue.pop();
+        std::cerr<<"get MySQL conn success!"<<std::endl;
         return connPtr;
     }
 
@@ -87,6 +88,7 @@ std::shared_ptr<Mysql> MySQLConnPool::getConnection() {
         connPtr = std::make_shared<Mysql>();
         if (connPtr->getConn() != nullptr) {
             _currentConn++;
+            std::cerr<<"expend MySQL conn success! conn nums: "<< _currentConn <<std::endl;
             return connPtr; // 返回 shared_ptr
         }
         // 如果创建失败，继续执行等待逻辑
@@ -126,7 +128,9 @@ bool MySQLConnPool::releaseConnection(std::shared_ptr<Mysql> connPtr) {
     std::lock_guard<std::mutex> lock(_mtx);
 
     _connQueue.push(connPtr);
-
+    std::cout << "success release MysqlPool" <<std::endl;
+    std::cout << "[MySQLConnPool] Success release connection! Queue size: " 
+                << _connQueue.size() << ", Current conn nums: " << _currentConn << std::endl;
     // 唤醒一个正在等待连接的线程
     _cv.notify_one();
     return true;

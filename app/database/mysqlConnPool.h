@@ -6,6 +6,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <memory>
+#include <atomic>
 
 #include <mysql/mysql.h>
 
@@ -34,7 +35,7 @@ private:
     MySQLConnPool();
     ~MySQLConnPool();
 
-    int _currentConn;
+    std::atomic<int> _currentConn{0};
     int _maxConn;
     int _minConn;
 

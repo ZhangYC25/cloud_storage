@@ -1,14 +1,35 @@
 #include "fdfsClient.h"
 
-FdfsClient::FdfsClient():conf_path("/etc/fdfs/client.conf"){
-    fdfs_client_init(conf_path);
-	ConnectionInfo* pTrackerServer = tracker_get_connection();
-    std::cerr << "fdfs init sucess" << std::endl;
+FdfsClient::FdfsClient():conf_path("/etc/fdfs/client.conf"), pTrackerServer(nullptr){
+    createConnection();
 }
 
 FdfsClient::~FdfsClient(){
-    tracker_close_connection_ex(pTrackerServer,true);
-	fdfs_client_destroy();
+    closeConnection();
+}
+
+bool FdfsClient::createConnection() {
+    closeConnection(); // 先关旧的
+
+    pTrackerServer = tracker_get_connection();
+    if (pTrackerServer == nullptr || pTrackerServer->sock < 0) {
+        std::cerr << "创建Tracker连接失败!" << std::endl;
+        return false;
+    }
+
+    // 校验连接有效性
+    if (pTrackerServer == nullptr) {
+        closeConnection();
+        std::cerr << "Tracker连接无效!" << std::endl;
+        return false;
+    }
+    return true;
+}
+void FdfsClient::closeConnection() {
+    if (pTrackerServer != nullptr) {
+        tracker_close_connection_ex(pTrackerServer, true);
+        pTrackerServer = nullptr;
+    }
 }
 
 ConnectionInfo* FdfsClient::getPtrackerServer(){return pTrackerServer;};
@@ -19,6 +40,9 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
 	char group_name[FDFS_GROUP_NAME_MAX_LEN + 1] = {0};
 	int store_path_index = 0;
 
+    if (pTrackerServer == NULL || pTrackerServer->sock < 0) {
+        fprintf(stderr, "tracker server connection is invalid\n");
+    }
 	int result = tracker_query_storage_store(pTrackerServer, &storageServer,
 			group_name, &store_path_index);
 	if (result != 0) {
@@ -41,10 +65,7 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
         group_name,
         file_id
     );
-
-	tracker_close_connection_ex(pTrackerServer, true);
-    fdfs_client_destroy();
-
+    std::cout<<group_name<<std::endl;
     if (result == 0) {
         return std::string(group_name) + "/" + std::string(file_id);
     }
@@ -65,4 +86,29 @@ std::string FdfsClient::create_temp_file(const std::vector<char>& data) {
 	}
     close(fd);
     return std::string(temp_template);
+}
+
+bool FdfsClient::delete_file_from_fastdfs(const std::string& group_name, const std::string& file){
+    ConnectionInfo storageServer;
+	memset(&storageServer, 0, sizeof(storageServer));
+
+    int result = tracker_query_storage_update(
+        pTrackerServer,
+        &storageServer,
+        group_name.c_str(),
+        file.c_str()
+    );
+    if (result != 0) {
+        std::cerr << "Failed to query storage server for file: " 
+                  << group_name << "/" << file 
+                  << ", error code: " << result << std::endl;
+        return false;
+    }
+    if(storage_delete_file(pTrackerServer,&storageServer,
+        group_name.c_str(), file.c_str())) {
+            std::cerr << "delete fdfs error" << std::endl;
+            return false;
+        }
+    return true;
+    
 }

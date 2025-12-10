@@ -33,12 +33,14 @@ public:
     // for user_file_list table
     bool insertUserFile(const std::string& md5, const std::string& username, const std::string& filename);
     bool isInUserList(const std::string& md5, const std::string& username);
-    bool addCount(const std::string& md5);
+    bool deleteUserFile(const std::string& username, const std::string& md5);
     
     // for file_info table
     bool insertFileInfo(const std::string& md5, const std::string& url);
     bool isInMySQL(const std::string& md5);
-
+    bool deleteSysFile(const std::string& md5);
+    bool updateCount(const std::string& md5, int delta);
+    bool getCount(const std::string& md5, int& count, std::string& url);
     void queryUserFiles(const std::string& username, nlohmann::json& array);
 // ============= end ===================
 

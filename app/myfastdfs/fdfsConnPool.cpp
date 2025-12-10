@@ -2,7 +2,7 @@
 
 
 FdfsConnPool* FdfsConnPool::_poolInstance = nullptr;
-
+bool FdfsConnPool::_global_init_done = false;
 // 私有构造函数
 FdfsConnPool::FdfsConnPool() : _currentConn(0), _minConn(3), _maxConn(10){}
 
@@ -22,25 +22,33 @@ FdfsConnPool* FdfsConnPool::getInstance(){
     }
 
 void FdfsConnPool::init(){
-    // 避免重复初始化
-    if (_currentConn > 0) {
-        std::cerr << "Warning: Connection pool already initialized." << std::endl;
-        return;
-    }
-    // 预先创建最小连接数
-    for (int i = 0; i < _minConn; ++i) {
-        std::shared_ptr<FdfsClient> connPtr = std::make_shared<FdfsClient>();
-        if (connPtr) {
-            std::lock_guard<std::mutex> lock(_mtx);
-            _connQueue.push(connPtr);
-            _currentConn++;
-        } else {
-            // 如果连接失败，可以根据需要决定是否退出
-            std::cerr << "Error: Failed to create initial connection " << i + 1 << std::endl;
+    // 第一步：全局只初始化1次fdfs_client
+        std::lock_guard<std::mutex> initLock(_mtx);
+        if (!_global_init_done) {
+            if (fdfs_client_init("/etc/fdfs/client.conf") != 0) {
+                std::cerr << "FastDFS全局初始化失败!检查client.conf" << std::endl;
+                exit(1); // 初始化失败直接退出，避免后续无效操作
+            }
+            _global_init_done = true;
+            std::cout << "FastDFS全局初始化成功" << std::endl;
         }
-    }
 
-    std::cout << "Info: Connection pool initialized with " << _currentConn << " connections." << std::endl;
+        // 第二步：创建连接池的初始连接（多个独立连接）
+        if (_currentConn > 0) {
+            std::cerr << "连接池已初始化" << std::endl;
+            return;
+        }
+
+        for (int i = 0; i < _minConn; ++i) {
+            auto connPtr = std::make_shared<FdfsClient>();
+            if (connPtr->getPtrackerServer() != nullptr) {
+                _connQueue.push(connPtr);
+                _currentConn++;
+            } else {
+                std::cerr << "创建初始连接" << i+1 << "失败" << std::endl;
+            }
+        }
+        std::cout << "FdfsPool初始化完成, 当前连接数：" << _currentConn << std::endl;
 }
 
 void FdfsConnPool::destroyPool() {
@@ -70,6 +78,7 @@ std::shared_ptr<FdfsClient> FdfsConnPool::getConnection(){
     if (!_connQueue.empty()) {
         connPtr = _connQueue.front();
         _connQueue.pop();
+        std::cout<<"get Fdfs connection"<<std::endl;
         return connPtr;
     }
 
@@ -80,7 +89,6 @@ std::shared_ptr<FdfsClient> FdfsConnPool::getConnection(){
             _currentConn++;
             return connPtr; // 返回 shared_ptr
         }
-        // 如果创建失败，继续执行等待逻辑
     }
 
     // 3. 队列为空，且已达到最大连接数，则等待
@@ -116,5 +124,6 @@ bool FdfsConnPool::releaseConnection(std::shared_ptr<FdfsClient> connPtr){
 
     // 唤醒一个正在等待连接的线程
     _cv.notify_one();
+    std::cout<<"release fdfsPool"<<std::endl;
     return true;
 }

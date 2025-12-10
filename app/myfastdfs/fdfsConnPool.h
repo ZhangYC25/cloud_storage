@@ -41,4 +41,5 @@ private:
     std::condition_variable _cv;
     // 静态指针，指向唯一的连接池实例
     static FdfsConnPool* _poolInstance;
+    static bool _global_init_done;
 };
