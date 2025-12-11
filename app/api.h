@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "database/mysqlConnPool.h"
+#include "database/redisConnPool.h"
 #include "myfastdfs/fdfsConnPool.h"
 #include "database/redis.h"
 
@@ -68,6 +69,7 @@ private:
     static std::shared_ptr<Api> _apiInstance;
     MySQLConnPool* _mysqlPool;
     FdfsConnPool* _fdfsPool;
+    RedisConnPool* _redisPool;
     //std::unordered_set<userInfo> _userSet;
     using json = nlohmann::json;
     Pistache::Rest::Router router;

@@ -153,10 +153,24 @@ CMakeFiles/cloud_storage_server.dir/database/redis.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cloud_storage_server.dir/database/redis.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhangyc/cloud_storage/app/database/redis.cpp -o CMakeFiles/cloud_storage_server.dir/database/redis.cpp.s
 
+CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o: CMakeFiles/cloud_storage_server.dir/flags.make
+CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o: /home/zhangyc/cloud_storage/app/database/redisConnPool.cpp
+CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o: CMakeFiles/cloud_storage_server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o -MF CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o.d -o CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o -c /home/zhangyc/cloud_storage/app/database/redisConnPool.cpp
+
+CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhangyc/cloud_storage/app/database/redisConnPool.cpp > CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.i
+
+CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhangyc/cloud_storage/app/database/redisConnPool.cpp -o CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.s
+
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o: CMakeFiles/cloud_storage_server.dir/flags.make
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o: /home/zhangyc/cloud_storage/app/myfastdfs/fdfsClient.cpp
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o: CMakeFiles/cloud_storage_server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o -MF CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o.d -o CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o -c /home/zhangyc/cloud_storage/app/myfastdfs/fdfsClient.cpp
 
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.i: cmake_force
@@ -170,7 +184,7 @@ CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.s: cmake_force
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o: CMakeFiles/cloud_storage_server.dir/flags.make
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o: /home/zhangyc/cloud_storage/app/myfastdfs/fdfsConnPool.cpp
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o: CMakeFiles/cloud_storage_server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o -MF CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o.d -o CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o -c /home/zhangyc/cloud_storage/app/myfastdfs/fdfsConnPool.cpp
 
 CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.i: cmake_force
@@ -189,6 +203,7 @@ cloud_storage_server_OBJECTS = \
 "CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.o" \
 "CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.o" \
 "CMakeFiles/cloud_storage_server.dir/database/redis.cpp.o" \
+"CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o" \
 "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o" \
 "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o"
 
@@ -201,12 +216,13 @@ cloud_storage_server: CMakeFiles/cloud_storage_server.dir/api.cpp.o
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.o
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.o
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/database/redis.cpp.o
+cloud_storage_server: CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/build.make
 cloud_storage_server: /usr/local/lib/bcrypt.a
 cloud_storage_server: CMakeFiles/cloud_storage_server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable cloud_storage_server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable cloud_storage_server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cloud_storage_server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

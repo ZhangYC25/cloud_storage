@@ -1,9 +1,9 @@
-#ifndef REDIS_CONN_POOL_H
-#define REDIS_CONN_POOL_H
+#pragma once
 
 #include "redis.h"
 #include <queue>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
 #include <chrono>
 #include <stdexcept>
@@ -33,14 +33,15 @@ private:
     RedisConnPool& operator=(const RedisConnPool&) = delete;
 
     // DCLP 需要的成员
-    static RedisConnPool* _instance;
-    static std::mutex _instanceMutex;
+    static RedisConnPool* _redisInstance;
+
+    //static std::mutex _instanceMutex;
 
     // 连接池状态和配置
-    int _minConn = 0;
-    int _maxConn = 0;
-    int _currentConn = 0; // 当前连接总数
-    int _timeoutSec = 5;  // 获取连接的超时时间
+    int8_t _minConn = 0;
+    int8_t _maxConn = 0;
+    std::atomic<int8_t> _currentConn = 0; // 当前连接总数
+    int8_t _timeoutSec = 5;  // 获取连接的超时时间
 
     const std::string _redis_host = "127.0.0.1";
     int _port = 6379;
@@ -52,5 +53,3 @@ private:
     std::mutex _mtx;
     std::condition_variable _cv;
 };
-
-#endif // REDIS_CONN_POOL_H

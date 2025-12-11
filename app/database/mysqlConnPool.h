@@ -35,19 +35,17 @@ private:
     MySQLConnPool();
     ~MySQLConnPool();
 
-    std::atomic<int> _currentConn{0};
-    int _maxConn;
-    int _minConn;
+    std::atomic<int8_t> _currentConn{0};
+    int8_t _maxConn;
+    int8_t _minConn;
 
-    //怎么取？ _connQueue.pop() -> conn;
+    //怎么取？auto conn = _connQueue->front();
     std::queue<std::shared_ptr<Mysql>> _connQueue;
     
     std::mutex _mtx;
     std::condition_variable _cv;
 
-    // 内部函数：创建一个新的数据库连接
-    //Mysql* createConnection();
-
     // 静态指针，指向唯一的连接池实例
     static MySQLConnPool* _poolInstance;
 };
+

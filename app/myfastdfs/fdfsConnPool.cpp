@@ -30,12 +30,12 @@ void FdfsConnPool::init(){
                 exit(1); // 初始化失败直接退出，避免后续无效操作
             }
             _global_init_done = true;
-            std::cout << "FastDFS全局初始化成功" << std::endl;
+            //std::cout << "FastDFS全局初始化成功" << std::endl;
         }
 
         // 第二步：创建连接池的初始连接（多个独立连接）
         if (_currentConn > 0) {
-            std::cerr << "连接池已初始化" << std::endl;
+            std::cerr << "[FdfsLConnPool] Warning Connection pool already initialized." << std::endl;
             return;
         }
 
@@ -45,10 +45,10 @@ void FdfsConnPool::init(){
                 _connQueue.push(connPtr);
                 _currentConn++;
             } else {
-                std::cerr << "创建初始连接" << i+1 << "失败" << std::endl;
+                std::cerr << "[FdfsConnPool] create initial conn " << static_cast<int>(_currentConn) << " failed!" << std::endl;
             }
         }
-        std::cout << "FdfsPool初始化完成, 当前连接数：" << _currentConn << std::endl;
+        std::cout << "[FdfsConnPool] init success: (conn=" << static_cast<int>(_currentConn) <<")"<< std::endl;
 }
 
 void FdfsConnPool::destroyPool() {
@@ -70,45 +70,52 @@ void FdfsConnPool::destroyPool() {
 
 // 从连接池中获取一个连接
 std::shared_ptr<FdfsClient> FdfsConnPool::getConnection(){
-
-    std::shared_ptr<FdfsClient> connPtr = nullptr;
     std::unique_lock<std::mutex> lock(_mtx);
-
-    // 1. 队列中有可用连接
-    if (!_connQueue.empty()) {
-        connPtr = _connQueue.front();
-        _connQueue.pop();
-        std::cout<<"get Fdfs connection"<<std::endl;
-        return connPtr;
-    }
-
-    // 2. 队列为空，但未达到最大连接数，则创建新连接
-    if (_currentConn < _maxConn) {
-        connPtr = std::make_shared<FdfsClient>();
-        if (connPtr->getPtrackerServer() != nullptr) {
-            _currentConn++;
-            return connPtr; // 返回 shared_ptr
+    while (true) {
+        std::shared_ptr<FdfsClient> connPtr = nullptr;
+        if (!_connQueue.empty()) {
+            connPtr = _connQueue.front();
+            _connQueue.pop();
+            std::cerr << "[FdfsConnPool] Success get connection! Queue Size = " 
+                            << _connQueue.size() <<", Current conn nums: "<<static_cast<int>(_currentConn)<< std::endl;
+            return connPtr;
         }
-    }
 
-    // 3. 队列为空，且已达到最大连接数，则等待
-    // 等待一个连接释放到队列中（设置一个超时时间，例如 5 秒）
-    std::cout << "Warning: Pool is full, waiting for connection release..." << std::endl;
-    
-    // lambda 谓词，条件满足时返回 true，避免虚假唤醒
-    bool success = _cv.wait_for(lock, std::chrono::seconds(5), [this] {
-        return !_connQueue.empty();
-    });
+        // 2. 队列为空，但未达到最大连接数，则创建新连接
+        if (_currentConn < _maxConn) {
+            connPtr = std::make_shared<FdfsClient>();
+            if (connPtr->getPtrackerServer() != nullptr) {
+                _currentConn++;
+                std::cerr<<"[FdfsConnPool] expend fastdfs conn success!" <<
+                 " Queue size: "<< _connQueue.size()<<", Current conn nums: "<< static_cast<int>(_currentConn) <<std::endl;
+                return connPtr; // 返回 shared_ptr
+            } else {
+                _currentConn--;
+                std::cerr << "[FdfsConnPool] create invalid conn, currentConn=" 
+                            << static_cast<int>(_currentConn) << std::endl;
+            }
+        }
 
-    if (success) {
-        // 等待成功，队列中有连接
-        connPtr = _connQueue.front();
-        _connQueue.pop();
-        return connPtr;
-    } else {
-        // 等待超时
-        std::cerr << "Error: Wait for connection timeout." << std::endl;
-        return nullptr;
+        // 3. 队列为空，且已达到最大连接数，则等待
+        std::cout << "[FdfsConnPool]  pool full (max=" << (int)_maxConn 
+                      << "), wait for conn..." << std::endl;        
+        // lambda 谓词，条件满足时返回 true，避免虚假唤醒
+        bool success = _cv.wait_for(lock, std::chrono::seconds(5), [this] {
+            return !_connQueue.empty();
+        });
+
+        if (success) {
+            // 等待成功，队列中有连接
+            connPtr = _connQueue.front();
+            _connQueue.pop();
+            std::cerr << "[FdfsConnPool] wait conn success!"<<" Queue size: "<<_connQueue.size()
+             <<", Current conn nums: "<<static_cast<int>(_currentConn)<< std::endl;
+            return connPtr;
+        } else {
+            // 等待超时
+            std::cerr << "[FdfsConnPool] wait conn timeout!" << std::endl;
+            return nullptr;
+        }
     }
 }
 
@@ -124,6 +131,8 @@ bool FdfsConnPool::releaseConnection(std::shared_ptr<FdfsClient> connPtr){
 
     // 唤醒一个正在等待连接的线程
     _cv.notify_one();
-    std::cout<<"release fdfsPool"<<std::endl;
+    std::cout << "[FdfsConnPool] Success release connection! Queue size: " 
+                << _connQueue.size() << ", Current conn nums: " << static_cast<int>(_currentConn) << std::endl;
+    
     return true;
 }

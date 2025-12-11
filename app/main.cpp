@@ -4,6 +4,7 @@
 int main(){
 	MySQLConnPool::getInstance() -> init();
 	FdfsConnPool::getInstance() -> init();
+	RedisConnPool::getInstance() -> init();
 	//Api::getInstance();
 	//std::shared_ptr<Api> api = std::make_shared<Api>();
 	

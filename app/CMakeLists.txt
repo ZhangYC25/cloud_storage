@@ -41,6 +41,7 @@ set(SOURCES
     database/Mysql.cpp
     database/mysqlConnPool.cpp
     database/redis.cpp
+    database/redisConnPool.cpp
     # myfastdfs子目录下的源文件
     myfastdfs/fdfsClient.cpp
     myfastdfs/fdfsConnPool.cpp

@@ -41,7 +41,7 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
 	int store_path_index = 0;
 
     if (pTrackerServer == NULL || pTrackerServer->sock < 0) {
-        fprintf(stderr, "tracker server connection is invalid\n");
+        fprintf(stderr, "[Fdfs ERROR] tracker server connection is invalid\n");
     }
 	int result = tracker_query_storage_store(pTrackerServer, &storageServer,
 			group_name, &store_path_index);
@@ -65,8 +65,10 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
         group_name,
         file_id
     );
-    std::cout<<group_name<<std::endl;
+    //std::cout<<group_name<<std::endl;
     if (result == 0) {
+        std::cout << "[Fdfs INFO] Successed upload FastDFS file: group=\"" 
+              << group_name <<", file= "<< std::string(file_id) << std::endl;
         return std::string(group_name) + "/" + std::string(file_id);
     }
     return "";
@@ -75,16 +77,21 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
 std::string FdfsClient::create_temp_file(const std::vector<char>& data) {
     char temp_template[] = "/tmp/fastdfs_upload_XXXXXX";
     int fd = mkstemp(temp_template);
-    if (fd == -1) return "";
+    if (fd == -1) {
+        std::cerr <<"[Fdfs ERROR] Failed create tmp file!"<<std::endl;
+        return "";
+    }
     
     ssize_t written = write(fd, data.data(), data.size());
 	
 	if (written != static_cast<ssize_t>(data.size())) {
     	close(fd);
+        std::cerr <<"[Fdfs ERROR] Failed written tmp file!"<<std::endl;
     	unlink(temp_template); // 删除创建的临时文件
     	return "";
 	}
     close(fd);
+    std::cerr <<"[Fdfs INFO] Successed create tmp file!"<<std::endl;
     return std::string(temp_template);
 }
 

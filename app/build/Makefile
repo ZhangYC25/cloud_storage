@@ -225,6 +225,30 @@ database/redis.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redis.cpp.s
 .PHONY : database/redis.cpp.s
 
+database/redisConnPool.o: database/redisConnPool.cpp.o
+.PHONY : database/redisConnPool.o
+
+# target to build an object file
+database/redisConnPool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o
+.PHONY : database/redisConnPool.cpp.o
+
+database/redisConnPool.i: database/redisConnPool.cpp.i
+.PHONY : database/redisConnPool.i
+
+# target to preprocess a source file
+database/redisConnPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.i
+.PHONY : database/redisConnPool.cpp.i
+
+database/redisConnPool.s: database/redisConnPool.cpp.s
+.PHONY : database/redisConnPool.s
+
+# target to generate assembly for a file
+database/redisConnPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.s
+.PHONY : database/redisConnPool.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -342,6 +366,9 @@ help:
 	@echo "... database/redis.o"
 	@echo "... database/redis.i"
 	@echo "... database/redis.s"
+	@echo "... database/redisConnPool.o"
+	@echo "... database/redisConnPool.i"
+	@echo "... database/redisConnPool.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

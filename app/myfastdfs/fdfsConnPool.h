@@ -30,9 +30,9 @@ private:
     FdfsConnPool();
     ~FdfsConnPool();
 
-    int _currentConn;
-    int _maxConn;
-    int _minConn;
+    int8_t _currentConn;
+    int8_t _maxConn;
+    int8_t _minConn;
 
     //怎么取？ _connQueue.pop() -> conn;
     std::queue<std::shared_ptr<FdfsClient>> _connQueue;

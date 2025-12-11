@@ -19,8 +19,14 @@ public:
     Redis& operator=(const Redis&) = delete;
 
     // 检查连接是否有效 (如果认证失败或连接中断，返回 false)
-    bool isConnected() const { return redis_ctx != nullptr; }
-    void connect();
+    bool isConnected() const;
+    bool connect();
+    void close();
+    
+    // ============ redis command ===================
+    bool set(const std::string& key, const std::string& value, int expire);
+    std::string get(const std::string& key);
+
 private:
     redisContext* redis_ctx; 
     const std::string redis_host = "127.0.0.1";

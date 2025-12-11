@@ -17,7 +17,7 @@ Mysql::Mysql(){
                 mysql_close(conn);
                 return;
             }
-            std::cout << "Debug: Successfully created new connection." << std::endl;
+            //std::cout << "Debug: Successfully created new connection." << std::endl;
             };
 
 Mysql::~Mysql() {
@@ -155,7 +155,7 @@ bool Mysql::insertUserFile(const std::string& md5, const std::string& username, 
         if (ret != 0) {
             throw std::runtime_error("插入user_file_list失败: " + std::string(mysql_error(conn)));
         }
-        std::cout << "成功向user_file_list插入记录,md5: " << md5 << ", 用户名: " << username << std::endl;
+        //std::cout << "成功向user_file_list插入记录,md5: " << md5 << ", 用户名: " << username << std::endl;
 
         // 6. 提交事务
         ret = mysql_query(conn, "COMMIT");
@@ -273,7 +273,7 @@ bool Mysql::insertFileInfo(const std::string& md5, const std::string& url){
         if (ret != 0) {
             throw std::runtime_error("更新file_info count失败: " + std::string(mysql_error(conn)));
         }
-        std::cout << "成功插入file_info表,md5: " << md5 << std::endl;
+        //std::cout << "成功插入file_info表,md5: " << md5 << std::endl;
 
         // 6. 提交事务
         ret = mysql_query(conn, "COMMIT");
@@ -549,12 +549,12 @@ bool Mysql::getCount(const std::string& md5, int& count, std::string& url){
     if (fetch_ret == 0) {
         // 读取成功：将缓冲区内容赋值给url（解决乱码）
         url = std::string(url_buffer, url_len); // 按实际长度赋值，避免多余空字符
-        std::cout << "[INFO] Get count: " << count << ", url: " << url << std::endl;
+        std::cout << "[MySQL INFO] Get count: " << count << std::endl;
         mysql_stmt_close(stmt);
         return true;
     } else if (fetch_ret == MYSQL_NO_DATA) {
         // 无数据（md5不存在）
-        std::cerr << "[WARN] No data found for md5: " << md5 << std::endl;
+        std::cerr << "[MySQL WARN] No data found for md5: " << md5 << std::endl;
         mysql_stmt_close(stmt);
         return false;
     } else {
@@ -564,3 +564,4 @@ bool Mysql::getCount(const std::string& md5, int& count, std::string& url){
         return false;
     }
 }
+

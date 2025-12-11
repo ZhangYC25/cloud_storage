@@ -414,6 +414,11 @@ CMakeFiles/cloud_storage_server.dir/server.cpp.o: \
  /usr/include/mysql/mysql_version.h /usr/include/mysql/mysql_time.h \
  /usr/include/mysql/errmsg.h /usr/include/c++/11/queue \
  /usr/include/c++/11/bits/stl_queue.h \
+ /home/zhangyc/cloud_storage/app/database/redisConnPool.h \
+ /home/zhangyc/cloud_storage/app/database/redis.h \
+ /usr/include/redis/hiredis.h /usr/include/redis/read.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/redis/sds.h \
+ /usr/include/c++/11/cstdarg \
  /home/zhangyc/cloud_storage/app/myfastdfs/fdfsConnPool.h \
  /home/zhangyc/cloud_storage/app/myfastdfs/fdfsClient.h \
  /usr/include/fastdfs/fdfs_client.h /usr/include/fastcommon/shared_func.h \
@@ -426,7 +431,6 @@ CMakeFiles/cloud_storage_server.dir/server.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/statx-generic.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_statx.h \
- /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/fastcommon/common_define.h /usr/include/inttypes.h \
  /usr/include/arpa/inet.h /usr/include/fastcommon/_os_define.h \
  /usr/include/fastcommon/ini_file_reader.h /usr/include/fastcommon/hash.h \
@@ -446,8 +450,4 @@ CMakeFiles/cloud_storage_server.dir/server.cpp.o: \
  /usr/include/fastdfs/fdfs_shared_func.h /usr/include/fastcommon/logger.h \
  /usr/include/fastdfs/fdfs_server_id_func.h \
  /usr/include/fastdfs/storage_client.h /usr/include/fastdfs/client_func.h \
- /usr/include/fastdfs/storage_client1.h \
- /home/zhangyc/cloud_storage/app/database/redis.h \
- /usr/include/redis/hiredis.h /usr/include/redis/read.h \
- /usr/include/redis/sds.h /usr/include/c++/11/cstdarg \
- /usr/include/c++/11/csignal
+ /usr/include/fastdfs/storage_client1.h /usr/include/c++/11/csignal

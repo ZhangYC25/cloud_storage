@@ -81,12 +81,12 @@ clean: CMakeFiles/cloud_storage_server.dir/clean
 CMakeFiles/cloud_storage_server.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target cloud_storage_server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zhangyc/cloud_storage/app/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target cloud_storage_server"
 .PHONY : CMakeFiles/cloud_storage_server.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/cloud_storage_server.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangyc/cloud_storage/app/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangyc/cloud_storage/app/build/CMakeFiles 10
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cloud_storage_server.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangyc/cloud_storage/app/build/CMakeFiles 0
 .PHONY : CMakeFiles/cloud_storage_server.dir/rule

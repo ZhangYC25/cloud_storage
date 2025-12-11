@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/database/redis.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/database/redis.cpp.o.d"
+  "CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o"
+  "CMakeFiles/cloud_storage_server.dir/database/redisConnPool.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/main.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/main.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o"
