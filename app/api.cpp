@@ -317,8 +317,11 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
             return;
         }
 
+		const char* ext = strrchr(filename.c_str(),'.');
+		const char* file_ext = ext?ext+1:"";
+
 		//upload
-		std::string fastdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str());
+		std::string fastdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str(), file_ext);
 		//std::string fastdfs_path = upload_file_to_fastdfs(temp_path.c_str());
 		if (fastdfs_path.empty()) {
            	response.send(Pistache::Http::Code::Bad_Request,
@@ -334,7 +337,7 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 		//入数据库
 		connPtr -> insertUserFile(md5, user, filename);
 		std::cerr<<"[MySQL INFO]  Successed Insert file for user: "<<user<<"file: "<<redisFile<<"to user_file_list"<<std::endl;
-		connPtr -> insertFileInfo(md5, fastdfs_path);
+		connPtr -> insertFileInfo(md5, fastdfs_path, file_ext);
 		std::cerr<<"[MySQL INFO ] Successed Insert file: "<<redisFile<<"to file_info" <<std::endl;
 		_mysqlPool -> releaseConnection(connPtr);
 
@@ -343,7 +346,7 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
     		{"success", true},
     		{"message", "file uploaded successfully"},
     		{"url", "http://146.56.194.96/" + fastdfs_path},
-    		{"fastdfs_path", fastdfs_path}
+    		{"fastdfs_path", fastdfs_path+file_ext}
 		};
 
 		response.send(
@@ -454,7 +457,6 @@ void Api::deleteFiles(const std::string& url, const std::string& md5){
 
 	std::string group_name = url.substr(0, firstSlash);
 	std::string remote_file = url.substr(firstSlash+1);
-
 	std::shared_ptr<FdfsClient> connFdfs = _fdfsPool->getConnection();
 	if( connFdfs -> delete_file_from_fastdfs(group_name, remote_file) ) {
 		std::cout << "[Fdfs INFO] Successfully deleted FastDFS file: group=\"" 

@@ -34,7 +34,7 @@ void FdfsClient::closeConnection() {
 
 ConnectionInfo* FdfsClient::getPtrackerServer(){return pTrackerServer;};
 
-std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
+std::string FdfsClient::upload_file_to_fastdfs(const char* local_path, const char* file_ext){
     ConnectionInfo storageServer;
 	memset(&storageServer, 0, sizeof(storageServer));
 	char group_name[FDFS_GROUP_NAME_MAX_LEN + 1] = {0};
@@ -53,8 +53,8 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path){
 
 	char file_id[256] = {0};
 	//提取文件扩展名
-	const char* ext = strrchr(local_path,'.');
-	const char* file_ext = ext?ext+1:"";
+	//const char* ext = strrchr(local_path,'.');
+	//const char* file_ext = ext?ext+1:"";
 	result = storage_upload_by_filename(
         pTrackerServer,
         &storageServer,

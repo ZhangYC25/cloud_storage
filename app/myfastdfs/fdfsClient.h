@@ -22,7 +22,7 @@ public:
 
     // ================= function ==================
     std::string create_temp_file(const std::vector<char>& data);
-    std::string upload_file_to_fastdfs(const char* local_path);
+    std::string upload_file_to_fastdfs(const char* local_path, const char* file_ext);
 
     bool delete_file_from_fastdfs(const std::string& group_name, const std::string& file);
 

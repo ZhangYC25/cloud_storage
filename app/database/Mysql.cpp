@@ -254,7 +254,7 @@ bool Mysql::deleteUserFile(const std::string& username, const std::string& md5){
 }
 
 // for file_info table
-bool Mysql::insertFileInfo(const std::string& md5, const std::string& url){
+bool Mysql::insertFileInfo(const std::string& md5, const std::string& url, const std::string& type){
     int ret = 0;
     bool result = false;
 
@@ -267,8 +267,8 @@ bool Mysql::insertFileInfo(const std::string& md5, const std::string& url){
 
         // 4. 更新file_info表 (存在则+1，不存在则初始化count=1）
         // 使用INSERT ... ON DUPLICATE KEY UPDATE实现「存在更新，不存在插入」
-        std::string updateFileInfoSql = "INSERT INTO file_info (md5, url, count) "
-                                        "VALUES ('" + md5 + "','" + url + "', 1) ";
+        std::string updateFileInfoSql = "INSERT INTO file_info (md5, url, count, type) "
+                                        "VALUES ('" + md5 + "','" + url + "',' 1 ','" + type + "')";
         ret = mysql_query(conn, updateFileInfoSql.c_str());
         if (ret != 0) {
             throw std::runtime_error("更新file_info count失败: " + std::string(mysql_error(conn)));

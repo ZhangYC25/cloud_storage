@@ -36,7 +36,7 @@ public:
     bool deleteUserFile(const std::string& username, const std::string& md5);
     
     // for file_info table
-    bool insertFileInfo(const std::string& md5, const std::string& url);
+    bool insertFileInfo(const std::string& md5, const std::string& url, const std::string& type);
     bool isInMySQL(const std::string& md5);
     bool deleteSysFile(const std::string& md5);
     bool updateCount(const std::string& md5, int delta);
