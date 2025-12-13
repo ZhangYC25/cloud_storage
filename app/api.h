@@ -60,7 +60,7 @@ public:
     // ================== DELETE / delete
     void deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
 
-    void deleteFiles(const std::string& url, const std::string& md5);
+    void deleteFiles(const std::string& url);
 
     Pistache::Rest::Router& getRouter(){return this->router;};
 

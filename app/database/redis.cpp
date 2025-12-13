@@ -100,14 +100,20 @@ bool Redis::set(const std::string& key, const std::string& value, int expire){
         return false;
     }
 	redisReply* reply = nullptr;
-    try {
-        // 执行SETEX命令（注意：hiredis的redisCommand是格式化命令，存在注入风险，后续可优化为redisCommandArgv）
-        reply = (redisReply*)redisCommand(redis_ctx, "SETEX %s %d %s",
-                                                          key.c_str(), expire, value.c_str());
 
-        // 处理错误情况
+    try {
+		// 构造命令参数：{"SET", key, value, "EX", expire_str}
+    std::string expire_str = std::to_string(expire);
+
+    const char* argv[] = {"SET", key.c_str(), value.c_str(), "EX",expire_str.c_str()};
+
+    size_t argvlen[] = {strlen("SET"), key.size(), value.size(), strlen("EX"), expire_str.size()};        
+        // 执行SETEX命令（注意：hiredis的redisCommand是格式化命令，存在注入风险，后续可优化为redisCommandArgv）
+        //reply = (redisReply*)redisCommandArgv(redis_ctx, argv.size(),argv.data(), argvlen.data());
+		reply = (redisReply*)redisCommandArgv(redis_ctx, 5, argv, argvlen);
+														  // 处理错误情况
         if (reply == nullptr || reply->type == REDIS_REPLY_ERROR) {
-            std::cerr << "[Redis INFO] Failed SET (md5, filename): " << (reply ? reply->str : "nullptr") << std::endl;
+            std::cerr << "[Redis INFO] Failed SET (md5, url): " << (reply ? reply->str : "nullptr") << std::endl;
 			freeReplyObject(reply);
             return false;
         }
@@ -175,3 +181,50 @@ std::string Redis::get(const std::string& key) {
     }
 }
 
+bool Redis::del(const std::string& key) {
+	if (redis_ctx == nullptr) {
+		std::cerr << "[Redis ERROR] redis_ctx is nullptr" << std::endl;
+        return false;
+	}
+
+	redisReply* reply = nullptr;
+	try {
+		reply = (redisReply*)redisCommand(redis_ctx, "DEL %s", key.c_str());
+		// 处理错误情况：reply为空 或 不是字符串类型
+		if (reply == nullptr) {
+            std::cerr << "[Redis ERROR] DEL command returned nullptr" << std::endl;
+            return false;
+        }
+
+		if (reply->type == REDIS_REPLY_ERROR) {
+            std::cerr << "[Redis ERROR] DEL failed: " << reply->str << std::endl;
+            freeReplyObject(reply);
+            return false;
+        }
+
+        if (reply->type == REDIS_REPLY_INTEGER) {
+            // 成功：返回被删除的 key 数量（0 或 1 或更多）
+            long deleted = reply->integer;
+            freeReplyObject(reply);
+            return deleted > 0; // 如果你只关心“是否删了至少一个”，可以 return true; 也可以 return deleted > 0;
+        }
+
+        // 其他类型？不应该发生
+        std::cerr << "[Redis ERROR] DEL returned unexpected type: " << reply->type << std::endl;
+        freeReplyObject(reply);
+        return false;
+
+	} catch (const std::bad_alloc& e) {
+        std::cerr << "[Redis ERROR] GET failed: memory allocation failed - " << e.what() << std::endl;
+		freeReplyObject(reply);
+        return "";
+    } catch (const std::exception& e) {
+        std::cerr << "[Redis ERROR] GET failed: " << e.what() << std::endl;
+		freeReplyObject(reply);
+        return "";
+    } catch (...) {
+        std::cerr << "[Redis ERROR] GET failed: unknown exception" << std::endl;
+		freeReplyObject(reply);
+        return "";
+    }
+}

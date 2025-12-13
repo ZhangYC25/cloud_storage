@@ -30,6 +30,50 @@ Mysql::~Mysql() {
 
 MYSQL* Mysql::getConn(){return conn;}
 
+bool Mysql::beginTransaction(){
+    if (conn == nullptr) {
+        std::cerr << "[MySQL ERROR] Connection is null when beginning transaction." << std::endl;
+        return false;
+    }
+    if (mysql_autocommit(conn, 0) != 0) {
+        std::cerr << "[MySQL ERROR] Failed to set autocommit to 0: " << mysql_error(conn) << std::endl;
+        return false;
+    }
+    return true;
+}
+bool Mysql::commit(){
+    if (conn == nullptr) {
+        std::cerr << "[MySQL ERROR] Connection is null when committing." << std::endl;
+        return false;
+    }
+    if (mysql_commit(conn) != 0) {
+        std::cerr << "[MySQL ERROR] COMMIT failed: " << mysql_error(conn) << std::endl;
+        mysql_autocommit(conn, 1); 
+        return false;
+    }
+    if (mysql_autocommit(conn, 1) != 0) {
+        std::cerr << "[MySQL WARN] Failed to set autocommit back to 1: " << mysql_error(conn) << std::endl;
+    }
+
+    return true;
+}
+bool Mysql::rollback(){
+    if (conn == nullptr) {
+        std::cerr << "[MySQL ERROR] Connection is null when rolling back." << std::endl;
+        return false;
+    }
+    if (mysql_rollback(conn) != 0) {
+        std::cerr << "[MySQL ERROR] ROLLBACK failed: " << mysql_error(conn) << std::endl;
+        mysql_autocommit(conn, 1); 
+        return false;
+    }
+
+    // 回滚成功后，恢复自动提交模式
+    if (mysql_autocommit(conn, 1) != 0) {
+        std::cerr << "[MySQL WARN] Failed to set autocommit back to 1: " << mysql_error(conn) << std::endl;
+    }
+    return true;
+}
 //================ CRUD ====================
 
 //for user_info table
@@ -431,7 +475,7 @@ bool Mysql::insertFileInfo(const std::string& md5, const std::string& url, const
 }
 
 bool Mysql::isInMySQL(const std::string& md5){
-    const char* query = "SELECT 1 FROM file_info WHERE md5 = ?";
+    const char* query = "SELECT url FROM file_info WHERE md5 = ?";
     MYSQL_STMT* stmt = nullptr;
 
     try {

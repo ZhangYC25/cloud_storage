@@ -24,6 +24,10 @@ public:
     int getPort() const;
 
     MYSQL* getConn();
+// ==============一致性 ===================
+    bool beginTransaction();
+    bool commit();
+    bool rollback();
 // =========== 实现增删查改 ==============
     // for user_info table
     bool insertUser(const std::string& username, const std::string& password_hash);

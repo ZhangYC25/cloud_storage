@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 #include <cstdarg> // For va_list
 
 class Redis {
@@ -26,6 +27,7 @@ public:
     // ============ redis command ===================
     bool set(const std::string& key, const std::string& value, int expire);
     std::string get(const std::string& key);
+    bool del(const std::string& key);
 
 private:
     redisContext* redis_ctx; 

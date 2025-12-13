@@ -171,46 +171,108 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 	try{
 		auto body = req.body(); //filename md5 filesize;
 		json j = json::parse(body);
-		std::shared_ptr connPtr = _mysqlPool -> getConnection();
+		std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
+		std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 		std::string filename = j.value("filename","");
 		std::string md5 = j.value("md5","");
 		std::string user = j.value("name","");
 
-		if (connPtr->isInMySQL(md5)) {
+		// if (connPtr->isInMySQL(md5)) {
+		// 	// in MySQL and in UserList
+		// 	if (connPtr->isInUserList(md5, user)) {
+		// 		std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
+		// 		_mysqlPool->releaseConnection(connPtr);
+		// 		response.send(Pistache::Http::Code::Ok,
+        //             R"({"success":true,"status":"already_owned"})",
+        //             MIME(Application, Json));
+        //         return;
+		// 	} else { // in MySQL but Not in UserList
+		// 		// 秒传：插入关系 + 引用计数+1
+        //         if (connPtr->insertUserFile(md5, user, filename) && connPtr->updateCount(md5, 1)) {
+		// 			std::cerr<<"[UploadCheck INFO] Database already owned File"<<std::endl;
+		// 			_mysqlPool->releaseConnection(connPtr);
+		// 			response.send(Pistache::Http::Code::Ok,
+		// 				R"({"success":true,"status":"instant_upload"})",
+		// 				MIME(Application, Json));
+		// 			return;
+		// 		}
+		// 	}
+		// }
+
+		if (redis_ptr->get(md5) != "") { //系统中有文件
 			// in MySQL and in UserList
-			if (connPtr->isInUserList(md5, user)) {
+			if (mysql_ptr->isInUserList(md5, user)) { //用户有该文件
 				std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
-				_mysqlPool->releaseConnection(connPtr);
+				_mysqlPool->releaseConnection(mysql_ptr);
+				_redisPool -> releaseConnection(redis_ptr);
 				response.send(Pistache::Http::Code::Ok,
                     R"({"success":true,"status":"already_owned"})",
                     MIME(Application, Json));
                 return;
-			} else { // in MySQL but Not in UserList
+			} else { // 系统中有文件，用户没有文件
 				// 秒传：插入关系 + 引用计数+1
-                if (connPtr->insertUserFile(md5, user, filename) && connPtr->updateCount(md5, 1)) {
+                if (mysql_ptr->insertUserFile(md5, user, filename) && mysql_ptr->updateCount(md5, 1)) {
 					std::cerr<<"[UploadCheck INFO] Database already owned File"<<std::endl;
-					_mysqlPool->releaseConnection(connPtr);
+					_mysqlPool->releaseConnection(mysql_ptr);
+					_redisPool -> releaseConnection(redis_ptr);
 					response.send(Pistache::Http::Code::Ok,
 						R"({"success":true,"status":"instant_upload"})",
 						MIME(Application, Json));
 					return;
 				}
 			}
+		} else { //redis 中没有该文件
+			if (mysql_ptr->isInMySQL(md5)){ //数据库中有该文件
+				int count = 0;
+				std::string url = "";
+				mysql_ptr -> getCount(md5, count, url);
+				redis_ptr -> set(md5,url, 3306);
+				// 用户也有该文件
+				if (mysql_ptr->isInUserList(md5, user)) {
+		 			std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
+		 			_redisPool -> releaseConnection(redis_ptr);
+					_mysqlPool->releaseConnection(mysql_ptr);
+		 			response.send(Pistache::Http::Code::Ok,
+                		R"({"success":true,"status":"already_owned"})",
+                    MIME(Application, Json));
+                 	return;
+				} else { //用户没有该文件
+					// 秒传：插入关系 + 引用计数+1
+					if (mysql_ptr->insertUserFile(md5, user, filename) && mysql_ptr->updateCount(md5, 1)) {
+						std::cerr<<"[UploadCheck INFO] Database already owned File"<<std::endl;
+						_redisPool -> releaseConnection(redis_ptr);
+						_mysqlPool->releaseConnection(mysql_ptr);
+						response.send(Pistache::Http::Code::Ok,
+							R"({"success":true,"status":"instant_upload"})",
+							MIME(Application, Json));
+						return;
+					} else {
+						response.send(Pistache::Http::Code::Internal_Server_Error,
+                        R"({"success":false,"message":"failed to link file"})",
+                        MIME(Application, Json));
+                    	return;
+					}
+				}
+			}
 		}
 		std::cerr<<"[UploadCheck INFO] Database have no File"<<std::endl;
-		_mysqlPool->releaseConnection(connPtr);
-		// 3. 系统也没有 → 需要上传，缓存 MD5 到 Redis
-		std::shared_ptr<Redis> redisConn = _redisPool -> getConnection();
-		if (!(redisConn -> set(md5, filename, 3600))){
-			std::cerr<< "Redis set Error" << std::endl;
-		}
-		_redisPool -> releaseConnection(redisConn);
-		
-    	response.send(Pistache::Http::Code::Ok,
+		_mysqlPool-> releaseConnection(mysql_ptr);
+		_redisPool -> releaseConnection(redis_ptr);
+		response.send(Pistache::Http::Code::Ok,
         	R"({"success":true,"status":"need_upload"})",
         	MIME(Application, Json));
+		// 3. 系统也没有 → 需要上传，缓存 MD5 到 Redis
+		// std::shared_ptr<Redis> redisConn = _redisPool -> getConnection();
+		// if (!(redisConn -> set(md5, filename, 3600))){
+		// 	std::cerr<< "Redis set Error" << std::endl;
+		// }
+		// _redisPool -> releaseConnection(redisConn);
+		
+    	// response.send(Pistache::Http::Code::Ok,
+        // 	R"({"success":true,"status":"need_upload"})",
+        // 	MIME(Application, Json));
 
-		} catch (const std::exception& e) {
+	}catch (const std::exception& e) {
 			response.send(Pistache::Http::Code::Bad_Request, R"({"error": "invalid json"})");
 		}
 }
@@ -298,16 +360,15 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
             return;
         }
 		
-		std::shared_ptr<Redis> redisConn = _redisPool->getConnection();
-		std::string redisFile = redisConn -> get(md5);
-		_redisPool -> releaseConnection(redisConn);
-		if (redisFile.size() == 0) {
-			response.send(Pistache::Http::Code::Bad_Request,
-            R"({"success":false,"message":"请先调用 /upload/check"})",
-            MIME(Application, Json));
-            return;
-		}
+		std::shared_ptr<Mysql> connPtr = _mysqlPool -> getConnection();
 
+		if (!connPtr->beginTransaction()) {
+			// 事务开启失败，需要清理 FastDFS 上已上传的文件
+			//fdfs_ptr -> delete_file_from_fastdfs();
+			_mysqlPool->releaseConnection(connPtr);
+			return;
+		}
+		//入数据库
 		std::shared_ptr<FdfsClient> fdfs_ptr = _fdfsPool -> getConnection();
 		std::string temp_path = fdfs_ptr -> create_temp_file(fileData);
 		if (temp_path.empty()) {
@@ -316,14 +377,13 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
                 MIME(Application, Json));
             return;
         }
-
 		const char* ext = strrchr(filename.c_str(),'.');
 		const char* file_ext = ext?ext+1:"";
-
 		//upload
 		std::string fastdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str(), file_ext);
 		//std::string fastdfs_path = upload_file_to_fastdfs(temp_path.c_str());
 		if (fastdfs_path.empty()) {
+			_fdfsPool -> releaseConnection(fdfs_ptr);
            	response.send(Pistache::Http::Code::Bad_Request,
                 R"({"success":false,"message":"upload to fastdfs false"})",
                 MIME(Application, Json));
@@ -333,14 +393,46 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 		std::filesystem::remove(temp_path);
 		_fdfsPool -> releaseConnection(fdfs_ptr);
 
-		std::shared_ptr<Mysql> connPtr = _mysqlPool -> getConnection();
-		//入数据库
-		connPtr -> insertUserFile(md5, user, filename);
-		std::cerr<<"[MySQL INFO]  Successed Insert file for user: "<<user<<"file: "<<redisFile<<"to user_file_list"<<std::endl;
-		connPtr -> insertFileInfo(md5, fastdfs_path, file_ext);
-		std::cerr<<"[MySQL INFO ] Successed Insert file: "<<redisFile<<"to file_info" <<std::endl;
-		_mysqlPool -> releaseConnection(connPtr);
+		bool db_success = false;
+		if (!(connPtr -> insertUserFile(md5, user, filename))){
+			std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<user<<"file: "<<filename<<"to user_file_list"<<std::endl;
+		}
+		if (!(connPtr -> insertFileInfo(md5, fastdfs_path, file_ext))){
+			std::cerr<<"[MySQL ERROE] Failed Insert file: "<<filename<<"to file_info" <<std::endl;
+		}
+		db_success = true;
+		
 
+		if (!(connPtr -> commit())) {
+			db_success = false;
+			std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
+		}
+		if (!db_success) {
+			connPtr->rollback();
+			std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
+			//std::string url = fastdfs_path;
+			deleteFiles(fastdfs_path); 
+			_mysqlPool -> releaseConnection(connPtr);
+			response.send(Pistache::Http::Code::Internal_Server_Error,
+				R"({"success":false,"message":"数据库操作失败或事务提交失败，文件已回滚"})",
+				MIME(Application, Json));
+		}
+
+		_mysqlPool -> releaseConnection(connPtr);
+		
+		//插入redis
+		// std::string url = fastdfs_path + ext;
+		// std::string value = url;
+		std::shared_ptr<Redis> redisConn = _redisPool->getConnection();
+		//std::cout << fastdfs_path << std::endl;
+		if (!(redisConn -> set(md5, fastdfs_path, 3600))) {
+			_redisPool -> releaseConnection(redisConn);
+			response.send(Pistache::Http::Code::Bad_Request,
+             R"({"success":false,"message":"请先调用 /upload/check"})",
+             MIME(Application, Json));
+             return;
+		}
+		_redisPool -> releaseConnection(redisConn);
 		// 构造 JSON 对象
 		json responseJson = {
     		{"success", true},
@@ -420,12 +512,18 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
 		connPtr -> updateCount(md5, -1); // 给文件 count -1;
 		int count = 0;
 		std::string url;
-		connPtr -> getCount(md5, count, url);
-		std::cout << "[MySQL INFO] Successed file: "<<md5<<" update count: "<<count<<std::endl;
+		if (connPtr -> getCount(md5, count, url)) {
+			std::cout << "[MySQL INFO] Successed file: "<<md5<<" update count: "<<count<<std::endl;
+		} else {
+			std::cout << "[MySQL INFO] Failed file: "<<md5<<" update count: "<<count<<std::endl;
+		}
 		_mysqlPool -> releaseConnection(connPtr);
 		if (count == 0) { // 已经没有用户需要这个文件
-			this->deleteFiles(url, md5); // 从 redis fdfs 中删除
-
+			//this->deleteFiles(url, md5); // 从 redis fdfs 中删除
+			this->deleteFiles(url);
+			std::shared_ptr<Redis> redis_ptr = _redisPool->getConnection();
+			redis_ptr -> del(md5);
+			_redisPool -> releaseConnection(redis_ptr);
 			connPtr -> deleteSysFile(md5); // 从 file_info 中删除
 			std::cerr<<"[MySQL INFO] "<<"Successed user: "<<user<<" delete file: "<<md5<<std::endl;
 			response.send(
@@ -447,7 +545,7 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
 	}
 }
 
-void Api::deleteFiles(const std::string& url, const std::string& md5){
+void Api::deleteFiles(const std::string& url){
 	// 删除 fdsf 系统文件
 	size_t firstSlash = url.find('/');
 	if (firstSlash == std::string::npos) {
@@ -468,37 +566,4 @@ void Api::deleteFiles(const std::string& url, const std::string& md5){
 	}
 
 	_fdfsPool -> releaseConnection(connFdfs);
-
-	// 再删除 redis 缓存
-	std::string redis_key = md5;
-	Redis* redis = new Redis();
-	redis -> connect();
-    redisContext* ctx = redis->getRedisContext();
-
-	if (!ctx || ctx->err) {
-        std::cerr << "[Redis ERROR] Failed to connect to Redis" << std::endl;
-        delete redis;
-        return;
-    }
-
-	// 执行 DEL 命令
-    redisReply* reply = (redisReply*)redisCommand(ctx, "DEL %s", redis_key.c_str());
-    if (reply) {
-        if (reply->type == REDIS_REPLY_INTEGER) {
-            long deletedCount = reply->integer;
-            if (deletedCount > 0) {
-                std::cout << "[Redis INFO] Redis cache deleted successfully, key: " << redis_key << std::endl;
-            } else {
-                std::cout << "[Redis WARN] Redis key not found (already expired or never existed): " << redis_key << std::endl;
-            }
-        } else {
-            std::cerr << "[Redis ERROR] Unexpected Redis DEL response type" << std::endl;
-        }
-        freeReplyObject(reply);
-    } else {
-        std::cerr << "[Redis ERROR] Redis DEL command failed: " << ctx->errstr << std::endl;
-    }
-
-    // 清理 Redis 资源
-    delete redis; // 注意：确保 Redis 类析构时会调用 redisFree()
 }
