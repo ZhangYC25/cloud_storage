@@ -1,8 +1,7 @@
-#include "mysqlConnPool.h"
-#include "Mysql.h"
-
 #include <iostream>
 #include <memory>
+
+#include "mysqlConnPool.h"
 
 // 静态成员初始化
 MySQLConnPool* MySQLConnPool::_poolInstance = nullptr;

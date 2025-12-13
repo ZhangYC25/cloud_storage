@@ -4,35 +4,18 @@
 #include <pistache/endpoint.h>
 #include <pistache/router.h>
 #include <pistache/http.h>
+#include <pistache/cookie.h>
 #include <bcrypt.h>
 #include <unordered_set>
+#include <nlohmann/json.hpp>
 
-#include "database/mysqlConnPool.h"
-#include "database/redisConnPool.h"
-#include "myfastdfs/fdfsConnPool.h"
-#include "database/redis.h"
+#include "../database/mysqlConnPool.h"
+#include "../database/redisConnPool.h"
+#include "../myfastdfs/fdfsConnPool.h"
 
+class Session;
 
-// typedef struct userInfo_t{
-//     int64_t user_id;
-//     const char* user_name;
-
-//     bool operator==(const userInfo& other){
-//         return this->user_id == other.user_id;
-//     }
-// } userInfo;
-
-// namespace std {
-//     template<>
-//     struct hash<userInfo> {
-//         // 重载 () 运算符，计算哈希值（核心：基于唯一标识，比如id）
-//         size_t operator()(const userInfo& user) const {
-//             // 简单场景：直接用id的哈希（如果id是唯一键）
-//             return hash<int64_t>()(user.user_id);
-//         }
-//     };
-// }
-
+static int SESSION_TIMEOUT_SECONDS = 1800;
 
 class Api{
 public:
@@ -64,13 +47,23 @@ public:
 
     Pistache::Rest::Router& getRouter(){return this->router;};
 
+    //=============== Session ==================
+    std::string getSessionUser(const std::string& sessionId);
+    
 private:
     Api();
+
     static std::shared_ptr<Api> _apiInstance;
+
     MySQLConnPool* _mysqlPool;
     FdfsConnPool* _fdfsPool;
     RedisConnPool* _redisPool;
-    //std::unordered_set<userInfo> _userSet;
-    using json = nlohmann::json;
+
     Pistache::Rest::Router router;
+    using json = nlohmann::json;
+    //================== Session ===============
+    //<user, Session>
+    //<Session session -> getUsername(), Session>
+    //手动修改 短Session；Redis 自动释放过期session
+    std::unordered_map<std::string, std::shared_ptr<Session>> _sessions;
 };

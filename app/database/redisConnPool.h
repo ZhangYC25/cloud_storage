@@ -1,12 +1,14 @@
 #pragma once
 
-#include "redis.h"
+//#include "redis.h"
 #include <queue>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
 #include <chrono>
 #include <stdexcept>
+
+#include "redis.h"
 
 class RedisConnPool {
 public:

@@ -1,14 +1,13 @@
 #pragma once
-
-#include "Mysql.h"
 #include <string>
 #include <queue>
 #include <mutex>
 #include <condition_variable>
 #include <memory>
 #include <atomic>
-
 #include <mysql/mysql.h>
+
+#include "Mysql.h"
 
 class MySQLConnPool {
 

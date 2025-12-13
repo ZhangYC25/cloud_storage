@@ -29,6 +29,7 @@ public:
     std::string get(const std::string& key);
     bool del(const std::string& key);
 
+
 private:
     redisContext* redis_ctx; 
     const std::string redis_host = "127.0.0.1";

@@ -113,14 +113,14 @@ bool Redis::set(const std::string& key, const std::string& value, int expire){
 		reply = (redisReply*)redisCommandArgv(redis_ctx, 5, argv, argvlen);
 														  // 处理错误情况
         if (reply == nullptr || reply->type == REDIS_REPLY_ERROR) {
-            std::cerr << "[Redis INFO] Failed SET (md5, url): " << (reply ? reply->str : "nullptr") << std::endl;
+            std::cerr << "[Redis INFO] Failed SET (key, value): "<<"("<<key<<", "<<value<<")" << (reply ? reply->str : "nullptr") << std::endl;
 			freeReplyObject(reply);
             return false;
         }
 
         // 校验SETEX执行结果
         if (!(reply->type == REDIS_REPLY_STATUS && strcasecmp(reply->str, "OK") == 0)) {
-            std::cerr << "[Redis INFO] Failed SET (md5, filename)! " << (reply->str ? reply->str : "Unkown Response!") << std::endl;
+            std::cerr << "[Redis INFO] Failed SET (md5, filename)! "<<"("<<key<<", "<<value<<")" << (reply->str ? reply->str : "Unkown Response!") << std::endl;
             freeReplyObject(reply);
 			return false;
         }

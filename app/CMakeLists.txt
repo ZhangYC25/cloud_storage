@@ -35,8 +35,9 @@ include_directories(
 # ========== 3. 源文件配置（把所有.cpp文件加入） ==========
 set(SOURCES
     main.cpp
-    server.cpp
-    api.cpp
+    server/server.cpp
+    server/api.cpp
+    server/session.cpp
     # database子目录下的源文件
     database/Mysql.cpp
     database/mysqlConnPool.cpp

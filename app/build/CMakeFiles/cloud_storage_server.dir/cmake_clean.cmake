@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/cloud_storage_server.dir/api.cpp.o"
-  "CMakeFiles/cloud_storage_server.dir/api.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/database/Mysql.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/database/mysqlConnPool.cpp.o"
@@ -15,8 +13,12 @@ file(REMOVE_RECURSE
   "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o.d"
-  "CMakeFiles/cloud_storage_server.dir/server.cpp.o"
-  "CMakeFiles/cloud_storage_server.dir/server.cpp.o.d"
+  "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o"
+  "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o.d"
+  "CMakeFiles/cloud_storage_server.dir/server/server.cpp.o"
+  "CMakeFiles/cloud_storage_server.dir/server/server.cpp.o.d"
+  "CMakeFiles/cloud_storage_server.dir/server/session.cpp.o"
+  "CMakeFiles/cloud_storage_server.dir/server/session.cpp.o.d"
   "cloud_storage_server"
   "cloud_storage_server.pdb"
 )

@@ -1,5 +1,5 @@
 #include "api.h"
-
+#include "session.h"
 
 
 std::shared_ptr<Api> Api::_apiInstance = nullptr;
@@ -24,12 +24,11 @@ Api::Api(){
 
 //合理吗？之后再说
 Api::~Api() {}
+// ============================= Session ================================
 
-// void Api::destroyed(){
-// 	_fdfsPool->destroyPool();
-// 	_mysqlPool->destroyPool();
-// }
 
+
+// ============================= API ===================================
 void Api::setupRoutes(){
 	// 方式1：结合std::bind（推荐，兼容性好）
 	using namespace Pistache::Rest;
@@ -79,7 +78,6 @@ void Api::setupRoutes(){
     );
 }
 
-
 void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
     try {
 		auto body = req.body();
@@ -91,24 +89,63 @@ void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::Response
 		std::string password = j.value("password", "");
 
 		if (username.empty() || password.empty()) {
-           		response.send(Pistache::Http::Code::Bad_Request, R"({"error": "missing username or password"})");
-            		return;
-        	}
+			response.send(Pistache::Http::Code::Bad_Request, R"({"error": "missing username or password"})");
+			return;
+        }
 
-        	std::string stored_hash;
-        	if (!(connPtr -> getUserPasswordHash(username, stored_hash))) {
-            		response.send(Pistache::Http::Code::Unauthorized, R"({"error": "invalid credentials"})");
-            		return;
-        	}
+		std::string stored_hash;
+		if (!(connPtr -> getUserPasswordHash(username, stored_hash))) {
+			response.send(Pistache::Http::Code::Unauthorized, R"({"error": "invalid credentials"})");
+			return;
+		}
 		if (bcrypt_checkpw(password.c_str(), stored_hash.c_str()) == 0) {
-					std::cerr<<"[Login INFO] Successed login! User: "<<username<<std::endl;
-					_mysqlPool -> releaseConnection(connPtr);
-            		response.headers().add<Pistache::Http::Header::ContentType>(Pistache::Http::Mime::MediaType("application/json"));
-            		response.send(Pistache::Http::Code::Ok, R"({"message": "login successful"})");
-        	} else {
-					_mysqlPool -> releaseConnection(connPtr);
-            		response.send(Pistache::Http::Code::Unauthorized, R"({"error": "invalid credentials"})");
-        	}
+					
+			std::shared_ptr<Session> session_ptr = std::make_shared<Session>();
+			session_ptr -> createSession(username);
+			auto it = _sessions.find(username);
+			if (it == _sessions.end()){
+				//说明用户第一次登录 或者 上传登录已经过期
+				std::cerr<<"[Session INFO] _session size: "<<_sessions.size()<<std::endl;
+				_sessions[username] = session_ptr;
+				std::cerr<<"[Session INFO] _session size: "<<_sessions.size()<<std::endl;
+			} else { //找到了，说明上传登录的信息还残留
+				std::cerr<<"[Session INFO] _session size: "<<_sessions.size()<<std::endl;
+				_sessions.erase(it);
+				std::cerr<<"[Session INFO] _session size: "<<_sessions.size()<<std::endl;
+				_sessions[username] = session_ptr;
+				std::cerr<<"[Session INFO] _session size: "<<_sessions.size()<<std::endl;
+				std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+				// 更新redis里面的数据 这里可以先不搞，把TTL设置小一点也行,10分钟不活跃的自动删除
+
+				_redisPool -> releaseConnection(redis_ptr);
+			}
+
+			//只要是登录就加入redis
+			std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+			// 添加到redis <sessionId, username>
+			redis_ptr -> set(session_ptr->getSession(), username, 600);
+			_redisPool -> releaseConnection(redis_ptr);
+
+			std::string sessionId = session_ptr->getSession();
+			std::string cookieValue = "SessionID=" + sessionId +
+									"; Path=/" +
+									"; HttpOnly" +
+									"; Max-Age=" + std::to_string(SESSION_TIMEOUT_SECONDS) +
+									"; SameSite=Strict";
+
+			//正确添加 Set-Cookie 头
+			response.headers().addRaw(Pistache::Http::Header::Raw("Set-Cookie", cookieValue));
+
+
+			std::cerr<<"[Login INFO] Successed login! User: "<<username<<std::endl;
+			_mysqlPool -> releaseConnection(connPtr);
+
+			response.headers().add<Pistache::Http::Header::ContentType>(Pistache::Http::Mime::MediaType("application/json"));
+			response.send(Pistache::Http::Code::Ok, R"({"message": "login successful"})");
+		} else {
+				_mysqlPool -> releaseConnection(connPtr);
+				response.send(Pistache::Http::Code::Unauthorized, R"({"error": "invalid credentials"})");
+		}
 	} catch (const std::exception& e) {
 		response.send(Pistache::Http::Code::Bad_Request, R"({"error":"invalid json"})");
 	}
@@ -176,29 +213,6 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 		std::string filename = j.value("filename","");
 		std::string md5 = j.value("md5","");
 		std::string user = j.value("name","");
-
-		// if (connPtr->isInMySQL(md5)) {
-		// 	// in MySQL and in UserList
-		// 	if (connPtr->isInUserList(md5, user)) {
-		// 		std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
-		// 		_mysqlPool->releaseConnection(connPtr);
-		// 		response.send(Pistache::Http::Code::Ok,
-        //             R"({"success":true,"status":"already_owned"})",
-        //             MIME(Application, Json));
-        //         return;
-		// 	} else { // in MySQL but Not in UserList
-		// 		// 秒传：插入关系 + 引用计数+1
-        //         if (connPtr->insertUserFile(md5, user, filename) && connPtr->updateCount(md5, 1)) {
-		// 			std::cerr<<"[UploadCheck INFO] Database already owned File"<<std::endl;
-		// 			_mysqlPool->releaseConnection(connPtr);
-		// 			response.send(Pistache::Http::Code::Ok,
-		// 				R"({"success":true,"status":"instant_upload"})",
-		// 				MIME(Application, Json));
-		// 			return;
-		// 		}
-		// 	}
-		// }
-
 		if (redis_ptr->get(md5) != "") { //系统中有文件
 			// in MySQL and in UserList
 			if (mysql_ptr->isInUserList(md5, user)) { //用户有该文件
@@ -261,16 +275,6 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 		response.send(Pistache::Http::Code::Ok,
         	R"({"success":true,"status":"need_upload"})",
         	MIME(Application, Json));
-		// 3. 系统也没有 → 需要上传，缓存 MD5 到 Redis
-		// std::shared_ptr<Redis> redisConn = _redisPool -> getConnection();
-		// if (!(redisConn -> set(md5, filename, 3600))){
-		// 	std::cerr<< "Redis set Error" << std::endl;
-		// }
-		// _redisPool -> releaseConnection(redisConn);
-		
-    	// response.send(Pistache::Http::Code::Ok,
-        // 	R"({"success":true,"status":"need_upload"})",
-        // 	MIME(Application, Json));
 
 	}catch (const std::exception& e) {
 			response.send(Pistache::Http::Code::Bad_Request, R"({"error": "invalid json"})");
