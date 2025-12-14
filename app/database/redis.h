@@ -28,7 +28,8 @@ public:
     bool set(const std::string& key, const std::string& value, int expire);
     std::string get(const std::string& key);
     bool del(const std::string& key);
-
+    
+    bool expire(const std::string& key, int seconds);
 
 private:
     redisContext* redis_ctx; 

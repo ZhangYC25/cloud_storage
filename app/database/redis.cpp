@@ -228,3 +228,32 @@ bool Redis::del(const std::string& key) {
         return "";
     }
 }
+
+bool Redis::expire(const std::string& key, int seconds) {
+    if (redis_ctx == nullptr) {
+        std::cerr << "[Redis ERROR] redis_ctx is nullptr in expire()" << std::endl;
+        return false;
+    }
+
+    redisReply* reply = nullptr;
+    try {
+        reply = (redisReply*)redisCommand(redis_ctx, "EXPIRE %s %d", key.c_str(), seconds);
+        if (!reply || reply->type == REDIS_REPLY_ERROR) {
+            std::cerr << "[Redis ERROR] EXPIRE failed for key: " << key 
+                      << " - " << (reply ? reply->str : "nullptr") << std::endl;
+            freeReplyObject(reply);
+            return false;
+        }
+
+        // EXPIRE 返回 1 表示成功设置，0 表示 key 不存在
+        bool success = (reply->type == REDIS_REPLY_INTEGER && reply->integer == 1);
+        freeReplyObject(reply);
+        return success;
+
+    } catch (...) {
+        std::cerr << "[Redis ERROR] Exception in expire()" << std::endl;
+        freeReplyObject(reply);
+        return false;
+    }
+}
+

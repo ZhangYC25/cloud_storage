@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云存储 - 用户认证 </title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ======================================================= */
+        /* 全局设置 & 青蓝主题颜色变量         */
+        /* ======================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00BCD4; /* 鲜亮的青色（强调色） */
+            --primary-hover: #00ACC1;
+            --background-start: #e0f7fa; /* 极浅的青色/白色背景 */
+            --background-end: #b2ebf2; /* 浅青色背景 */
+            --card-bg: rgba(255, 255, 255, 0.9); /* 略带透明的白色卡片 */
+            --text-color: #004d40; /* 深墨绿色/深青色（文字） */
+            --text-secondary: #7f8c8d; /* 辅助文本色 */
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-deep: 0 15px 40px rgba(0, 0, 0, 0.2);
+            --input-border: #b2ebf2; /* 浅青色边框 */
+            --input-focus: #00BCD4;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* 青蓝渐变背景 */
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        /* ======================================================= */
+        /* 卡片容器                         */
+        /* ======================================================= */
+        .container {
+            width: 100%;
+            max-width: 380px;
+            padding: 40px 32px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-deep);
+            /* 浅色模式下的轻微玻璃拟态效果 */
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 35px;
+            font-weight: 700;
+            font-size: 30px;
+            letter-spacing: 1px;
+        }
+
+        /* ======================================================= */
+        /* 表单元素                         */
+        /* ======================================================= */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: #ffffff; /* 纯白输入框 */
+            color: var(--text-color);
+        }
+
+        input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        /* 小眼睛图标样式 */
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #b0bec5; /* 灰色图标 */
+            transition: color 0.2s;
+            font-size: 18px;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--primary-hover);
+            box-shadow: 0 6px 20px rgba(0, 172, 193, 0.6);
+        }
+
+        button:active:not(:disabled) {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
+        }
+
+        button:disabled {
+            background: #e0f7fa; /* 禁用色 */
+            color: #90a4ae;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ======================================================= */
+        /* 切换链接                         */
+        /* ======================================================= */
+        .switch {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .switch a {
+            cursor: pointer;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 4px;
+            transition: color 0.2s;
+        }
+
+        .switch a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        /* ======================================================= */
+        /* 动画与响应式                      */
+        /* ======================================================= */
+        #login-box, #register-box {
+            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 16px;
+                max-width: 90%;
+            }
+            h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="login-box">
+    <h2>欢迎回来</h2>
+    <div class="input-group">
+        <input id="login-name" placeholder="用户名" autocomplete="username">
+    </div>
+    <div class="input-group">
+        <div class="password-wrapper">
+            <input id="login-password" type="password" placeholder="密码" autocomplete="current-password">
+            <i class="password-toggle fa-solid fa-eye" onclick="togglePasswordVisibility('login-password', this)"></i>
+        </div>
+    </div>
+    <button onclick="login()" id="login-button">登录</button>
+
+    <div class="switch">
+        还没有账号？<a onclick="showRegister()">立即注册</a>
+    </div>
+</div>
+
+<div class="container" id="register-box" style="display:none;">
+    <h2>创建账号</h2>
+    <div class="input-group">
+        <input id="reg-name" placeholder="设置用户名" autocomplete="username">
+    </div>
+    <div class="input-group">
+        <div class="password-wrapper">
+            <input id="reg-password" type="password" placeholder="设置密码" autocomplete="new-password">
+            <i class="password-toggle fa-solid fa-eye" onclick="togglePasswordVisibility('reg-password', this)"></i>
+        </div>
+    </div>
+    <button onclick="registerUser()" id="register-button">注册</button>
+
+    <div class="switch">
+        已有账号？<a onclick="showLogin()">立即登录</a>
+    </div>
+</div>
+
+<script>
+    // =======================================================
+    // 核心 JS 逻辑（保持不变）
+    // =======================================================
+    function togglePasswordVisibility(inputId, iconElement) {
+        const input = document.getElementById(inputId);
+        const isPassword = input.type === 'password';
+        
+        input.type = isPassword ? 'text' : 'password';
+        
+        iconElement.classList.toggle('fa-eye');
+        iconElement.classList.toggle('fa-eye-slash');
+    }
+
+    function showRegister() {
+        const loginBox = document.getElementById('login-box');
+        const registerBox = document.getElementById('register-box');
+        loginBox.style.display = 'none';
+        registerBox.style.display = 'block';
+        registerBox.style.animation = 'none';
+        setTimeout(() => registerBox.style.animation = 'fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards', 10);
+    }
+
+    function showLogin() {
+        const loginBox = document.getElementById('login-box');
+        const registerBox = document.getElementById('register-box');
+        registerBox.style.display = 'none';
+        loginBox.style.display = 'block';
+        loginBox.style.animation = 'none';
+        setTimeout(() => loginBox.style.animation = 'fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards', 10);
+    }
+    
+    async function login() {
+        const nameInput = document.getElementById('login-name');
+        const passInput = document.getElementById('login-password');
+        const submitBtn = document.getElementById('login-button');
+
+        const name = nameInput.value.trim();
+        const password = passInput.value;
+
+        if (!name || !password) {
+            alert("请输入完整信息！");
+            return;
+        }
+
+        if (submitBtn.disabled) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '登录中…';
+
+        try {
+            const res = await fetch('/api/login', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.message == "login successful") {
+                window.location.href = "/updown.html";
+            } else {
+                alert("登录失败：" + (data.message || "用户名或密码错误"));
+                passInput.value = '';
+                nameInput.focus();
+            }
+        } catch (error) {
+            console.error("登录异常:", error);
+            alert("网络错误，请检查连接后重试");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '登录';
+        }
+    }
+    
+    async function registerUser() {
+        const name = document.getElementById('reg-name').value.trim();
+        const password = document.getElementById('reg-password').value;
+
+        if (!name || !password) {
+            alert("请输入完整注册信息！");
+            return;
+        }
+
+        const btn = document.getElementById('register-button');
+        btn.disabled = true;
+        btn.textContent = '注册中…';
+
+        try {
+            const res = await fetch('/api/register', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, password })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert("注册成功！请登录。");
+                showLogin();
+            } else {
+                const errorMessage = data.error || data.message || "未知错误";
+                alert("注册失败：" + errorMessage);
+                document.getElementById('reg-password').value = '';
+            }
+        } catch (error) {
+            console.error("注册异常:", error);
+            alert("网络错误，请稍后重试");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '注册';
+        }
+    }
+</script>
+
+</body>
+</html>
