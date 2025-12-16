@@ -27,7 +27,7 @@ public:
 
     //============ POST /register ============
     void registerUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
-
+    void registerEmail(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
     // ========= POST /login =========
     void loginUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
 

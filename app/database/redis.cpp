@@ -1,7 +1,29 @@
-#include "redis.h"
-
 #include <cstring>
+#include <mutex>
+
+#include "redis.h"
+#include "../utils/confRead.h"
+
+
+// std::string Redis::redis_host;// = "127.0.0.1";
+// std::string Redis::redis_pass;// = "ZYCzyc520@APEX!";
+// int Redis::port = 6379;
+
+namespace {
+    std::once_flag config_loaded;
+}
+
+// void Redis::setConfig(){
+//     std::call_once(config_loaded, []() {
+//         ConfigReader config("../../conf/config.env");
+//         redis_host = config.get("REDIS_HOST");
+//         redis_pass = config.get("REDIS_PASS");
+//         port       = config.get_int("REDIS_PORT", 6379);
+//     });
+// }
+
 Redis::Redis():redis_ctx(nullptr){
+    //setConfig();
 }
 
 Redis::~Redis(){

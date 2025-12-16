@@ -34,7 +34,8 @@ public:
 private:
     redisContext* redis_ctx; 
     const std::string redis_host = "127.0.0.1";
-    const std::string redis_pass = "ZYCzyc520@APEX!";
-    const int redis_timeout = 5000;
-    unsigned int port = 6379;
+    const std::string redis_pass= "ZYCzyc520@APEX!";
+    int redis_timeout = 5000;
+    const int port = 6379;
+
 };

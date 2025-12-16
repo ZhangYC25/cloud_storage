@@ -1,0 +1,6 @@
+# 编译产物（之前的build文件，继续保留）
+app/build/
+*.o
+*.d
+
+conf/config.env

@@ -7,7 +7,7 @@ C++/Nginx/Fastdfs/Pistache
 - 上传自动计算文件MD5，MySQL中储存MD5值，文件存储在Fastdfs中
 - 基于MD5 与 Redis去重，不会重复上传文件
 - 通过 URL 直接访问文件
-
+- 采用HTTPS + Session机制，数据加密存储保证数据安全
 ## 如何运行
 ### 环境构建
 - 本项目在 Ubuntu22.04 上构建，并且 lib 文件夹中包含了项目需要的所有工具
@@ -15,7 +15,7 @@ C++/Nginx/Fastdfs/Pistache
 - 首先安装一些必要的依赖：
 ```
 apt update
-apt install -y build-essential libpcre3 libpcre3-dev zlib1g-dev libssl-dev
+apt install -y build-essential libpcre3 libpcre3-dev zlib1g-dev libssl-dev libcurl4-openssl-dev
 ```
 这些依赖在nginx构建中会用到，具体作用可以自己去查询，这里直接apt install就好<br>
 
@@ -160,7 +160,7 @@ make
 ./cloud_storage_server
 ```
 
-##访问
+## 访问
 直接输入运行Nginx的主机IP就可以访问，如果只有一台主机，那理论上来说tracker/storage/nginx的IP是一样的<br>
 
 你也可以输入我的IP

@@ -321,6 +321,30 @@ server/api.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/api.cpp.s
 .PHONY : server/api.cpp.s
 
+server/email.o: server/email.cpp.o
+.PHONY : server/email.o
+
+# target to build an object file
+server/email.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/email.cpp.o
+.PHONY : server/email.cpp.o
+
+server/email.i: server/email.cpp.i
+.PHONY : server/email.i
+
+# target to preprocess a source file
+server/email.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/email.cpp.i
+.PHONY : server/email.cpp.i
+
+server/email.s: server/email.cpp.s
+.PHONY : server/email.s
+
+# target to generate assembly for a file
+server/email.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/email.cpp.s
+.PHONY : server/email.cpp.s
+
 server/server.o: server/server.cpp.o
 .PHONY : server/server.o
 
@@ -369,6 +393,30 @@ server/session.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/session.cpp.s
 .PHONY : server/session.cpp.s
 
+utils/confRead.o: utils/confRead.cpp.o
+.PHONY : utils/confRead.o
+
+# target to build an object file
+utils/confRead.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o
+.PHONY : utils/confRead.cpp.o
+
+utils/confRead.i: utils/confRead.cpp.i
+.PHONY : utils/confRead.i
+
+# target to preprocess a source file
+utils/confRead.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.i
+.PHONY : utils/confRead.cpp.i
+
+utils/confRead.s: utils/confRead.cpp.s
+.PHONY : utils/confRead.s
+
+# target to generate assembly for a file
+utils/confRead.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.s
+.PHONY : utils/confRead.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -402,12 +450,18 @@ help:
 	@echo "... server/api.o"
 	@echo "... server/api.i"
 	@echo "... server/api.s"
+	@echo "... server/email.o"
+	@echo "... server/email.i"
+	@echo "... server/email.s"
 	@echo "... server/server.o"
 	@echo "... server/server.i"
 	@echo "... server/server.s"
 	@echo "... server/session.o"
 	@echo "... server/session.i"
 	@echo "... server/session.s"
+	@echo "... utils/confRead.o"
+	@echo "... utils/confRead.i"
+	@echo "... utils/confRead.s"
 .PHONY : help
 
 

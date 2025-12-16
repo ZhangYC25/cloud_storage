@@ -1,24 +1,47 @@
 
-#include "Mysql.h"
-
 #include <iostream>
 #include <chrono>
+#include <mutex>
+
+#include "Mysql.h"
+#include "../utils/confRead.h"
+
+//std::string Mysql::_mysql_host = "127.0.0.1";
+// std::string Mysql::_mysql_user;// = "zhangyc";
+// std::string Mysql::_mysql_pass;// = "zhangyc@APEX!!!";
+// std::string Mysql::_mysql_db;// = "cloud_storage";
+//int Mysql::_port = 3306;
+namespace {
+    std::once_flag config_loaded;
+}
+
+// void Mysql::setConfig(){
+//     std::call_once(config_loaded, []() {
+//         ConfigReader config("../../conf/config.env");
+//         //_mysql_host = config.get("MYSQL_HOST", "127.0.0.1");
+//         _mysql_user = config.get("MYSQL_USER");
+//         _mysql_pass = config.get("MYSQL_PASS");
+//         _mysql_db   = config.get("MYSQL_DB", "cloud_storage");
+//         _port       = config.get_int("MYSQL_PORT", 3306); // 使用前面实现的 get_uint
+//     });
+// }
 
 Mysql::Mysql(){  
-            conn = mysql_init(nullptr);
-            if (!conn) {
-                std::cerr << "Error: mysql_init failed." << std::endl;
-                return;
-            }
-            // 尝试连接数据库
-            if (mysql_real_connect(conn, _mysql_host.c_str(), _mysql_user.c_str(), _mysql_pass.c_str(),
-                           _mysql_db.c_str(), _port, nullptr, 0) == nullptr) {
-                std::cerr << "Error: mysql_real_connect failed: " << mysql_error(conn) << std::endl;
-                mysql_close(conn);
-                return;
-            }
+    //setConfig();
+    conn = mysql_init(nullptr);
+    if (!conn) {
+        std::cerr << "Error: mysql_init failed." << std::endl;
+        return;
+    }
+    // 尝试连接数据库
+    if (mysql_real_connect(conn, _mysql_host.c_str(), _mysql_user.c_str(), _mysql_pass.c_str(),
+                _mysql_db.c_str(), _port, nullptr, 0) == nullptr) {
+        std::cerr << "Error: mysql_real_connect failed: " << mysql_error(conn) << std::endl;
+        mysql_close(conn);
+        return;
+    }
             //std::cout << "Debug: Successfully created new connection." << std::endl;
-            };
+};
 
 Mysql::~Mysql() {
     if (conn) {
@@ -77,8 +100,8 @@ bool Mysql::rollback(){
 //================ CRUD ====================
 
 //for user_info table
-bool Mysql::insertUser(const std::string& username, const std::string& password_hash){
-    const char* query = "INSERT INTO user (name, nickname, password, phone, email, createtime) VALUES (?, ?, ?, NULL, NULL, ?)";
+bool Mysql::insertUser(const std::string& username, const std::string& password_hash, const std::string& email){
+    const char* query = "INSERT INTO user (name, nickname, password, phone, email, createtime) VALUES (?, ?, ?, NULL, ?, ?)";
     MYSQL_STMT* stmt = nullptr; // 声明在 try 块外部，确保在 catch/return 时可以安全访问
     try {
         // 1. 初始化语句句柄
@@ -101,7 +124,7 @@ bool Mysql::insertUser(const std::string& username, const std::string& password_
         std::string timestamp = ss.str();
         // --- 时间戳创建结束 ---
         // 3. 绑定参数结构
-        MYSQL_BIND bind[4] = {};
+        MYSQL_BIND bind[5] = {};
         bind[0].buffer_type = MYSQL_TYPE_STRING;
         bind[0].buffer = const_cast<char*>(username.c_str());
         bind[0].buffer_length = username.length();
@@ -113,10 +136,14 @@ bool Mysql::insertUser(const std::string& username, const std::string& password_
         bind[2].buffer_type = MYSQL_TYPE_STRING;
         bind[2].buffer = const_cast<char*>(password_hash.c_str());
         bind[2].buffer_length = password_hash.length();
-        
+
         bind[3].buffer_type = MYSQL_TYPE_STRING;
-        bind[3].buffer = const_cast<char*>(timestamp.c_str());
-        bind[3].buffer_length = timestamp.length();
+        bind[3].buffer = const_cast<char*>(email.c_str());
+        bind[3].buffer_length = email.length();
+        
+        bind[4].buffer_type = MYSQL_TYPE_STRING;
+        bind[4].buffer = const_cast<char*>(timestamp.c_str());
+        bind[5].buffer_length = timestamp.length();
 
 
         // 4. 执行参数绑定
@@ -232,7 +259,99 @@ bool Mysql::getUserPasswordHash(const std::string& username, std::string& out_ha
     }
 }
 
-//bool Mysql::queryUser(const std::string& username){}
+bool Mysql::queryUser(const std::string& username){
+    const std::string query = "select * from user where name = ?";
+    MYSQL_STMT* stmt = nullptr;
+    try {
+        stmt = mysql_stmt_init(conn);
+        if (!stmt) {
+            throw std::runtime_error("mysql_stmt_init() failed.");
+        }
+        if (mysql_stmt_prepare(stmt, query.c_str(), query.length())) {
+            throw std::runtime_error(
+                "mysql_stmt_prepare() failed: " + std::string(mysql_stmt_error(stmt))
+            );}
+
+        MYSQL_BIND bind[1] = {};
+        bind[0].buffer_type = MYSQL_TYPE_STRING;
+        bind[0].buffer = const_cast<char*>(username.c_str());
+        bind[0].buffer_length = username.length();
+
+        if (mysql_stmt_bind_param(stmt, bind)) {
+            throw std::runtime_error(
+                "mysql_stmt_bind_param() failed: " + std::string(mysql_stmt_error(stmt))
+            );}
+
+        if (mysql_stmt_execute(stmt)) {
+            throw std::runtime_error(
+                "mysql_stmt_execute() failed: " + std::string(mysql_stmt_error(stmt))
+            );}
+
+        if (mysql_stmt_store_result(stmt)) {
+            throw std::runtime_error(
+                "mysql_stmt_store_result() failed: " + std::string(mysql_stmt_error(stmt))
+            );
+        }
+        bool exists = (mysql_stmt_num_rows(stmt) > 0);
+
+        mysql_stmt_close(stmt);
+        
+        return exists;
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[MySQL Error] queryUser failed: " << e.what() << std::endl;
+        if (stmt) {
+            mysql_stmt_close(stmt);
+        }
+        return false;
+    }
+}
+
+bool Mysql::queryEmail(const std::string& email){
+    const std::string query = "select * from user where email = ?";
+    MYSQL_STMT* stmt = nullptr;
+    try {
+        stmt = mysql_stmt_init(conn);
+        if (!stmt) {
+            throw std::runtime_error("mysql_stmt_init() failed.");
+        }
+        if (mysql_stmt_prepare(stmt, query.c_str(), query.length())) {
+            throw std::runtime_error(
+                "mysql_stmt_prepare() failed: " + std::string(mysql_stmt_error(stmt))
+            );}
+
+        MYSQL_BIND bind[1] = {};
+        bind[0].buffer_type = MYSQL_TYPE_STRING;
+        bind[0].buffer = const_cast<char*>(email.c_str());
+        bind[0].buffer_length = email.length();
+
+        if (mysql_stmt_bind_param(stmt, bind)) {
+            throw std::runtime_error(
+                "mysql_stmt_bind_param() failed: " + std::string(mysql_stmt_error(stmt))
+            );}
+
+        if (mysql_stmt_execute(stmt)) {
+            throw std::runtime_error(
+                "mysql_stmt_execute() failed: " + std::string(mysql_stmt_error(stmt))
+            );}
+
+        if (mysql_stmt_store_result(stmt)) {
+            throw std::runtime_error(
+                "mysql_stmt_store_result() failed: " + std::string(mysql_stmt_error(stmt))
+            );
+        }
+        bool exists = (mysql_stmt_num_rows(stmt) > 0);
+
+        mysql_stmt_close(stmt);
+        
+        return exists;
+    } catch (const std::runtime_error& e) {
+        std::cerr << "[MySQL Error] queryEmail failed: " << e.what() << std::endl;
+        if (stmt) {
+            mysql_stmt_close(stmt);
+        }
+        return false;
+    }
+}
 
 // for user_file_list table
 bool Mysql::insertUserFile(const std::string& md5, const std::string& username, const std::string& filename){

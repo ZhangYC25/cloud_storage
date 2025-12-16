@@ -16,8 +16,10 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zhangyc/cloud_storage/app/myfastdfs/fdfsClient.cpp" "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsClient.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/myfastdfs/fdfsConnPool.cpp" "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/api.cpp" "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o.d"
+  "/home/zhangyc/cloud_storage/app/server/email.cpp" "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/server.cpp" "CMakeFiles/cloud_storage_server.dir/server/server.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/server.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/session.cpp" "CMakeFiles/cloud_storage_server.dir/server/session.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/session.cpp.o.d"
+  "/home/zhangyc/cloud_storage/app/utils/confRead.cpp" "CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

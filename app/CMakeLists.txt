@@ -17,6 +17,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}          # 根目录（main.cpp所在）
     ${CMAKE_CURRENT_SOURCE_DIR}/database # database子目录
     ${CMAKE_CURRENT_SOURCE_DIR}/myfastdfs # myfastdfs子目录
+    ${CMAKE_CURRENT_SOURCE_DIR}/server
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils
 )
 
 # 系统/第三方头文件
@@ -26,6 +28,7 @@ include_directories(
     /usr/include/fastcommon              # fastcommon头文件
     /usr/include/fastdfs                 # fastdfs头文件
     /usr/local/include/bcrypt   # bcrypt头文件
+    /usr/include/x86_64-linux-gnu #curl
 )
 
 # ========== 2. 库路径配置（可选，若库不在系统默认路径） ==========
@@ -38,6 +41,7 @@ set(SOURCES
     server/server.cpp
     server/api.cpp
     server/session.cpp
+    server/email.cpp
     # database子目录下的源文件
     database/Mysql.cpp
     database/mysqlConnPool.cpp
@@ -46,6 +50,7 @@ set(SOURCES
     # myfastdfs子目录下的源文件
     myfastdfs/fdfsClient.cpp
     myfastdfs/fdfsConnPool.cpp
+    utils/confRead.cpp
 )
 
 
@@ -65,6 +70,7 @@ target_link_libraries(cloud_storage_server
         fastcommon          # fastcommon库
         fdfsclient          # fastdfs客户端库
         /usr/local/lib/bcrypt.a # bcrypt静态库
+        /usr/lib/x86_64-linux-gnu/libcurl.so # curl 动态库
 )
 
 

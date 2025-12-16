@@ -16,7 +16,6 @@ public:
     Mysql();
     ~Mysql();
     
-
     //获得数据库的信息
     std::string getPassword() const;
     std::string getUserinfo() const;
@@ -30,10 +29,10 @@ public:
     bool rollback();
 // =========== 实现增删查改 ==============
     // for user_info table
-    bool insertUser(const std::string& username, const std::string& password_hash);
+    bool insertUser(const std::string& username, const std::string& password_hash, const std::string& email);
     bool getUserPasswordHash(const std::string& username, std::string& out_hash);
     bool queryUser(const std::string& username);
-    
+    bool queryEmail(const std::string& email);
     // for user_file_list table
     bool insertUserFile(const std::string& md5, const std::string& username, const std::string& filename);
     bool isInUserList(const std::string& md5, const std::string& username);
@@ -53,8 +52,8 @@ private:
     const std::string _mysql_user = "zhangyc";
     const std::string _mysql_pass = "zhangyc@APEX!!!";
     const std::string _mysql_db = "cloud_storage";
-    unsigned int _port = 3306;
-
+    const int _port = 3306;
+    //static void setConfig();
     MYSQL* conn;
 
 };
