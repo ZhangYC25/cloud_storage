@@ -422,6 +422,11 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/mysql/mysql_version.h /usr/include/mysql/mysql_time.h \
  /usr/include/mysql/errmsg.h \
  /home/zhangyc/cloud_storage/app/server/../database/Mysql.h \
+ /home/zhangyc/cloud_storage/app/server/../database/../utils/asyncLogger.h \
+ /usr/include/c++/11/fstream \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+ /usr/include/c++/11/bits/fstream.tcc \
  /home/zhangyc/cloud_storage/app/server/../database/redisConnPool.h \
  /home/zhangyc/cloud_storage/app/server/../database/redis.h \
  /usr/include/redis/hiredis.h /usr/include/redis/read.h \

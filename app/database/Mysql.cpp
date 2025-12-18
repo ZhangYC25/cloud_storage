@@ -5,7 +5,6 @@
 
 #include "Mysql.h"
 #include "../utils/confRead.h"
-
 //std::string Mysql::_mysql_host = "127.0.0.1";
 // std::string Mysql::_mysql_user;// = "zhangyc";
 // std::string Mysql::_mysql_pass;// = "zhangyc@APEX!!!";
@@ -30,13 +29,15 @@ Mysql::Mysql(){
     //setConfig();
     conn = mysql_init(nullptr);
     if (!conn) {
-        std::cerr << "Error: mysql_init failed." << std::endl;
+        //std::cerr << "Error: mysql_init failed." << std::endl;
+        MY_LOG_ERROR("Error: mysql_init failed.");
         return;
     }
     // 尝试连接数据库
     if (mysql_real_connect(conn, _mysql_host.c_str(), _mysql_user.c_str(), _mysql_pass.c_str(),
                 _mysql_db.c_str(), _port, nullptr, 0) == nullptr) {
-        std::cerr << "Error: mysql_real_connect failed: " << mysql_error(conn) << std::endl;
+        //std::cerr << "Error: mysql_real_connect failed: " << mysql_error(conn) << std::endl;
+        MY_LOG_ERROR("Error: mysql_real_connect failed: ", mysql_error(conn));
         mysql_close(conn);
         return;
     }
@@ -55,45 +56,53 @@ MYSQL* Mysql::getConn(){return conn;}
 
 bool Mysql::beginTransaction(){
     if (conn == nullptr) {
-        std::cerr << "[MySQL ERROR] Connection is null when beginning transaction." << std::endl;
+        //std::cerr << "[MySQL ERROR] Connection is null when beginning transaction." << std::endl;
+        MY_LOG_ERROR("MySQL Connection is null when beginning transaction");
         return false;
     }
     if (mysql_autocommit(conn, 0) != 0) {
-        std::cerr << "[MySQL ERROR] Failed to set autocommit to 0: " << mysql_error(conn) << std::endl;
+        //std::cerr << "[MySQL ERROR] Failed to set autocommit to 0: " << mysql_error(conn) << std::endl;
+        MY_LOG_ERROR("MySQL Failed to set autocommit to 0: ", mysql_error(conn));
         return false;
     }
     return true;
 }
 bool Mysql::commit(){
     if (conn == nullptr) {
-        std::cerr << "[MySQL ERROR] Connection is null when committing." << std::endl;
+        //std::cerr << "[MySQL ERROR] Connection is null when committing." << std::endl;
+        MY_LOG_ERROR("[MySQL Connection is null when committing.");
         return false;
     }
     if (mysql_commit(conn) != 0) {
-        std::cerr << "[MySQL ERROR] COMMIT failed: " << mysql_error(conn) << std::endl;
+        //std::cerr << "[MySQL ERROR] COMMIT failed: " << mysql_error(conn) << std::endl;
+        MY_LOG_ERROR("MySQL COMMIT failed: ", mysql_error(conn));
         mysql_autocommit(conn, 1); 
         return false;
     }
     if (mysql_autocommit(conn, 1) != 0) {
-        std::cerr << "[MySQL WARN] Failed to set autocommit back to 1: " << mysql_error(conn) << std::endl;
+        //std::cerr << "[MySQL WARN] Failed to set autocommit back to 1: " << mysql_error(conn) << std::endl;
+        MY_LOG_WARN("MySQL Failed to set autocommit back to 1: ", mysql_error(conn));
     }
 
     return true;
 }
 bool Mysql::rollback(){
     if (conn == nullptr) {
-        std::cerr << "[MySQL ERROR] Connection is null when rolling back." << std::endl;
+        //std::cerr << "[MySQL ERROR] Connection is null when rolling back." << std::endl;
+        MY_LOG_ERROR("MySQL Connection is null when rolling back");
         return false;
     }
     if (mysql_rollback(conn) != 0) {
-        std::cerr << "[MySQL ERROR] ROLLBACK failed: " << mysql_error(conn) << std::endl;
+        //std::cerr << "[MySQL ERROR] ROLLBACK failed: " << mysql_error(conn) << std::endl;
+        MY_LOG_ERROR("MySQL ROLLBACK failed: ", mysql_error(conn));
         mysql_autocommit(conn, 1); 
         return false;
     }
 
     // 回滚成功后，恢复自动提交模式
     if (mysql_autocommit(conn, 1) != 0) {
-        std::cerr << "[MySQL WARN] Failed to set autocommit back to 1: " << mysql_error(conn) << std::endl;
+        //std::cerr << "[MySQL WARN] Failed to set autocommit back to 1: " << mysql_error(conn) << std::endl;
+        MY_LOG_WARN("MySQL Failed to set autocommit back to 1: ", mysql_error(conn));
     }
     return true;
 }
@@ -166,8 +175,8 @@ bool Mysql::insertUser(const std::string& username, const std::string& password_
 
     } catch (const std::runtime_error& e) {
         // 7. 捕获并处理异常
-        std::cerr << "[MySQL Error] insertUser failed: " << e.what() << std::endl;
-        
+        //std::cerr << "[MySQL Error] insertUser failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL insert user : ",username," to user failed: ", e.what());
         // 8. 确保在出错时关闭语句句柄，避免资源泄漏
         if (stmt) {
             mysql_stmt_close(stmt);
@@ -250,8 +259,8 @@ bool Mysql::getUserPasswordHash(const std::string& username, std::string& out_ha
         return true;
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] getUserPasswordHash failed: " << e.what() << std::endl;
-        
+        //std::cerr << "[MySQL Error] getUserPasswordHash failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL select user ",username,"  passwd failed: ",e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -298,7 +307,8 @@ bool Mysql::queryUser(const std::string& username){
         
         return exists;
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] queryUser failed: " << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] queryUser failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL select user ", username, "failed: ", e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -345,7 +355,8 @@ bool Mysql::queryEmail(const std::string& email){
         
         return exists;
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] queryEmail failed: " << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] queryEmail failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL select email ",email, "failed: ",e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -397,8 +408,8 @@ bool Mysql::insertUserFile(const std::string& md5, const std::string& username, 
         return true;
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] insertUserFile failed: " << e.what() << std::endl;
-        
+        //std::cerr << "[MySQL Error] insertUserFile failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL insert file ", filename, "to user_file_list failed: ", e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -468,7 +479,8 @@ bool Mysql::isInUserList(const std::string& md5, const std::string& username){
         return exists;
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] isInUserList failed: " << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] isInUserList failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL select user ", username, "from user failed: ", e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -524,7 +536,8 @@ bool Mysql::deleteUserFile(const std::string& username, const std::string& md5){
         success = true;
         return success;
     } catch ( const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] deleteUserFile failed: " << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] deleteUserFile failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL delete user ", username, " file from user_file_list failed:", e.what());
         return false;
     }
 }
@@ -583,8 +596,8 @@ bool Mysql::insertFileInfo(const std::string& md5, const std::string& url, const
         return true;
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] insertFileInfo failed: " << e.what() << std::endl;
-
+        //std::cerr << "[MySQL Error] insertFileInfo failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL insert file", md5, "to file_info failed: ", e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -640,7 +653,8 @@ bool Mysql::isInMySQL(const std::string& md5){
         return exists;
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] isInMySQL failed: " << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] isInMySQL failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL isInMySQL file ", md5, " failed: ", e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -687,7 +701,8 @@ bool Mysql::deleteSysFile(const std::string& md5){
         success = true;
         return success;
     } catch ( const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] deleteSysFile failed: " << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] deleteSysFile failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL delete file ", md5, "from file_info failed: ", e.what());
         return false;
     }
 }
@@ -772,8 +787,8 @@ void Mysql::queryUserFiles(const std::string& username, nlohmann::json& array){
         mysql_stmt_close(stmt);
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] queryUserFiles failed: " << e.what() << std::endl;
-        
+        //std::cerr << "[MySQL Error] queryUserFiles failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL select user", username, "storage failed: ", e.what());
         if (stmt) {
             mysql_stmt_close(stmt);
         }
@@ -825,7 +840,8 @@ bool Mysql::updateCount(const std::string& md5, int delta){
         success = true;
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] Failed to update count" << e.what() << std::endl;
+        //std::cerr << "[MySQL Error] Failed to update count" << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL update file", md5, " count from file_info failed: ", e.what());
         success = false;
         if (stmt) {
             mysql_stmt_close(stmt);
@@ -914,8 +930,8 @@ bool Mysql::getCount(const std::string& md5, int& count, std::string& url){
         }
 
     } catch (const std::runtime_error& e) {
-        std::cerr << "[MySQL Error] getCount failed: " << e.what() << std::endl;
-        
+        //std::cerr << "[MySQL Error] getCount failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("MySQL select file ", md5, " count failed: ", e.what());
         // 异常路径：确保清理资源
         if (stmt) {
             mysql_stmt_close(stmt);

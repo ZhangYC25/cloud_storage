@@ -233,6 +233,7 @@ void Api::registerEmail(const Pistache::Rest::Request& req, Pistache::Http::Resp
             //_redisPool->releaseConnection(redis_ptr);
         } catch (...) {
             std::cerr << "释放Redis连接失败" << std::endl;
+			MY_LOG_ERROR("Redis Release connection failed");
         }
     }
 	return;
@@ -300,7 +301,7 @@ void Api::registerUser(const Pistache::Rest::Request& req, Pistache::Http::Respo
 		// 	response.send(Pistache::Http::Code::Bad_Request, R"({"error": "error"})");
     	// 	return;
 		// }
-
+// ============================================================================
 
 		char hash[BCRYPT_HASHSIZE];
 		char salt[BCRYPT_HASHSIZE] = {0}; // 盐值缓冲区
@@ -330,6 +331,7 @@ void Api::registerUser(const Pistache::Rest::Request& req, Pistache::Http::Respo
 
 		// =============== add to set =======================
 		std::cerr<<"[Login INFO] Successed Register! User: "<<name<<std::endl;
+		//MY_LOG_INFO("Login Successed Register! User: ", name);
 		_mysqlPool->releaseConnection(mysql_ptr);
 
 		response.headers().add<Pistache::Http::Header::ContentType>(
@@ -358,7 +360,8 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 			sessionId = cookies.get("session").value;
 			// 验证 sessionId 是否有效...
 		} else {
-			std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			MY_LOG_ERROR("UploadCheck invalid session: ", sessionId);
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
@@ -367,10 +370,11 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 		redis_ptr -> expire(sessionId, 600);
 		//std::string file_redis = redis_ptr->get(md5);
 
-		std::cerr<<"user: "<<user<<" session: "<< sessionId <<std::endl;
+		//std::cerr<<"user: "<<user<<" session: "<< sessionId <<std::endl;
 
 		if (mysql_ptr -> isInUserList(md5, user)) { // 先查 userfile 命中的话其他根本不用查。
 			std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
+			//MY_LOG_INFO("UploadCheck user: ", user, "already owned File");
 				response.send(Pistache::Http::Code::Ok,
                     R"({"success":true,"status":"already_owned"})",
                     MIME(Application, Json));
@@ -389,20 +393,21 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 				}
 
 				if (!(mysql_ptr -> insertUserFile(md5, user, filename))) {
-					std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<
-					user<<"file: "<<filename<<"to user_file_list"<<std::endl;
+					// std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<
+					// user<<"file: "<<filename<<"to user_file_list"<<std::endl;
+					//MY_LOG_ERROR("MySQL Failed Insert file for user: ")
 				}
 				if (!(mysql_ptr -> updateCount(md5, 1))){
-					std::cerr<<"[MySQL ERROR]  Failed Update count for file: "<<filename<<std::endl;
+					//std::cerr<<"[MySQL ERROR]  Failed Update count for file: "<<filename<<std::endl;
 				}
 				bool db_success = true;
 				if (!(mysql_ptr -> commit())) {
 					db_success = false;
-					std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
+					//std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
 				}
 				if (!db_success) {
 					mysql_ptr->rollback();
-					std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
+					//std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
 					response.send(Pistache::Http::Code::Internal_Server_Error,
 						R"({"success":false,"message":"数据库操作失败或事务提交失败，文件已回滚"})",
 						MIME(Application, Json));
@@ -509,7 +514,8 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 			sessionId = cookies.get("session").value;
 			// 验证 sessionId 是否有效...
 		} else {
-			std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			MY_LOG_ERROR("Upload invalid session: ", sessionId);
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
@@ -557,21 +563,21 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 
 		bool db_success = false;
 		if (!(connPtr -> insertUserFile(md5, user, filename))){
-			std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<user<<"file: "<<filename<<"to user_file_list"<<std::endl;
+			//std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<user<<"file: "<<filename<<"to user_file_list"<<std::endl;
 		}
 		if (!(connPtr -> insertFileInfo(md5, fastdfs_path, file_ext))){
-			std::cerr<<"[MySQL ERROE] Failed Insert file: "<<filename<<"to file_info" <<std::endl;
+			//std::cerr<<"[MySQL ERROE] Failed Insert file: "<<filename<<"to file_info" <<std::endl;
 		}
 		db_success = true;
 		
 
 		if (!(connPtr -> commit())) {
 			db_success = false;
-			std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
+			//std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
 		}
 		if (!db_success) {
 			connPtr->rollback();
-			std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
+			//std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
 			//std::string url = fastdfs_path;
 			deleteFiles(fastdfs_path); 
 			_mysqlPool -> releaseConnection(connPtr);
@@ -621,7 +627,8 @@ void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::Res
 			sessionId = cookies.get("session").value;
 			// 验证 sessionId 是否有效...
 		} else {
-			std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			MY_LOG_ERROR("queryUserFiles invalid session: ", sessionId);
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
@@ -646,7 +653,8 @@ void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::Res
     	response.send(Pistache::Http::Code::Ok, jsonString);
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error in queryUserFiles: " << e.what() << std::endl;
+		//std::cerr << "Error in queryUserFiles: " << e.what() << std::endl;
+		MY_LOG_ERROR("Error in queryUserFiles: ", e.what());
         response.send(Pistache::Http::Code::Internal_Server_Error, "Server error");
 	}
 }
@@ -678,7 +686,8 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
 			sessionId = cookies.get("session").value;
 			// 验证 sessionId 是否有效...
 		} else {
-			std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			MY_LOG_ERROR("deleteCheck invalid session: ", sessionId);
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
@@ -692,17 +701,22 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
         }
 
 		std::shared_ptr<Mysql> connPtr = _mysqlPool->getConnection();
-		connPtr -> deleteUserFile(user, md5); // 先给用户删除
-		std::cout << "[MySQL INFO] Successed user: "<<user<<" deleted file: "<< md5<< std::endl;
-		connPtr -> updateCount(md5, -1); // 给文件 count -1;
-		std::cerr<<"user: "<< user <<" delete file"<<std::endl;
+		if (connPtr -> deleteUserFile(user, md5)) { // 先给用户删除
+			std::cout << "[MySQL INFO] Successed user: "<<user<<" deleted file: "<< md5<< std::endl;
+			//MY_LOG_INFO("MySQL user", user, " Delete file: ", md5, "Succeeded");
+		}
+		if (connPtr -> updateCount(md5, -1)) { // 给文件 count -1;
+			//std::cerr<<"user: "<< user <<" delete file"<<std::endl;
+			//MY_LOG_INFO("MySQL update file", md5, " Succeeded");
+		}
 		int count = 0;
 		std::string url;
 		if (connPtr -> getCount(md5, count, url)) {
 			std::cout << "[MySQL INFO] Successed file: "<<md5<<" update count: "<<count<<std::endl;
-		} else {
-			std::cout << "[MySQL INFO] Failed file: "<<md5<<" update count: "<<count<<std::endl;
-		}
+			//MY_LOG_INFO("MySQL Update file: ", md5, "count: ",count, " Successed");
+		 } //else {
+		// 	std::cout << "[MySQL INFO] Failed file: "<<md5<<" update count: "<<count<<std::endl;
+		// }
 		_mysqlPool -> releaseConnection(connPtr);
 		if (count == 0) { // 已经没有用户需要这个文件
 			//this->deleteFiles(url, md5); // 从 redis fdfs 中删除
@@ -710,8 +724,10 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
 			std::shared_ptr<Redis> redis_ptr = _redisPool->getConnection();
 			redis_ptr -> del(md5);
 			_redisPool -> releaseConnection(redis_ptr);
-			connPtr -> deleteSysFile(md5); // 从 file_info 中删除
-			std::cerr<<"[MySQL INFO] "<<"Successed user: "<<user<<" delete file: "<<md5<<std::endl;
+			if (connPtr -> deleteSysFile(md5)) {
+				std::cerr<<"[MySQL INFO] "<<"Successed user: "<<user<<" delete file: "<<md5<<std::endl;
+			} // 从 file_info 中删除
+			//std::cerr<<"[MySQL INFO] "<<"Successed user: "<<user<<" delete file: "<<md5<<std::endl;
 			response.send(
             	Pistache::Http::Code::Ok,
             	R"({"success":true,"message":"File deleted successfully"})",
@@ -743,11 +759,13 @@ void Api::deleteFiles(const std::string& url){
 	std::string remote_file = url.substr(firstSlash+1);
 	std::shared_ptr<FdfsClient> connFdfs = _fdfsPool->getConnection();
 	if( connFdfs -> delete_file_from_fastdfs(group_name, remote_file) ) {
-		std::cout << "[Fdfs INFO] Successfully deleted FastDFS file: group=\"" 
+		std::cout << "[Fdfs INFO] Successfully deleted FastDFS file: group= " 
               << group_name << "\", file=\"" << remote_file << "\"" << std::endl;
+		//MY_LOG_INFO("Fdfs Deleted file: group= ", group_name , "/file=", remote_file, "Succeeded");
 	} else {
-		std::cerr << "[Fdfs ERROR] Failed to delete FastDFS file: group=\"" 
-              << group_name << "\", file=\"" << remote_file << "\"" << std::endl;
+		// std::cerr << "[Fdfs ERROR] Failed to delete FastDFS file: group=\"" 
+        //       << group_name << "\", file=\"" << remote_file << "\"" << std::endl;
+		MY_LOG_ERROR("Fdfs Delete file: group= ", group_name, "file = ", remote_file, "Failed");
 		return;  // 跳过redis
 	}
 

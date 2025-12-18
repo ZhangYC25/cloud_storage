@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdarg> // For va_list
 
+#include "../utils/asyncLogger.h"
 class Redis {
 public:
     // 构造函数负责创建和认证连接

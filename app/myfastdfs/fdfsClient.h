@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include "../utils/asyncLogger.h"
 
 extern "C" {
     #include "fastdfs/fdfs_client.h"

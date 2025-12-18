@@ -1,6 +1,14 @@
 #pragma once
 
 #include <string>
+
+/*
+home/zhangyc/tencentcloud-sdk-cpp/core/include/tencentcloud/core/profile/HttpProfile.h
+home/zhangyc/tencentcloud-sdk-cpp/core/include/tencentcloud/core/profile/ClientProfile.h
+home/zhangyc/tencentcloud-sdk-cpp/ses/include/tencentcloud/ses/v20201002/SesClient.h
+home/zhangyc/tencentcloud-sdk-cpp/ses/include/tencentcloud/ses/v20201002/model/SendEmailRequest.h
+*/
+
 class Email{
 public:
     Email(const std::string&, const std::string&, const std::string&);

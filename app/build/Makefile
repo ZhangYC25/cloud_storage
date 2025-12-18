@@ -393,6 +393,30 @@ server/session.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/session.cpp.s
 .PHONY : server/session.cpp.s
 
+utils/asyncLogger.o: utils/asyncLogger.cpp.o
+.PHONY : utils/asyncLogger.o
+
+# target to build an object file
+utils/asyncLogger.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/asyncLogger.cpp.o
+.PHONY : utils/asyncLogger.cpp.o
+
+utils/asyncLogger.i: utils/asyncLogger.cpp.i
+.PHONY : utils/asyncLogger.i
+
+# target to preprocess a source file
+utils/asyncLogger.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/asyncLogger.cpp.i
+.PHONY : utils/asyncLogger.cpp.i
+
+utils/asyncLogger.s: utils/asyncLogger.cpp.s
+.PHONY : utils/asyncLogger.s
+
+# target to generate assembly for a file
+utils/asyncLogger.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/asyncLogger.cpp.s
+.PHONY : utils/asyncLogger.cpp.s
+
 utils/confRead.o: utils/confRead.cpp.o
 .PHONY : utils/confRead.o
 
@@ -459,6 +483,9 @@ help:
 	@echo "... server/session.o"
 	@echo "... server/session.i"
 	@echo "... server/session.s"
+	@echo "... utils/asyncLogger.o"
+	@echo "... utils/asyncLogger.i"
+	@echo "... utils/asyncLogger.s"
 	@echo "... utils/confRead.o"
 	@echo "... utils/confRead.i"
 	@echo "... utils/confRead.s"

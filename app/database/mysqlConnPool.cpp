@@ -30,7 +30,8 @@ MySQLConnPool* MySQLConnPool::getInstance() {
 void MySQLConnPool::init() {
     // 避免重复初始化
     if (_currentConn > 0) {
-        std::cerr << "[MySQLConnPool] Warning Connection pool already initialized." << std::endl;
+        //std::cerr << "[MySQLConnPool] Warning Connection pool already initialized." << std::endl;
+        MY_LOG_WARN("MySQLConnPool Connection pool already initialized");
         return;
     }
     // 预先创建最小连接数
@@ -43,7 +44,8 @@ void MySQLConnPool::init() {
             _currentConn++;
         } else {
             // 如果连接失败，可以根据需要决定是否退出
-            std::cerr << "[MySQLConnPool] create initial conn " << _currentConn << " failed!" << std::endl;
+            //std::cerr << "[MySQLConnPool] create initial conn " << _currentConn << " failed!" << std::endl;
+            MY_LOG_ERROR("MySQLConnPool create initial conn ", static_cast<int>(_currentConn), "failed!");
         }
     }
 
@@ -59,8 +61,10 @@ std::shared_ptr<Mysql> MySQLConnPool::getConnection() {
         if (!_connQueue.empty()) {
             connPtr = _connQueue.front();
             _connQueue.pop();
-            std::cerr << "[MySQLConnPool] Success get connection! Queue Size = " 
+            std::cerr << "[MySQLConnPool] Success get connection! Queue size = " 
                             << _connQueue.size() << ", Current conn nums: "<<static_cast<int>(_currentConn)<<std::endl;
+            //MY_LOG_INFO("MySQLConnPool Success get connection! Queue Size: ", _connQueue.size(), 
+            //              ", Current conn nums: ", static_cast<int>(_currentConn));
             return connPtr;
         }
 
@@ -69,22 +73,25 @@ std::shared_ptr<Mysql> MySQLConnPool::getConnection() {
             connPtr = std::make_shared<Mysql>();
             if (connPtr->getConn() != nullptr) {
                 _currentConn++;
-                std::cerr<<"[MySQLConnPool] expend MySQL conn success!" <<
+                std::cerr<<"[MySQLConnPool] expend MySQL conn success" <<
                  " Queue size: "<< _connQueue.size()<<", Current conn nums: "<< static_cast<int>(_currentConn) <<std::endl;
-                return connPtr; // 返回 shared_ptr
+                //MY_LOG_INFO("MySQLConnPool Expend MySQL conn success! Queue size: ", 
+                    //_connQueue.size(), ", Current conn nums: ", static_cast<int>(_currentConn));
+                 return connPtr; // 返回 shared_ptr
             } else {
                 _currentConn--;
-                std::cerr << "[MySQLConnPool] create invalid conn, currentConn=" 
-                            << static_cast<int>(_currentConn) << std::endl;
+                //std::cerr << "[MySQLConnPool] create invalid conn, currentConn=" 
+                            //<< static_cast<int>(_currentConn) << std::endl;
+                MY_LOG_ERROR("MySQLConnPool Create invalid conn, currentConn= ", static_cast<int>(_currentConn));
             }
         }
 
         // 3. 队列为空，且已达到最大连接数，则等待
-        std::cout << "[FdfsConnPool]  pool full (max=" << (int)_maxConn 
+        std::cout << "[MysqlConnPool]  pool full (max=" << (int)_maxConn 
                       << "), wait for conn..." << std::endl;  
-        
+        MY_LOG_WARN("MysqlConnPool Pool fulled (max: ",(int)_maxConn, "), wait for conn...");
         // lambda 谓词，条件满足时返回 true，避免虚假唤醒
-        bool success = _cv.wait_for(lock, std::chrono::seconds(5), [this] {
+        bool success = _cv.wait_for(lock, std::chrono::seconds(3), [this] {
             return !_connQueue.empty();
         });
 
@@ -94,10 +101,13 @@ std::shared_ptr<Mysql> MySQLConnPool::getConnection() {
             _connQueue.pop();
             std::cerr << "[MySQLConnPool] wait conn success!"<<" Queue size: "<<_connQueue.size()
              <<", Current conn nums: "<<static_cast<int>(_currentConn)<< std::endl;
+            //MY_LOG_INFO("MySQLConnPool Wait conn success! Queue size: ",_connQueue.size(),
+             //", Current conn nums: ", static_cast<int>(_currentConn));
             return connPtr;
         } else {
             // 等待超时
-            std::cerr << "[MySQLConnPool] wait conn timeout!" << std::endl;
+            //std::cerr << "[MySQLConnPool] wait conn timeout!" << std::endl;
+            MY_LOG_ERROR("MySQLConnPool Wait conn timeout!");
             return nullptr;
         }
     }
@@ -113,6 +123,9 @@ bool MySQLConnPool::releaseConnection(std::shared_ptr<Mysql> connPtr) {
     _connQueue.push(connPtr);
     std::cout << "[MySQLConnPool] Success release connection! Queue size: " 
                 << _connQueue.size() << ", Current conn nums: " << static_cast<int>(_currentConn) << std::endl;
+    //MY_LOG_INFO("MySQLConnPool Success release connection! Queue size: ", _connQueue.size(),
+        //", Current conn nums: ", static_cast<int>(_currentConn));
+    
     // 唤醒一个正在等待连接的线程
     _cv.notify_one();
     return true;

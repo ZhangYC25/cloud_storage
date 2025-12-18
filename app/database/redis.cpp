@@ -46,8 +46,9 @@ bool Redis::connect(){
     redis_ctx = redisConnectWithTimeout(redis_host.c_str(), port, tv);
 		// 检查Redis连接是否失败
 	if (redis_ctx == nullptr || redis_ctx->err) {
-		std::cerr << "Redis连接失败: " << (redis_ctx ? redis_ctx->errstr : "内存分配错误") << std::endl;
-		// 释放连接（若存在）
+		//std::cerr << "Redis连接失败: " << (redis_ctx ? redis_ctx->errstr : "内存分配错误") << std::endl;
+		MY_LOG_ERROR("Redis Connect failed: ", (redis_ctx ? redis_ctx->errstr : "invalid memory alloc"));
+        // 释放连接（若存在）
 		if (redis_ctx) close();			// 返回服务端错误响应
 		return false;
 		}
@@ -62,8 +63,9 @@ bool Redis::connect(){
 	redisReply* redis_reply = (redisReply*)redisCommandArgv(redis_ctx, 2, argv, argvlen);
 	
 	if (redis_reply == nullptr) {
-		std::cerr << "Redis认证命令发送失败: " << redis_ctx->errstr << std::endl;
-		close();
+		//std::cerr << "Redis认证命令发送失败: " << redis_ctx->errstr << std::endl;
+		MY_LOG_ERROR("Redis send AUTH command failed: ", redis_ctx->errstr);
+        close();
 		return false;
 	}
 	
@@ -83,7 +85,8 @@ bool Redis::connect(){
 redisContext* Redis::getRedisContext(){
     // 无效则自动重连
 	if (!isConnected()) {
-		std::cerr << "Redis connection invalid, try reconnect..." << std::endl;
+		//std::cerr << "Redis connection invalid, try reconnect..." << std::endl;
+        MY_LOG_ERROR("Redis connection invalid, try reconnect...");
 		if (!connect()) {
 			return nullptr;
 		}
@@ -93,13 +96,15 @@ redisContext* Redis::getRedisContext(){
 
 bool Redis::isConnected() const{
 	if (redis_ctx == nullptr) {
-		std::cerr<<"Redis: invalid connection"<<std::endl;
+		//std::cerr<<"Redis: invalid connection"<<std::endl;
+        MY_LOG_ERROR("Redis connections are invalid");
 		return false;
 	}
 	// 发送 PING 命令检测连接是否存活
 	redisReply* reply = (redisReply*)redisCommand(redis_ctx, "PING");
 	if (reply == nullptr) {
-    	std::cerr<<"Redis: invalid connection, non-exist"<<std::endl;
+    	//std::cerr<<"Redis: invalid connection, non-exist"<<std::endl;
+        MY_LOG_ERROR("Redis connection invalid, non-exist");
 		return false;
 	}
 	if (reply->type == REDIS_REPLY_STATUS && strcmp(reply->str, "PONG") == 0) {
@@ -107,7 +112,8 @@ bool Redis::isConnected() const{
 		freeReplyObject(reply);
 		return true;
 	} else {
-		std::cerr<<"Redis: invalid reply: "<< reply->str <<std::endl;
+		//std::cerr<<"Redis: invalid reply: "<< reply->str <<std::endl;
+        MY_LOG_ERROR("Redis reply invalid : ", reply->str);
 		freeReplyObject(reply);
 		return false;
 	}
@@ -119,6 +125,7 @@ bool Redis::set(const std::string& key, const std::string& value, int expire){
 	// 先判断核心句柄，空则返回
     if (redis_ctx == nullptr) {
         std::cerr << "[Redis ERROR] redis_ctx is nullptr" << std::endl;
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
         return false;
     }
 	redisReply* reply = nullptr;
@@ -130,19 +137,19 @@ bool Redis::set(const std::string& key, const std::string& value, int expire){
     const char* argv[] = {"SET", key.c_str(), value.c_str(), "EX",expire_str.c_str()};
 
     size_t argvlen[] = {strlen("SET"), key.size(), value.size(), strlen("EX"), expire_str.size()};        
-        // 执行SETEX命令（注意：hiredis的redisCommand是格式化命令，存在注入风险，后续可优化为redisCommandArgv）
-        //reply = (redisReply*)redisCommandArgv(redis_ctx, argv.size(),argv.data(), argvlen.data());
 		reply = (redisReply*)redisCommandArgv(redis_ctx, 5, argv, argvlen);
-														  // 处理错误情况
+		// 处理错误情况
         if (reply == nullptr || reply->type == REDIS_REPLY_ERROR) {
-            std::cerr << "[Redis INFO] Failed SET (key, value): "<<"("<<key<<", "<<value<<")" << (reply ? reply->str : "nullptr") << std::endl;
-			freeReplyObject(reply);
+            //std::cerr << "[Redis INFO] Failed SET (key, value): "<<"("<<key<<", "<<value<<")" << (reply ? reply->str : "nullptr") << std::endl;
+			MY_LOG_ERROR("Redis SET key:  ", key, "failed command returned nullptr");
+            freeReplyObject(reply);
             return false;
         }
 
         // 校验SETEX执行结果
         if (!(reply->type == REDIS_REPLY_STATUS && strcasecmp(reply->str, "OK") == 0)) {
-            std::cerr << "[Redis INFO] Failed SET (md5, filename)! "<<"("<<key<<", "<<value<<")" << (reply->str ? reply->str : "Unkown Response!") << std::endl;
+            //std::cerr << "[Redis INFO] Failed SET (md5, filename)! "<<"("<<key<<", "<<value<<")" << (reply->str ? reply->str : "Unkown Response!") << std::endl;
+            MY_LOG_ERROR("[Redis SET key: ",key, "failed");
             freeReplyObject(reply);
 			return false;
         }
@@ -150,17 +157,20 @@ bool Redis::set(const std::string& key, const std::string& value, int expire){
         return true;
     } catch (const std::bad_alloc& e) {
         // 捕获内存分配异常
-        std::cerr << "[Redis ERROR] SET failed: memory allocation failed - " << e.what() << std::endl;
-		freeReplyObject(reply);
+        //std::cerr << "[Redis ERROR] SET failed: memory allocation failed - " << e.what() << std::endl;
+		MY_LOG_ERROR("Redis SET key ", key, "failed memory failed: ", e.what());
+        freeReplyObject(reply);
         return false;
     } catch (const std::exception& e) {
         // 捕获其他标准异常
-        std::cerr << "[Redis ERROR] SET failed: " << e.what() << std::endl;
+        //std::cerr << "[Redis ERROR] SET failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("Redis SET key ", key, "failed: ", e.what());
 		freeReplyObject(reply);
         return false;
     } catch (...) {
         // 捕获所有未处理的异常（兜底）
-        std::cerr << "[Redis ERROR] SET failed: unknown exception" << std::endl;
+        //std::cerr << "[Redis ERROR] SET failed: unknown exception" << std::endl;
+        MY_LOG_ERROR("Redis SET key ", key, "failed: unknown exception");
 		freeReplyObject(reply);
         return false;
     }
@@ -169,7 +179,8 @@ bool Redis::set(const std::string& key, const std::string& value, int expire){
 
 std::string Redis::get(const std::string& key) {
 	if (redis_ctx == nullptr) {
-        std::cerr << "[Redis ERROR] redis_ctx is nullptr" << std::endl;
+        //std::cerr << "[Redis ERROR] redis_ctx is nullptr" << std::endl;
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
         return "";
     }
 	redisReply* reply = nullptr;
@@ -178,34 +189,40 @@ std::string Redis::get(const std::string& key) {
 
         // 处理错误情况：reply为空 或 不是字符串类型
         if (reply == nullptr || reply->type != REDIS_REPLY_STRING) {
-            std::cerr << "[Redis INFO] GET failed: no value or invalid type for key: " << key << std::endl;
-			freeReplyObject(reply);
+            //std::cerr << "[Redis INFO] GET failed: no value or invalid type for key: " << key << std::endl;
+			MY_LOG_ERROR("Redis GET failed: no value or invalid type for key: ", key);
+            freeReplyObject(reply);
             return "";
         }
 
         // 正常返回结果
         std::string res = reply->str;
         std::cerr << "[Redis INFO] GET successed: " << res << std::endl;
+        //MY_LOG_INFO("Redis GET succeded: ", res);
 		freeReplyObject(reply);
         return res;
     } catch (const std::bad_alloc& e) {
-        std::cerr << "[Redis ERROR] GET failed: memory allocation failed - " << e.what() << std::endl;
-		freeReplyObject(reply);
+        //std::cerr << "[Redis ERROR] GET failed: memory allocation failed - " << e.what() << std::endl;
+		MY_LOG_ERROR("Redis GET key: ", key, "failed: memory allocation failed: ", e.what());
+        freeReplyObject(reply);
         return "";
     } catch (const std::exception& e) {
-        std::cerr << "[Redis ERROR] GET failed: " << e.what() << std::endl;
+        //std::cerr << "[Redis ERROR] GET failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("Redis GET key: ", key, "failed: ",e.what());
 		freeReplyObject(reply);
         return "";
     } catch (...) {
-        std::cerr << "[Redis ERROR] GET failed: unknown exception" << std::endl;
-		freeReplyObject(reply);
+        //std::cerr << "[Redis ERROR] GET failed: unknown exception" << std::endl;
+		MY_LOG_ERROR("Redis GET key: ", key, " failed: unknown exception");
+        freeReplyObject(reply);
         return "";
     }
 }
 
 bool Redis::del(const std::string& key) {
 	if (redis_ctx == nullptr) {
-		std::cerr << "[Redis ERROR] redis_ctx is nullptr" << std::endl;
+		//std::cerr << "[Redis ERROR] redis_ctx is nullptr" << std::endl;
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
         return false;
 	}
 
@@ -214,12 +231,14 @@ bool Redis::del(const std::string& key) {
 		reply = (redisReply*)redisCommand(redis_ctx, "DEL %s", key.c_str());
 		// 处理错误情况：reply为空 或 不是字符串类型
 		if (reply == nullptr) {
-            std::cerr << "[Redis ERROR] DEL command returned nullptr" << std::endl;
+            //std::cerr << "[Redis ERROR] DEL command returned nullptr" << std::endl;
+            MY_LOG_ERROR("Redis DEL key: ", key, "failed command returned nullptr");
             return false;
         }
 
 		if (reply->type == REDIS_REPLY_ERROR) {
-            std::cerr << "[Redis ERROR] DEL failed: " << reply->str << std::endl;
+            //std::cerr << "[Redis ERROR] DEL failed: " << reply->str << std::endl;
+            MY_LOG_ERROR("Redis DEL key: ", key, " failed: ", reply->str);
             freeReplyObject(reply);
             return false;
         }
@@ -232,28 +251,33 @@ bool Redis::del(const std::string& key) {
         }
 
         // 其他类型？不应该发生
-        std::cerr << "[Redis ERROR] DEL returned unexpected type: " << reply->type << std::endl;
+        //std::cerr << "[Redis ERROR] DEL returned unexpected type: " << reply->type << std::endl;
+        MY_LOG_ERROR("Redis DEL key: ", key, "returned unexpected type: ", reply->type);
         freeReplyObject(reply);
         return false;
 
 	} catch (const std::bad_alloc& e) {
-        std::cerr << "[Redis ERROR] GET failed: memory allocation failed - " << e.what() << std::endl;
-		freeReplyObject(reply);
+        //std::cerr << "[Redis ERROR] GET failed: memory allocation failed - " << e.what() << std::endl;
+		MY_LOG_ERROR("Redis DEL key: ", key, " failed: memory allocation failed");
+        freeReplyObject(reply);
         return "";
     } catch (const std::exception& e) {
-        std::cerr << "[Redis ERROR] GET failed: " << e.what() << std::endl;
+        //std::cerr << "[Redis ERROR] GET failed: " << e.what() << std::endl;
+        MY_LOG_ERROR("Redis DEL key: ", key, " failed: ", e.what());
 		freeReplyObject(reply);
         return "";
     } catch (...) {
-        std::cerr << "[Redis ERROR] GET failed: unknown exception" << std::endl;
-		freeReplyObject(reply);
+        //std::cerr << "[Redis ERROR] GET failed: unknown exception" << std::endl;
+		MY_LOG_ERROR("Redis DEL key: ", key, " failed: unknown exception");
+        freeReplyObject(reply);
         return "";
     }
 }
 
 bool Redis::expire(const std::string& key, int seconds) {
     if (redis_ctx == nullptr) {
-        std::cerr << "[Redis ERROR] redis_ctx is nullptr in expire()" << std::endl;
+        //std::cerr << "[Redis ERROR] redis_ctx is nullptr in expire()" << std::endl;
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
         return false;
     }
 
@@ -261,8 +285,9 @@ bool Redis::expire(const std::string& key, int seconds) {
     try {
         reply = (redisReply*)redisCommand(redis_ctx, "EXPIRE %s %d", key.c_str(), seconds);
         if (!reply || reply->type == REDIS_REPLY_ERROR) {
-            std::cerr << "[Redis ERROR] EXPIRE failed for key: " << key 
-                      << " - " << (reply ? reply->str : "nullptr") << std::endl;
+            //std::cerr << "[Redis ERROR] EXPIRE failed for key: " << key 
+                      //<< " - " << (reply ? reply->str : "nullptr") << std::endl;
+            MY_LOG_ERROR("Redis EXPIRE failed for key: ", key, "failed - ", (reply ? reply->str : "nullptr"));
             freeReplyObject(reply);
             return false;
         }
@@ -273,7 +298,8 @@ bool Redis::expire(const std::string& key, int seconds) {
         return success;
 
     } catch (...) {
-        std::cerr << "[Redis ERROR] Exception in expire()" << std::endl;
+        //std::cerr << "[Redis ERROR] Exception in expire()" << std::endl;
+        MY_LOG_ERROR("Redis Expire key: ", key, "failed");
         freeReplyObject(reply);
         return false;
     }

@@ -31,7 +31,8 @@ void RedisConnPool::destroyPool() {
 void RedisConnPool::init(){
     std::lock_guard<std::mutex> lock(_mtx);
     if (_currentConn > 0) {
-        std::cerr << "[RedisConnPool] Warning Connection pool already initialized." << std::endl;
+        //std::cerr << "[RedisConnPool] Warning Connection pool already initialized." << std::endl;
+        MY_LOG_WARN("RedisConnPool Connection pool already initialized");
         return;
     }
     //_maxConn = 10
@@ -41,7 +42,8 @@ void RedisConnPool::init(){
             _connQueue.push(redisConn);
             _currentConn++;
         } else {
-            std::cerr << "[RedisConnPool] create initial conn " << static_cast<int>(_currentConn) << " failed!" << std::endl;
+            //std::cerr << "[RedisConnPool] create initial conn " << static_cast<int>(_currentConn) << " failed!" << std::endl;
+            MY_LOG_ERROR("RedisConnPool create initial conn ", static_cast<int>(_currentConn), "failed!");
         }
     }
     std::cout << "[RedisConnPool] init success (conn=" << static_cast<int>(_currentConn) << ")" << std::endl;
@@ -58,6 +60,9 @@ std::shared_ptr<Redis> RedisConnPool::getConnection(){
             if (conn && conn->isConnected()) {
                 std::cerr << "[RedisConnPool] Success get connection! Queue Size = " 
                           << _connQueue.size() << ", Current conn nums: "<<static_cast<int>(_currentConn)<<std::endl;
+                
+                //MY_LOG_INFO("MySQLConnPool Success get connection! Queue Size: ", 
+                //           _connQueue.size(), ", Current conn nums: ", static_cast<int>(_currentConn));
                 return conn;
             } else {
                 // 无效连接：丢弃，不放回
@@ -77,14 +82,19 @@ std::shared_ptr<Redis> RedisConnPool::getConnection(){
                     _currentConn++;
                     std::cerr<<"[RedisConnPool] expend Redsi conn success!" <<
                  " Queue size: "<< _connQueue.size()<<", Current conn nums: "<< static_cast<int>(_currentConn) <<std::endl;
+                    //MY_LOG_INFO("RedisConnPool Expend Redsi conn success! Queue size: ", 
+                    //_connQueue.size(), ", Current conn nums: ", static_cast<int>(_currentConn));
+                    
                     return newConn;
                 } else {
-                    std::cerr << "[RedisConnPool] create invalid conn, currentConn=" 
-                          << static_cast<int>(_currentConn) << std::endl;
+                    //std::cerr << "[RedisConnPool] create invalid conn, currentConn=" 
+                    //      << static_cast<int>(_currentConn) << std::endl;
+                    MY_LOG_ERROR("RedisConnPool Create invalid conn, currentConn= ", static_cast<int>(_currentConn));
                 }
             } else {
                 lock.lock();
                 std::cerr << "[RedisConnPool] create new conn failed!" << std::endl;
+                //MY_LOG_ERROR("RedisConnPool] create new conn failed!")
                 // 创建失败，不计入 currentConn
             }
         }
@@ -92,17 +102,21 @@ std::shared_ptr<Redis> RedisConnPool::getConnection(){
         else {
             std::cout << "[RedisConnPool]  pool full (max=" << (int)_maxConn 
                       << "), wait for conn..." << std::endl;
-            
+            MY_LOG_WARN("RedisConnPool Pool fulled (max: ",(int)_maxConn, "), wait for conn...");
             bool success = _cv.wait_for(lock, std::chrono::seconds(_timeoutSec), [this](){
                 return !_connQueue.empty();
             });
 
             if (!success) {
                 std::cerr << "[RedisConnPool] wait conn timeout!" << std::endl;
+
+                MY_LOG_ERROR("RedisConnPool Wait conn timeout!");
                 return nullptr;
             }
             std::cerr << "[RedisConnPool] wait conn success!"<<" Queue size: "<<_connQueue.size()
              <<", Current conn nums: "<<static_cast<int>(_currentConn)<< std::endl;
+             //MY_LOG_INFO("RedisConnPool Wait conn success! Queue size: ",_connQueue.size(),
+             //", Current conn nums: ", static_cast<int>(_currentConn));
             // 醒来后继续循环尝试获取
         }
     }

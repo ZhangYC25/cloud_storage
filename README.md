@@ -5,12 +5,13 @@ C++/Nginx/Fastdfs/Pistache
 
 ## 当前功能
 - 上传自动计算文件MD5，MySQL中储存MD5值，文件存储在Fastdfs中
-- 基于MD5 与 Redis去重，不会重复上传文件
-- 通过 URL 直接访问文件
+- 基于MD5 与 Redis去重,有效时间内不会重复上传文件
+- 支持大文件上传，上传成功返回URL，通过 URL 直接访问文件
 - 采用HTTPS + Session机制，数据加密存储保证数据安全
+
 ## 如何运行
 ### 环境构建
-- 本项目在 Ubuntu22.04 上构建，并且 lib 文件夹中包含了项目需要的所有工具
+- 本项目在 Ubuntu22.04 上构建，并且 lib 文件夹中包含了项目需要的所有工具包
 - 但是实际上你只需要用到其中的fastdfs/fastdfs-nginx-module/libfastcommon/nginx
 - 首先安装一些必要的依赖：
 ```
@@ -33,8 +34,8 @@ apt install -y build-essential libpcre3 libpcre3-dev zlib1g-dev libssl-dev libcu
     ```
     cp XXX.conf.sample XXX.conf
     ```
-  - 后续都在 XXX.conf 文件中改<br>
-  创建 三个文件夹，用来存放日志信息：
+  - 后续都在 XXX.conf 文件中改
+  - 创建 三个文件夹，用来存放日志信息：
 ```
 makir -p /var/fdfs/{tracker storage client}
 ```
@@ -42,8 +43,8 @@ makir -p /var/fdfs/{tracker storage client}
 *tracker.conf*
   - 找到 base_path 改成 **你的机器上存在** 的路径，这个文件用来放 tracker 的日志信息，这里也可以不改
   - 可以是任意路径，只要这个路径存在就行
-  - 启动tracker的命令是 fdfs_trackerd + 配置文件 + start，一般fdfs_trackerd在 /usr/bin 目录下<br>
-  找不到就 find / -name "fdfs_trackerd"
+  - 启动tracker的命令是 fdfs_trackerd + 配置文件 + start，一般fdfs_trackerd在 /usr/bin 目录下
+  - 找不到就 find / -name "fdfs_trackerd"
 ```
 fdfs_trackerd /etc/fdfs/tracker.conf start
 ```
@@ -147,6 +148,11 @@ sudo make install
 我提供了 .a 与 .c文件，但只支持 加密 和 解密 两个操作。
 
 得到之后记得改改 CMakeLists里面的路径
+
+### 邮件服务
+- 这里的邮件服务使用了腾讯云的API，需要腾讯云相关密钥
+- 没有腾讯云也没关系，我上传的版本屏蔽了相关代码，可以自行修改
+
 ### 代码编译
 ```
 cd app
@@ -163,5 +169,5 @@ make
 ## 访问
 直接输入运行Nginx的主机IP就可以访问，如果只有一台主机，那理论上来说tracker/storage/nginx的IP是一样的<br>
 
-你也可以输入我的IP
-```146.56.194.96```
+你也可以访问我的网址
+```www.goodfloat.cloud```

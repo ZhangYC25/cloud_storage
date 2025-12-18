@@ -3,4 +3,9 @@ app/build/
 *.o
 *.d
 
+app/log/error.log
+
+
 conf/config.env
+
+

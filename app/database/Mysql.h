@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <mysql/mysql.h>
 
+#include "../utils/asyncLogger.h"
 class Mysql
 {
 public:

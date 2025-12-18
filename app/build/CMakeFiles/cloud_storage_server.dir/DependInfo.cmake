@@ -19,6 +19,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zhangyc/cloud_storage/app/server/email.cpp" "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/server.cpp" "CMakeFiles/cloud_storage_server.dir/server/server.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/server.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/session.cpp" "CMakeFiles/cloud_storage_server.dir/server/session.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/session.cpp.o.d"
+  "/home/zhangyc/cloud_storage/app/utils/asyncLogger.cpp" "CMakeFiles/cloud_storage_server.dir/utils/asyncLogger.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/utils/asyncLogger.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/utils/confRead.cpp" "CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o.d"
   )
 

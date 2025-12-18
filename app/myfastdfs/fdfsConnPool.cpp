@@ -35,7 +35,8 @@ void FdfsConnPool::init(){
 
         // 第二步：创建连接池的初始连接（多个独立连接）
         if (_currentConn > 0) {
-            std::cerr << "[FdfsLConnPool] Warning Connection pool already initialized." << std::endl;
+            //std::cerr << "[FdfsLConnPool] Warning Connection pool already initialized." << std::endl;
+            MY_LOG_WARN("FdfsLConnPool Connection pool already initialized");
             return;
         }
 
@@ -45,7 +46,8 @@ void FdfsConnPool::init(){
                 _connQueue.push(connPtr);
                 _currentConn++;
             } else {
-                std::cerr << "[FdfsConnPool] create initial conn " << static_cast<int>(_currentConn) << " failed!" << std::endl;
+                //std::cerr << "[FdfsConnPool] create initial conn " << static_cast<int>(_currentConn) << " failed!" << std::endl;
+                MY_LOG_ERROR("FdfsConnPool create initial conn ", static_cast<int>(_currentConn), "failed!");
             }
         }
         std::cout << "[FdfsConnPool] init success: (conn=" << static_cast<int>(_currentConn) <<")"<< std::endl;
@@ -78,6 +80,8 @@ std::shared_ptr<FdfsClient> FdfsConnPool::getConnection(){
             _connQueue.pop();
             std::cerr << "[FdfsConnPool] Success get connection! Queue Size = " 
                             << _connQueue.size() <<", Current conn nums: "<<static_cast<int>(_currentConn)<< std::endl;
+            //MY_LOG_INFO("FdfsConnPool Success get connection! Queue Size: ", _connQueue.size(), 
+            //              ", Current conn nums: ", static_cast<int>(_currentConn));
             return connPtr;
         }
 
@@ -88,17 +92,22 @@ std::shared_ptr<FdfsClient> FdfsConnPool::getConnection(){
                 _currentConn++;
                 std::cerr<<"[FdfsConnPool] expend fastdfs conn success!" <<
                  " Queue size: "<< _connQueue.size()<<", Current conn nums: "<< static_cast<int>(_currentConn) <<std::endl;
+                //MY_LOG_INFO("FdfsConnPool Expend MySQL conn success! Queue size: ", 
+                    //_connQueue.size(), ", Current conn nums: ", static_cast<int>(_currentConn));
                 return connPtr; // 返回 shared_ptr
             } else {
                 _currentConn--;
-                std::cerr << "[FdfsConnPool] create invalid conn, currentConn=" 
-                            << static_cast<int>(_currentConn) << std::endl;
+                // std::cerr << "[FdfsConnPool] create invalid conn, currentConn=" 
+                //             << static_cast<int>(_currentConn) << std::endl;
+                MY_LOG_ERROR("FdfsConnPool Create invalid conn, currentConn= ", static_cast<int>(_currentConn));
+            
             }
         }
 
         // 3. 队列为空，且已达到最大连接数，则等待
         std::cout << "[FdfsConnPool]  pool full (max=" << (int)_maxConn 
-                      << "), wait for conn..." << std::endl;        
+                      << "), wait for conn..." << std::endl;
+        MY_LOG_WARN("FdfsConnPool Pool fulled (max: ",(int)_maxConn, "), wait for conn...");
         // lambda 谓词，条件满足时返回 true，避免虚假唤醒
         bool success = _cv.wait_for(lock, std::chrono::seconds(5), [this] {
             return !_connQueue.empty();
@@ -110,10 +119,14 @@ std::shared_ptr<FdfsClient> FdfsConnPool::getConnection(){
             _connQueue.pop();
             std::cerr << "[FdfsConnPool] wait conn success!"<<" Queue size: "<<_connQueue.size()
              <<", Current conn nums: "<<static_cast<int>(_currentConn)<< std::endl;
+
+            //MY_LOG_INFO("FdfsConnPool Wait conn success! Queue size: ",_connQueue.size(),
+             //", Current conn nums: ", static_cast<int>(_currentConn));
             return connPtr;
         } else {
             // 等待超时
-            std::cerr << "[FdfsConnPool] wait conn timeout!" << std::endl;
+            //std::cerr << "[FdfsConnPool] wait conn timeout!" << std::endl;
+            MY_LOG_ERROR("FdfsConnPool Wait conn timeout!");
             return nullptr;
         }
     }
@@ -133,6 +146,7 @@ bool FdfsConnPool::releaseConnection(std::shared_ptr<FdfsClient> connPtr){
     _cv.notify_one();
     std::cout << "[FdfsConnPool] Success release connection! Queue size: " 
                 << _connQueue.size() << ", Current conn nums: " << static_cast<int>(_currentConn) << std::endl;
-    
+    //MY_LOG_INFO("FdfsConnPool Success release connection! Queue size: ", _connQueue.size(),
+        //", Current conn nums: ", static_cast<int>(_currentConn));
     return true;
 }
