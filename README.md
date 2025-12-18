@@ -124,6 +124,8 @@ make && make install
 为了方便，这里都是docker启动
 在lib/database分支下有对应的 docker-compose.yaml文件
 去对应文件夹执行
+
+- 同时也提供了单机版的nginx/tracker/storage/client配置文件
 ```
 docker-compose -d up
 ```

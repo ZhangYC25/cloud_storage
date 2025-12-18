@@ -1,0 +1,274 @@
+/* ======================================================= */
+/* 全局设置 & 锦云主题颜色变量（温润青灰蓝） */
+/* ======================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #3A86A9;       /* 青灰蓝，如墨染云笺 */
+    --primary-hover: #2E6C87;
+    --background-start: #f8fbfc;    /* 极浅天青底 */
+    --background-end: #e6f2f6;      /* 淡云色渐变 */
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --text-color: #2C3E50;          /* 深灰蓝，比纯黑更柔和 */
+    --text-secondary: #7f8c8d;
+    --shadow-light: 0 4px 12px rgba(58, 134, 169, 0.1);
+    --shadow-deep: 0 12px 30px rgba(58, 134, 169, 0.15);
+    --input-border: #d1e6ec;
+    --input-focus: #3A86A9;
+}
+
+body {
+    font-family: 'Noto Sans SC', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.container {
+    width: 100%;
+    max-width: 380px;
+    padding: 40px 32px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow-deep);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+h2 {
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 24px;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 0.5px;
+}
+
+/* slogan 样式 */
+.slogan {
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* 表单元素（保持原样，仅继承新色） */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #ffffff;
+    color: var(--text-color);
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--input-focus);
+    box-shadow: 0 0 0 3px rgba(58, 134, 169, 0.25);
+    transform: translateY(-1px);
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #b0bec5;
+    transition: color 0.2s;
+    font-size: 18px;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(58, 134, 169, 0.3);
+}
+
+button:hover:not(:disabled) {
+    background: var(--primary-hover);
+    box-shadow: 0 6px 18px rgba(58, 134, 169, 0.4);
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: 0 2px 5px rgba(58, 134, 169, 0.25);
+}
+
+button:disabled {
+    background: var(--background-end);
+    color: #90a4ae;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.switch {
+    text-align: center;
+    margin-top: 30px;
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+.switch a {
+    cursor: pointer;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+
+.switch a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+#login-box, #register-box {
+    animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-error {
+    min-height: 1.4em;
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    text-align: center;
+    transition: opacity 0.2s;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
+        border-radius: 16px;
+        max-width: 90%;
+    }
+    h2 {
+        font-size: 26px;
+    }
+    .slogan {
+        font-size: 15px;
+        margin-bottom: 26px;
+    }
+}
+
+/* —————— 验证码输入区域（重构版） —————— */
+.code-wrapper {
+    display: flex;
+    /* 调整间距，使其更紧凑 */
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* 验证码输入框 */
+.code-wrapper input {
+    /* 继承全局 input 样式，保持一致性 */
+    flex-grow: 1; /* 允许输入框占用剩余空间 */
+    /* min-width 保持不变，确保不被过度挤压 */
+    min-width: 80px;
+}
+
+/* 获取验证码按钮：主色、圆角、阴影、hover 动效 */
+.code-wrapper button {
+    /* 锁定宽度，确保按钮大小一致，不再使用 min-width */
+    width: 80px; 
+    /* 保持与输入框一致的 padding，确保视觉高度统一 */
+    padding: 7px 9px; 
+    /* 覆盖全局 button 的 margin-top，避免在 flex 布局中错位 */
+    margin-top: 0; 
+    
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px; /* 略微调整字体大小，使其更适合小按钮 */
+    font-weight: 600;
+    transition: 
+        background 0.2s, 
+        transform 0.1s, 
+        box-shadow 0.2s;
+    box-shadow: var(--shadow-light);
+}
+
+.code-wrapper button:hover:not(:disabled) {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(58, 134, 169, 0.4);
+}
+
+.code-wrapper button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.code-wrapper button:disabled {
+    background: var(--background-end);
+    color: #90a4ae;
+    cursor: not-allowed;
+    box-shadow: none;
+    /* 确保禁用状态下不会因为 transform 而跳动 */
+    transform: none; 
+}
+
+/* 移动端优化：小屏时上下排列 */
+@media (max-width: 480px) {
+    .code-wrapper {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .code-wrapper input {
+        width: 100%;
+    }
+
+    .code-wrapper button {
+        width: 80%;
+        /* 在小屏堆叠时，按钮保持和输入框一样的圆角和样式，取消固定的 120px 宽度 */
+        min-width: auto; 
+        padding: 7px; /* 恢复全局按钮的 padding */
+        font-size: 9px; /* 恢复全局按钮的字体大小 */
+    }
+}

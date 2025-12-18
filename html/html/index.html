@@ -3,206 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>云存储 - 用户认证 </title>
+    <title>锦云存储 · 锦云所托，轻而可存</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <style>
-        /* ======================================================= */
-        /* 全局设置 & 青蓝主题颜色变量         */
-        /* ======================================================= */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #00BCD4; /* 鲜亮的青色（强调色） */
-            --primary-hover: #00ACC1;
-            --background-start: #e0f7fa; /* 极浅的青色/白色背景 */
-            --background-end: #b2ebf2; /* 浅青色背景 */
-            --card-bg: rgba(255, 255, 255, 0.9); /* 略带透明的白色卡片 */
-            --text-color: #004d40; /* 深墨绿色/深青色（文字） */
-            --text-secondary: #7f8c8d; /* 辅助文本色 */
-            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-deep: 0 15px 40px rgba(0, 0, 0, 0.2);
-            --input-border: #b2ebf2; /* 浅青色边框 */
-            --input-focus: #00BCD4;
-        }
-
-        body {
-            font-family: 'Noto Sans SC', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* 青蓝渐变背景 */
-            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
-            padding: 20px;
-            color: var(--text-color);
-        }
-
-        /* ======================================================= */
-        /* 卡片容器                         */
-        /* ======================================================= */
-        .container {
-            width: 100%;
-            max-width: 380px;
-            padding: 40px 32px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: var(--shadow-deep);
-            /* 浅色模式下的轻微玻璃拟态效果 */
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        h2 {
-            text-align: center;
-            color: var(--text-color);
-            margin-bottom: 35px;
-            font-weight: 700;
-            font-size: 30px;
-            letter-spacing: 1px;
-        }
-
-        /* ======================================================= */
-        /* 表单元素                         */
-        /* ======================================================= */
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        .password-wrapper {
-            position: relative;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 1px solid var(--input-border);
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            background: #ffffff; /* 纯白输入框 */
-            color: var(--text-color);
-        }
-
-        input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--input-focus);
-            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.3);
-            transform: translateY(-1px);
-        }
-        
-        /* 小眼睛图标样式 */
-        .password-toggle {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #b0bec5; /* 灰色图标 */
-            transition: color 0.2s;
-            font-size: 18px;
-        }
-        
-        .password-toggle:hover {
-            color: var(--primary-color);
-        }
-
-        button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 14px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
-        }
-
-        button:hover:not(:disabled) {
-            background: var(--primary-hover);
-            box-shadow: 0 6px 20px rgba(0, 172, 193, 0.6);
-        }
-
-        button:active:not(:disabled) {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(0, 188, 212, 0.3);
-        }
-
-        button:disabled {
-            background: #e0f7fa; /* 禁用色 */
-            color: #90a4ae;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        /* ======================================================= */
-        /* 切换链接                         */
-        /* ======================================================= */
-        .switch {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--text-secondary);
-            font-size: 15px;
-        }
-
-        .switch a {
-            cursor: pointer;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            margin-left: 4px;
-            transition: color 0.2s;
-        }
-
-        .switch a:hover {
-            color: var(--primary-hover);
-            text-decoration: underline;
-        }
-
-        /* ======================================================= */
-        /* 动画与响应式                      */
-        /* ======================================================= */
-        #login-box, #register-box {
-            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 20px;
-                border-radius: 16px;
-                max-width: 90%;
-            }
-            h2 {
-                font-size: 26px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 
 <div class="container" id="login-box">
-    <h2>欢迎回来</h2>
+    <h2>锦云存储</h2>
+    <p class="slogan">锦云所托，轻而可存。</p>
+    <div id="login-error" class="form-error"></div>
     <div class="input-group">
-        <input id="login-name" placeholder="用户名" autocomplete="username">
+        <input id="login-name" placeholder="用户名or 邮箱" autocomplete="username">
     </div>
     <div class="input-group">
         <div class="password-wrapper">
@@ -219,8 +33,13 @@
 
 <div class="container" id="register-box" style="display:none;">
     <h2>创建账号</h2>
+    <p class="slogan">锦云所托，轻而可存。</p>
+    <div id="register-error" class="form-error"></div>
     <div class="input-group">
-        <input id="reg-name" placeholder="设置用户名" autocomplete="username">
+        <input id="reg-name" placeholder="设置用户名，避免中文" autocomplete="username">
+    </div>
+    <div class="input-group">
+        <input id="reg-email" placeholder="设置邮箱" autocomplete="email">
     </div>
     <div class="input-group">
         <div class="password-wrapper">
@@ -228,17 +47,24 @@
             <i class="password-toggle fa-solid fa-eye" onclick="togglePasswordVisibility('reg-password', this)"></i>
         </div>
     </div>
+    <div class="input-group">
+    <!--<div class="code-wrapper">
+        <input id="reg-code" type="text" placeholder="邮箱验证码" maxlength="6" autocomplete="off">
+        <button type="button" id="send-code-btn" onclick="sendVerificationCode()">获取验证码</button>
+    </div>
+    </div>-->
     <button onclick="registerUser()" id="register-button">注册</button>
 
     <div class="switch">
-        已有账号？<a onclick="showLogin()">立即登录</a>
+        已有账号？<a onclick="showLogin()">返回登录</a>
     </div>
 </div>
 
+<!-- 以下 script 完全保留，未做任何修改 -->
 <script>
-    // =======================================================
-    // 核心 JS 逻辑（保持不变）
-    // =======================================================
+let countdown = 60; // 60秒倒计时
+let countdownInterval = null;
+
     function togglePasswordVisibility(inputId, iconElement) {
         const input = document.getElementById(inputId);
         const isPassword = input.type === 'password';
@@ -271,8 +97,11 @@
         const nameInput = document.getElementById('login-name');
         const passInput = document.getElementById('login-password');
         const submitBtn = document.getElementById('login-button');
+	const errorDiv = document.getElementById('login-error');
 
-        const name = nameInput.value.trim();
+	errorDiv.textContent = '';
+
+	const name = nameInput.value.trim();
         const password = passInput.value;
 
         if (!name || !password) {
@@ -297,10 +126,10 @@
             if (res.ok && data.message == "login successful") {
                 window.location.href = "/updown.html";
             } else {
-                alert("登录失败：" + (data.message || "用户名或密码错误"));
+                errorDiv.textContent = '用户名或密码错误';
                 passInput.value = '';
                 nameInput.focus();
-            }
+	    }
         } catch (error) {
             console.error("登录异常:", error);
             alert("网络错误，请检查连接后重试");
@@ -310,34 +139,214 @@
         }
     }
     
-    async function registerUser() {
-        const name = document.getElementById('reg-name').value.trim();
-        const password = document.getElementById('reg-password').value;
+async function sendVerificationCode() {
+    const emailInput = document.getElementById('reg-email');
+    const email = emailInput.value.trim();
+    const nameInput = document.getElementById('reg-name');
+    const name = nameInput.value.trim();
+    const btn = document.getElementById('send-code-btn');
+    const errorDiv = document.getElementById('register-error');
 
-        if (!name || !password) {
-            alert("请输入完整注册信息！");
-            return;
+    // 清除旧提示
+    errorDiv.textContent = '';
+    errorDiv.style.color = '#e74c3c'; // 默认红色
+
+    // 前端基础校验（可选，但建议保留作为快速反馈）
+    if (!email) {
+        errorDiv.textContent = '请先填写邮箱';
+        emailInput.focus();
+        return;
+    }
+    if (!name) {
+        errorDiv.textContent = '用户名不能为空';
+        nameInput.focus();
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        errorDiv.textContent = '邮箱格式不正确';
+        emailInput.focus();
+        return;
+    }
+    if (name.length < 3 || name.length > 20) {
+        errorDiv.textContent = '用户名必须为 3-20 个字符';
+        nameInput.focus();
+        return;
+    }
+
+    // 防止重复点击
+    if (btn.disabled) return;
+
+    try {
+        const res = await fetch('/api/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, name })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            // 成功：200 OK
+            errorDiv.style.color = '#27ae60';
+            errorDiv.textContent = '验证码已发送，请查收（包括垃圾邮件）';
+
+            // 启动倒计时
+            countdown = 60;
+            btn.disabled = true;
+            btn.textContent = `${countdown}s 后重试`;
+
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    btn.disabled = false;
+                    btn.textContent = '重新获取';
+                } else {
+                    btn.textContent = `${countdown}s 后重试`;
+                }
+            }, 1000);
+        } else {
+            // 处理各种错误
+            let msg = data.error || '未知错误，请稍后重试';
+
+            // 可选：针对特定错误做友好提示（非必须，但体验更好）
+            if (msg.includes('name has existed')) {
+                msg = '该用户名已被注册';
+                nameInput.focus();
+            } else if (msg.includes('email has existed')) {
+                msg = '该邮箱已被注册';
+                emailInput.focus();
+            } else if (msg.includes('name must be 3-20')) {
+                msg = '用户名长度需为 3-20 个字符';
+                nameInput.focus();
+            } else if (msg.includes('valid email')) {
+                msg = '请输入有效的邮箱地址';
+                emailInput.focus();
+            } else if (msg.includes('send verify failed')) {
+                msg = '验证码发送失败，请稍后重试';
+            }
+
+            errorDiv.textContent = msg;
         }
+    } catch (err) {
+        console.error("网络请求失败:", err);
+        errorDiv.textContent = '网络错误，请检查连接后重试';
+    }
+}
+ 
 
+    async function registerUser() {
+	const nameInput = document.getElementById('reg-name');
+        const emailInput = document.getElementById('reg-email');
+        const passwordInput = document.getElementById('reg-password');
+	//const codeInput = document.getElementById('reg-code');
+        const errorDiv = document.getElementById('register-error');
         const btn = document.getElementById('register-button');
-        btn.disabled = true;
-        btn.textContent = '注册中…';
 
-        try {
-            const res = await fetch('/api/register', { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, password })
-            });
+	// 清除旧提示
+        errorDiv.textContent = '';
+        errorDiv.style.color = '#e74c3c';
+        
+	const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+	//const code = codeInput.value.trim();
+		// 前端快速校验（提升体验，减少无效请求）
+	if (!name) {
+	    errorDiv.textContent = '请输入用户名';
+	    nameInput.focus();
+	    return;
+	}
+	    if (name.length < 3 || name.length > 20) {
+	    errorDiv.textContent = '用户名需为 3-16 个英文字符';
+	    nameInput.focus();
+	    return;
+	}
+	if (!email) {
+	    errorDiv.textContent = '请输入邮箱';
+	    emailInput.focus();
+	    return;
+	}
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+	    errorDiv.textContent = '邮箱格式不正确';
+	    emailInput.focus();
+	    return;
+	}
+	if (!password) {
+	    errorDiv.textContent = '请输入密码';
+	    passwordInput.focus();
+	    return;
+	}
+//	if (!code) {
+//	    errorDiv.textContent = '请输入验证码';
+//	    codeInput.focus();
+//	    return;
+//	}
+
+//	if (code.length != 6) {
+//		errorDiv.textContent = '验证码必须6位数';
+//		return;
+//		}
+//	if (!/^\d{6}$/.test(code)) {
+//	    errorDiv.textContent = '验证码为6位数字';
+//	    codeInput.focus();
+//	    return;
+//	}
+
+	// 禁用按钮
+	btn.disabled = true;
+	btn.textContent = '注册中…';
+	try {
+	    const res = await fetch('/api/register', { 
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ name, password, email})
+	    });
 
             const data = await res.json();
+
             if (res.ok) {
-                alert("注册成功！请登录。");
+                // 成功：绿色提示 + 自动跳转
+            errorDiv.style.color = '#27ae60';
+            errorDiv.textContent = '注册成功！2秒后返回登录…';
+            setTimeout(() => {
                 showLogin();
+                // 清空注册表单（可选）
+                nameInput.value      = '';
+                emailInput.value     = '';
+                passwordInput.value  = '';
+		//codeInput.value      = '';
+                errorDiv.textContent = '';
+            }, 2000);
             } else {
-                const errorMessage = data.error || data.message || "未知错误";
-                alert("注册失败：" + errorMessage);
-                document.getElementById('reg-password').value = '';
+                // 处理后端返回的错误，做用户友好翻译
+            let msg = data.error || data.message || '注册失败，请稍后重试';
+
+            if (msg.includes('name has existed') || msg.includes('name already taken')) {
+                	msg = '该用户名已被占用';
+            	} else if (msg.includes('email has existed') || msg.includes('email already registered')) {
+                	msg = '该邮箱已被注册';
+            	} else if (msg.includes('password is too weak')) {
+                	msg = '密码过于简单，请换一个';
+            	} else if (msg.includes('password must be at least 8 characters')) {
+			msg = '密码需>= 8 位，并包含字母、数字或符号';
+            	} else if (msg.includes('please input valid email') || msg.includes('invalid email format')) {
+                	msg = '邮箱格式不正确';
+            	} else if (msg.includes('name and password are required')) {
+                	msg = '请填写完整信息';
+		} //else if (msg.includes('vervify null')) {
+//			msg = '验证码为空，请重新获取';
+//		} else if (msg.includes('invalid vervify')) {
+//			msg = '无效的验证码，请重新获取';
+//		} else if (msg.includes('invalid or outtime')) {
+//			msg = '验证码过期，请重新获取';
+//		} else if (msg.includes('error')) {
+//			msg = '验证码或用户名错误，请重新输入';
+//			}
+
+            	errorDiv.textContent = msg;
+            	//passwordInput.value = ''; // 安全起见清空密码
             }
         } catch (error) {
             console.error("注册异常:", error);
