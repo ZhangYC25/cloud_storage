@@ -87,14 +87,14 @@ std::string FdfsClient::create_temp_file(const std::vector<char>& data) {
     }
     
     ssize_t written = write(fd, data.data(), data.size());
-	
-	if (written != static_cast<ssize_t>(data.size())) {
-    	close(fd);
+    
+    if (written != static_cast<ssize_t>(data.size())) {
+        close(fd);
         //std::cerr <<"[Fdfs ERROR] Failed written tmp file!"<<std::endl;
         MY_LOG_ERROR("Fdfs written tmp file failed");
-    	unlink(temp_template); // 删除创建的临时文件
-    	return "";
-	}
+        unlink(temp_template); // 删除创建的临时文件
+        return "";
+    }
     close(fd);
     std::cerr <<"[Fdfs INFO] Successed create tmp file!"<<std::endl;
     return std::string(temp_template);

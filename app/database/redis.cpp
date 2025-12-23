@@ -305,3 +305,209 @@ bool Redis::expire(const std::string& key, int seconds) {
     }
 }
 
+// ======================  HSET：设置 Hash 字段  ======================
+bool Redis::hset(const std::string& key, const std::string& field, const std::string& value) {
+    if (redis_ctx == nullptr) {
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
+        return false;
+    }
+
+    redisReply* reply = nullptr;
+    try {
+        // 使用 HSET key field value
+        const char* argv[] = {"HSET", key.c_str(), field.c_str(), value.c_str()};
+        size_t argvlen[] = {strlen("HSET"), key.size(), field.size(), value.size()};
+
+        reply = (redisReply*)redisCommandArgv(redis_ctx, 4, argv, argvlen);
+
+        if (reply == nullptr) {
+            MY_LOG_ERROR("Redis HSET failed: command returned nullptr (key: ", key, ", field: ", field, ")");
+            return false;
+        }
+
+        // HSET 返回整数回复（新创建字段返回1，已存在字段更新返回0）
+        if (reply->type != REDIS_REPLY_INTEGER) {
+            MY_LOG_ERROR("Redis HSET failed: unexpected reply type (key: ", key, ", field: ", field, ")");
+            freeReplyObject(reply);
+            return false;
+        }
+
+        // 可以选择记录日志（可选）
+        // std::cerr << "[Redis INFO] HSET success: key=" << key << ", field=" << field << ", value=" << value << std::endl;
+
+        freeReplyObject(reply);
+        return true;
+
+    } catch (const std::bad_alloc& e) {
+        MY_LOG_ERROR("Redis HSET failed: memory allocation failed (key: ", key, ", field: ", field, "): ", e.what());
+        freeReplyObject(reply);
+        return false;
+    } catch (const std::exception& e) {
+        MY_LOG_ERROR("Redis HSET failed: exception (key: ", key, ", field: ", field, "): ", e.what());
+        freeReplyObject(reply);
+        return false;
+    } catch (...) {
+        MY_LOG_ERROR("Redis HSET failed: unknown exception (key: ", key, ", field: ", field, ")");
+        freeReplyObject(reply);
+        return false;
+    }
+}
+
+// ======================  HGET：获取 Hash 字段值  ======================
+std::string Redis::hget(const std::string& key, const std::string& field) {
+    if (redis_ctx == nullptr) {
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
+        return "";
+    }
+
+    redisReply* reply = nullptr;
+    try {
+        // 使用 HGET key field
+        reply = (redisReply*)redisCommand(redis_ctx, "HGET %s %s", key.c_str(), field.c_str());
+
+        if (reply == nullptr) {
+            MY_LOG_ERROR("Redis HGET failed: command returned nullptr (key: ", key, ", field: ", field, ")");
+            return "";
+        }
+
+        // 如果字段不存在，返回 NIL
+        if (reply->type == REDIS_REPLY_NIL) {
+            freeReplyObject(reply);
+            return "";
+        }
+
+        // 正常情况：必须是字符串类型
+        if (reply->type != REDIS_REPLY_STRING) {
+            MY_LOG_ERROR("Redis HGET failed: unexpected reply type (key: ", key, ", field: ", field, ")");
+            freeReplyObject(reply);
+            return "";
+        }
+
+        std::string res = reply->str;
+
+        // 可选：成功日志（与你的 get 风格一致）
+        std::cerr << "[Redis INFO] HGET successed: " << res << std::endl;
+
+        freeReplyObject(reply);
+        return res;
+
+    } catch (const std::bad_alloc& e) {
+        MY_LOG_ERROR("Redis HGET failed: memory allocation failed (key: ", key, ", field: ", field, "): ", e.what());
+        freeReplyObject(reply);
+        return "";
+    } catch (const std::exception& e) {
+        MY_LOG_ERROR("Redis HGET failed: exception (key: ", key, ", field: ", field, "): ", e.what());
+        freeReplyObject(reply);
+        return "";
+    } catch (...) {
+        MY_LOG_ERROR("Redis HGET failed: unknown exception (key: ", key, ", field: ", field, ")");
+        freeReplyObject(reply);
+        return "";
+    }
+}
+
+
+bool Redis::exists(const std::string& key) {
+    if (redis_ctx == nullptr) return false;
+    redisReply* reply = (redisReply*)redisCommand(redis_ctx, "EXISTS %s", key.c_str());
+    if (reply && reply->type == REDIS_REPLY_INTEGER) {
+        bool res = reply->integer > 0;
+        freeReplyObject(reply);
+        return res;
+    }
+    freeReplyObject(reply);
+    return false;
+}
+
+// ======================  SADD：向 Set 添加元素（原子操作）  ======================
+int Redis::sadd(const std::string& key, const std::string& member) {
+    if (redis_ctx == nullptr) {
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
+        return 0;
+    }
+
+    redisReply* reply = nullptr;
+    try {
+        // SADD key member
+        const char* argv[] = {"SADD", key.c_str(), member.c_str()};
+        size_t argvlen[] = {strlen("SADD"), key.size(), member.size()};
+
+        reply = (redisReply*)redisCommandArgv(redis_ctx, 3, argv, argvlen);
+
+        if (reply == nullptr) {
+            MY_LOG_ERROR("Redis SADD failed: command returned nullptr (key: ", key, ", member: ", member, ")");
+            return 0;
+        }
+
+        // SADD 返回整数：新增元素数量（1 表示新增，0 表示已存在）
+        if (reply->type != REDIS_REPLY_INTEGER) {
+            MY_LOG_ERROR("Redis SADD failed: unexpected reply type (key: ", key, ", member: ", member, ")");
+            freeReplyObject(reply);
+            return 0;
+        }
+
+        long long added = reply->integer;
+
+        // 可选日志（调试时很有用）
+        // std::cerr << "[Redis INFO] SADD success: key=" << key << ", member=" << member
+        //           << ", added=" << added << " (0 means already exists)" << std::endl;
+
+        freeReplyObject(reply);
+        return added;  // 返回 1 或 0，前端可用于判断是否重复上传
+
+    } catch (const std::bad_alloc& e) {
+        MY_LOG_ERROR("Redis SADD failed: memory allocation failed (key: ", key, ", member: ", member, "): ", e.what());
+        freeReplyObject(reply);
+        return 0;
+    } catch (const std::exception& e) {
+        MY_LOG_ERROR("Redis SADD failed: exception (key: ", key, ", member: ", member, "): ", e.what());
+        freeReplyObject(reply);
+        return 0;
+    } catch (...) {
+        MY_LOG_ERROR("Redis SADD failed: unknown exception (key: ", key, ", member: ", member, ")");
+        freeReplyObject(reply);
+        return 0;
+    }
+}
+
+// ======================  SCARD：获取 Set 元素数量  ======================
+int Redis::scard(const std::string& key) {
+    if (redis_ctx == nullptr) {
+        MY_LOG_ERROR("Redis redis_ctx is nullptr");
+        return 0;
+    }
+
+    redisReply* reply = nullptr;
+    try {
+        reply = (redisReply*)redisCommand(redis_ctx, "SCARD %s", key.c_str());
+
+        if (reply == nullptr) {
+            MY_LOG_ERROR("Redis SCARD failed: command returned nullptr (key: ", key, ")");
+            return 0;
+        }
+
+        if (reply->type != REDIS_REPLY_INTEGER) {
+            MY_LOG_ERROR("Redis SCARD failed: unexpected reply type (key: ", key, ")");
+            freeReplyObject(reply);
+            return 0;
+        }
+
+        int count = reply->integer;
+        freeReplyObject(reply);
+        return count;
+
+    } catch (const std::bad_alloc& e) {
+        MY_LOG_ERROR("Redis SCARD failed: memory allocation failed (key: ", key, "): ", e.what());
+        freeReplyObject(reply);
+        return 0;
+    } catch (const std::exception& e) {
+        MY_LOG_ERROR("Redis SCARD failed: exception (key: ", key, "): ", e.what());
+        freeReplyObject(reply);
+        return 0;
+    } catch (...) {
+        MY_LOG_ERROR("Redis SCARD failed: unknown exception (key: ", key, ")");
+        freeReplyObject(reply);
+        return 0;
+    }
+}
+

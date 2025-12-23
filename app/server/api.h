@@ -14,6 +14,8 @@
 #include "../myfastdfs/fdfsConnPool.h"
 
 class Session;
+class UploadFile;
+class uploadThreadPool;
 
 static int SESSION_TIMEOUT_SECONDS = 1800;
 
@@ -36,7 +38,13 @@ public:
 
     // ================= POST / upload 
     void upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
+    
+    // ================== POST / large file upload
+    void largeInit(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
 
+    void largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
+
+    void uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
     // ================== GET / queryUserFiles ===========
     void queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response);
 
@@ -44,6 +52,8 @@ public:
     void deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
 
     void deleteFiles(const std::string& url);
+
+    void mergeChunksAndUpload(const std::string& upload_id, const std::string& user);
 
     Pistache::Rest::Router& getRouter(){return this->router;};
 
@@ -58,7 +68,7 @@ private:
     MySQLConnPool* _mysqlPool;
     FdfsConnPool* _fdfsPool;
     RedisConnPool* _redisPool;
-
+    uploadThreadPool* _pthreadPool;
     Pistache::Rest::Router router;
     using json = nlohmann::json;
     //================== Session ===============
@@ -66,4 +76,5 @@ private:
     //<Session session -> getUsername(), Session>
     //手动修改 短Session；Redis 自动释放过期session
     std::unordered_map<std::string, std::shared_ptr<Session>> _sessions;
+    //std::unordered_map<std::string, std::shared_ptr<UploadFile>> _files;
 };

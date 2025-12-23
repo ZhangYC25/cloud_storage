@@ -29,6 +29,7 @@ include_directories(
     /usr/include/fastdfs                 # fastdfs头文件
     /usr/local/include/bcrypt   # bcrypt头文件
     /usr/include/x86_64-linux-gnu #curl
+    /home/zhangyc/tencentcloud-sdk-cpp/core/include
 )
 
 # ========== 2. 库路径配置（可选，若库不在系统默认路径） ==========

@@ -55,3 +55,72 @@ std::string generateSixDigitCode() {
     oss << std::setw(6) << std::setfill('0') << dis(gen);
     return oss.str();
 }
+
+// 生成纯数字的四位ID
+static std::string generate_upload_id() {
+    // 1. 初始化随机数生成器（仅初始化一次，避免重复）
+    static std::random_device rd;  // 获取随机种子（硬件熵源）
+    static std::mt19937 gen(rd()); // 梅森旋转算法，高性能随机数引擎
+    // 2. 定义随机数范围：0 ~ 9999（四位数字的总范围）
+    std::uniform_int_distribution<> dis(0, 9999);
+    // 3. 生成随机数
+    int random_num = dis(gen);
+    // 4. 格式化为四位字符串（不足四位补前导零）
+    std::stringstream ss;
+    ss << std::setw(4) << std::setfill('0') << random_num;
+    return ss.str();
+}
+
+
+void merge_and_upload_to_fastdfs(const std::string& upload_id, const std::string& temp_dir, const int& total_chunks) {
+    try {
+        // 1. 拼接文件
+        std::string final_file = temp_dir + "/__final__.tmp";
+        {
+            std::ofstream ofs(final_file, std::ios::binary);
+            for (int i = 0; i < total_chunks; ++i) {
+                std::ifstream ifs(temp_dir + "/chunk_" + std::to_string(i), std::ios::binary);
+                if (!ifs) throw std::runtime_error("Missing chunk " + std::to_string(i));
+                ofs << ifs.rdbuf();
+            }
+        }
+
+        // // 3. 上传 FastDFS
+        // char file_id[256] = {0};
+        // int result = fdfs_upload_by_filename(
+        //     &g_tracker_group, nullptr, final_file.c_str(), nullptr, file_id, sizeof(file_id)
+        // );
+
+        // 4. 写结果到 Redis
+        // nlohmann::json task;
+        // if (result == 0 && strlen(file_id) > 0) {
+        //     task["status"] = "success";
+        //     task["file_id"] = std::string(file_id);
+        //     task["url"] = build_fastdfs_url(file_id);
+        // } else {
+        //     task["status"] = "failed";
+        //     task["error"] = "FastDFS upload failed, code=" + std::to_string(result);
+        // }
+        // redis_client.setex("task:" + upload_id, 3600, task.dump());
+
+    } catch (const std::exception& e) {
+        // nlohmann::json task;
+        // task["status"] = "failed";
+        // task["error"] = std::string("Exception: ") + e.what();
+        //redis_client.setex("task:" + upload_id, 3600, task.dump());
+    }
+
+    // 5. 清理
+    // try {
+    //     redis_client.del("upload:" + upload_id);
+    //     // 注意：temp_dir 可能已被删除，安全起见检查存在性
+    //     auto session = redis_client.get("upload:" + upload_id);
+    //     if (session) {
+    //         auto j = nlohmann::json::parse(*session);
+    //         std::string dir = j.value("temp_dir", "");
+    //         if (!dir.empty() && std::filesystem::exists(dir)) {
+    //             std::filesystem::remove_all(dir);
+    //         }
+    //     }
+    // } catch (...) {}
+}

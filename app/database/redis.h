@@ -32,6 +32,16 @@ public:
     
     bool expire(const std::string& key, int seconds);
 
+    bool hset(const std::string& key, const std::string& field, const std::string& value);
+
+    std::string hget(const std::string& key, const std::string& field);
+
+    bool exists(const std::string& key);
+
+    int sadd(const std::string& key, const std::string& member);
+
+    int scard(const std::string& key);
+
 private:
     redisContext* redis_ctx; 
     const std::string redis_host = "127.0.0.1";
