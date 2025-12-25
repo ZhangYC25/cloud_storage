@@ -106,6 +106,13 @@ void Api::setupRoutes(){
 			return Route::Result::Ok;
 		}
 	);
+
+	Routes::Post(router, "/api/upload/finish",
+		[this](const Request& req, ResponseWriter response) -> Route::Result{
+			this -> uploadLargeFileFinish(req, std::move(response));
+			return Route::Result::Ok;
+		}
+	);
 }
 
 void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
@@ -662,8 +669,9 @@ void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::Response
 		//_files.emplace(upload_id, files);
 
 		std::string info_key = "upload:" + upload_id + ":info";
-		//std::string chunk_key = "upload:" + upload_id + ":chunks";
+		std::string status_key = "upload:" + upload_id + ":status";
 
+		redis_ptr -> set(status_key, "initial", 3600);
 		if (redis_ptr -> hset(info_key, "filename", filename) &&
         	redis_ptr -> hset(info_key, "temp_dir", temp_dir) &&
         	redis_ptr -> hset(info_key, "total_chunks", std::to_string(total_chunks)) &&
@@ -770,6 +778,10 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
         }
 
         response.send(Pistache::Http::Code::Ok, res.dump(), MIME(Application, Json));
+		
+		
+		std::string status_key = "upload:" + upload_id + ":status";
+		redis_ptr -> set(status_key, "upload", 3600);
 		// 更新已上传 chunk
 		// obj -> _uploaded_chunks.insert(chunk_index);
 		// if (redis_ptr -> set(key, obj -> serialize(), 3600)) {
@@ -788,6 +800,7 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
 }
 
 void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response) {
+	//auto responseTime = std::chrono::system_clock::now();
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try{
 		auto& cookies = req.cookies();
@@ -810,8 +823,23 @@ void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Ht
 		json j = json::parse(body);
 		std::string upload_id = j.value("upload_id","");
 
+		response.send(Pistache::Http::Code::Ok,
+                    R"({"success":true,"status":"already_owned"})",
+                    MIME(Application, Json));
+
+		// auto responseDuration = std::chrono::system_clock::now() - responseTime;
+		// auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(responseDuration).count();
+		// std::cout<<"response time: "<<ms<<std::endl;
+
 		_pthreadPool -> submit([upload_id, user, this](){
+			//auto startTime = std::chrono::system_clock::now();
+			//sleep(1);
 			mergeChunksAndUpload(upload_id, user);
+			// auto endTime = std::chrono::system_clock::now();
+			// auto workMS = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - responseTime).count();
+			// auto threadMS = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+			// std::cout<<"work time: "<<workMS<<std::endl;
+			// std::cout<<"thread time: "<<threadMS<<std::endl;
 		});
 
 	} catch(...){}
@@ -1022,6 +1050,7 @@ void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& 
 
 		//delete tem file
 		std::filesystem::remove(temp_path);
+		std::filesystem::remove_all(temp_dir);  // 递归删除整个目录树！
 		_fdfsPool -> releaseConnection(fdfs_ptr);
 
 		std::string md5 = redis_ptr -> hget(key, "md5");
@@ -1069,8 +1098,12 @@ void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& 
 
     // 5. 清理
     try {
-        redis_ptr -> del("upload:" + upload_id + ":info");
-		redis_ptr -> del ("upload:" + upload_id + ":chunks");
+		//不用清理等他自动过期，更新redis状态才对
+
+		std::string status_key = "upload:" + upload_id + ":status";
+		redis_ptr -> set(status_key, "finish", 3600);
+        //redis_ptr -> del("upload:" + upload_id + ":info");
+		//redis_ptr -> del ("upload:" + upload_id + ":chunks");
 		_redisPool -> releaseConnection(redis_ptr);
         // 注意：temp_dir 可能已被删除，安全起见检查存在性
         // auto session = redis_client.get("upload:" + upload_id);
