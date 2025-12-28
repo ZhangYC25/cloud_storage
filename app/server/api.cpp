@@ -113,6 +113,12 @@ void Api::setupRoutes(){
 			return Route::Result::Ok;
 		}
 	);
+
+	Routes::Post(router, "/api/upload/query",
+		[this](const Request& req, ResponseWriter response) -> Route::Result{
+			this -> queryFileURL(req, std::move(response));
+			return Route::Result::Ok;
+		});
 }
 
 void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
@@ -627,7 +633,8 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 		json responseJson = {
     		{"success", true},
     		{"message", "file uploaded successfully"},
-    		{"url", "http://146.56.194.96/" + fastdfs_path},
+    		//{"url", "http://146.56.194.96/" + fastdfs_path},
+			{"url", "https://goodflaot.cloud/" + fastdfs_path},
     		{"fastdfs_path", fastdfs_path+file_ext}
 		};
 
@@ -646,6 +653,7 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 
 // ===============================POST / large upload
 void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
+	std::cout<<"start Init"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection(); 
 	try {
 		auto body = req.body();
@@ -694,11 +702,12 @@ void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::Response
                       MIME(Application, Json));
     }
 	_redisPool -> releaseConnection(redis_ptr);
+	std::cout<<"end Init"<<std::endl;
 	return;
 }
 
 void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	
+	std::cout<<"start upload"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try {
 		auto upload_id_header = req.headers().tryGetRaw("X-Upload-ID");
@@ -739,21 +748,7 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
         }
 		redis_ptr->expire(info_key, 3600);
 
-        //redis_ptr->expire(chunks_key, 3600);
-
-
-
-		// if (file_json == "") {
-		// 	_redisPool -> releaseConnection(redis_ptr);
-		// 	response.send(Pistache::Http::Code::Not_Found, "Upload session not found");
-		// 	return;
-		// }
-		// std::shared_ptr<UploadFile> obj = deserialize(file_json);
-		// redis_ptr -> expire(key, 3600);
-
-
 		auto body = req.body();
-
 		
 		if (body.size() > CHUNK_SIZE + 1024) { // 允许一点余量
 			response.send(Pistache::Http::Code::Bad_Request, "Chunk too large");
@@ -797,10 +792,12 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
                       MIME(Application, Json));
     }
 	_redisPool -> releaseConnection(redis_ptr);
+	std::cout<<"end upload"<<std::endl;
 }
 
 void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response) {
 	//auto responseTime = std::chrono::system_clock::now();
+	std::cout<<"start FileFinish"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try{
 		auto& cookies = req.cookies();
@@ -841,11 +838,47 @@ void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Ht
 			// std::cout<<"work time: "<<workMS<<std::endl;
 			// std::cout<<"thread time: "<<threadMS<<std::endl;
 		});
-
+		std::cout<<"end FileFinish"<<std::endl;
 	} catch(...){}
+	_redisPool -> releaseConnection(redis_ptr);
 }
 
+void Api::queryFileURL(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
+	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+	try{
+		auto& cookies = req.cookies();
+		std::string sessionId = "";
+		if (cookies.has("session")) {
+			sessionId = cookies.get("session").value;
+			// 验证 sessionId 是否有效...
+		} else {
+			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
+			MY_LOG_ERROR("queryUserFiles invalid session: ", sessionId);
+			response.send(Pistache::Http::Code::Bad_Request,
+                    R"({"success":false,"message":"invalid session!"})",
+                    MIME(Application, Json));
+		}
+		auto body = req.body();
+		json j = json::parse(body);
+		std::string key = j.value("md5","");
+		std::string URL = redis_ptr -> get(key);
+		if (URL != "") {
+			URL = "https://goodfloat.cloud/" + URL;
+		}
+		redis_ptr -> expire(key, 3600);
+		_redisPool->releaseConnection(redis_ptr);
+		json response_json = {{"url", URL}};
 
+		response.headers().add<Pistache::Http::Header::ContentType>(
+			Pistache::Http::Mime::MediaType("application/json"));
+    	response.send(Pistache::Http::Code::Ok, response_json.dump());
+	}
+	catch (const std::exception& e) {
+		//std::cerr << "Error in queryUserFiles: " << e.what() << std::endl;
+		MY_LOG_ERROR("Error in queryUserFiles: ", e.what());
+        response.send(Pistache::Http::Code::Internal_Server_Error, "Server error");
+	}
+}
 
 void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response){
 	try{
@@ -1005,6 +1038,7 @@ void Api::deleteFiles(const std::string& url){
 
 // ====================== Merge =======================
 void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& user){
+	std::cout<<"start mergeChunksAndUpload"<<std::endl;
 	std::shared_ptr<FdfsClient> fdfs_ptr = _fdfsPool -> getConnection();
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
@@ -1025,25 +1059,28 @@ void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& 
 
         // 3. 上传 FastDFS
         char file_id[256] = {0};
-        // int result = fdfs_upload_by_filename(
-        //     &g_tracker_group, nullptr, final_file.c_str(), nullptr, file_id, sizeof(file_id)
-        // );
 		
 		std::string file_ext = redis_ptr -> hget(key, "file_ext");
 		std::string fdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str(), file_ext.c_str());
-
 		if (!mysql_ptr -> beginTransaction()) {
 			// 事务开启失败，需要清理 FastDFS 上已上传的文件
-			//fdfs_ptr -> delete_file_from_fastdfs();
+			size_t firstSlash = fdfs_path.find('/');
+			std::string group_name = fdfs_path.substr(0,firstSlash);
+			std::string remote_file = fdfs_path.substr(firstSlash+1);
+			fdfs_ptr -> delete_file_from_fastdfs(group_name, remote_file);
+			_fdfsPool -> releaseConnection(fdfs_ptr);
+			_redisPool -> releaseConnection(redis_ptr);
 			_mysqlPool->releaseConnection(mysql_ptr);
 			return;
 		}
-
+// ================= 下面只是能用， 细节还需打磨 ========================
 		if (fdfs_path.empty()) {
 			_fdfsPool -> releaseConnection(fdfs_ptr);
            	// response.send(Pistache::Http::Code::Bad_Request,
             //     R"({"success":false,"message":"upload to fastdfs false"})",
             //     MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
+			_mysqlPool->releaseConnection(mysql_ptr);
 			std::cerr << "上传失败, 路径为空" << std::endl;
             return;
         }
@@ -1102,18 +1139,8 @@ void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& 
 
 		std::string status_key = "upload:" + upload_id + ":status";
 		redis_ptr -> set(status_key, "finish", 3600);
-        //redis_ptr -> del("upload:" + upload_id + ":info");
-		//redis_ptr -> del ("upload:" + upload_id + ":chunks");
 		_redisPool -> releaseConnection(redis_ptr);
-        // 注意：temp_dir 可能已被删除，安全起见检查存在性
-        // auto session = redis_client.get("upload:" + upload_id);
-        // if (session) {
-        //     auto j = nlohmann::json::parse(*session);
-        //     std::string dir = j.value("temp_dir", "");
-        //     if (!dir.empty() && std::filesystem::exists(dir)) {
-        //         std::filesystem::remove_all(dir);
-        //     }
-        // }
+		std::cout<<"end mergeChunksAndUpload"<<std::endl;
     } catch (...) {}
 }
 

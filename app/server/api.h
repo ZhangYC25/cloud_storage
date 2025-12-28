@@ -45,6 +45,8 @@ public:
     void largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
 
     void uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
+    
+    void queryFileURL(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
     // ================== GET / queryUserFiles ===========
     void queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response);
 

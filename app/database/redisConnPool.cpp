@@ -2,7 +2,7 @@
 
 RedisConnPool* RedisConnPool::_redisInstance = nullptr;
 
-RedisConnPool::RedisConnPool():_minConn(3),_maxConn(10){}
+RedisConnPool::RedisConnPool():_minConn(4),_maxConn(10){}
 RedisConnPool::~RedisConnPool(){
     destroyPool();
 }

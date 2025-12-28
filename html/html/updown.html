@@ -7,253 +7,7 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        /* 颜色变量 (锦云主题：温润青灰蓝) & 全局设置 */
-        :root {
-            --primary-color: #3A86A9;
-            --primary-hover: #2E6C87;
-            --sidebar-bg: #2C3E50;
-            --sidebar-text: #ecf0f1;
-            --main-bg: #f8fbfc;
-            --text-color: #2C3E50;
-            --card-bg: #ffffff;
-            --border-color: #d1e6ec;
-            --shadow: 0 4px 12px rgba(58, 134, 169, 0.08);
-            --danger-color: #e74c3c;
-        }
-
-        body {
-            font-family: 'Noto Sans SC', 'Segoe UI', Arial, sans-serif;
-            background: var(--main-bg);
-            color: var(--text-color);
-            margin: 0;
-        }
-
-        /* 布局: 侧边栏 + 内容区 */
-        .app-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 220px;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            padding: 20px 0;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.12);
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            padding: 0 20px 25px;
-            color: var(--primary-color);
-            letter-spacing: 0.5px;
-        }
-
-        .nav-link-item {
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 15px;
-            text-decoration: none;
-            color: var(--sidebar-text);
-            border-left: 4px solid transparent;
-        }
-
-        .nav-link-item i {
-            margin-right: 12px;
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .nav-link-item:hover,
-        .nav-link-item.current {
-            background: rgba(58, 134, 169, 0.15);
-            color: white;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 30px;
-        }
-
-        .page {
-            display: none;
-            padding: 0;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .active {
-            display: block;
-        }
-
-        .page h2 {
-            font-size: 26px;
-            color: var(--text-color);
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        /* UI 组件样式 */
-        .card {
-            background: var(--card-bg);
-            padding: 28px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-            width: 100%;
-            border: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        .file-select-wrapper {
-            position: relative;
-            display: block;
-            margin-bottom: 20px;
-            cursor: pointer;
-            border: 2px dashed var(--border-color);
-            border-radius: 10px;
-            padding: 24px;
-            text-align: center;
-            transition: all 0.25s ease;
-            background: #fafdff;
-        }
-        .file-select-wrapper:hover {
-            border-color: var(--primary-color);
-            background: #f0f9fc;
-        }
-        .file-select-wrapper input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-        #fileInputDisplay {
-            display: block;
-            color: var(--text-color);
-            font-weight: 500;
-            font-size: 16px;
-        }
-
-        .upload-controls {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 10px 22px;
-            border: none;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        button:hover {
-            background: var(--primary-hover);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-        table thead tr {
-            background: #f0f9fc;
-            color: var(--text-color);
-            font-weight: 600;
-        }
-        table th, table td {
-            border-bottom: 1px solid var(--border-color);
-            padding: 14px 16px;
-            text-align: left;
-        }
-        table tbody tr:last-child td {
-            border-bottom: none;
-        }
-        table tbody tr:hover {
-            background: #f8fbfd;
-        }
-
-        .action-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            margin-right: 12px;
-            transition: color 0.2s;
-            font-weight: 500;
-        }
-        .action-link:hover {
-            color: var(--primary-hover);
-            text-decoration: underline;
-        }
-
-        table td button {
-            background: var(--danger-color);
-            padding: 6px 12px;
-            font-size: 13px;
-            border-radius: 4px;
-        }
-        table td button:hover {
-            background: #c0392b;
-        }
-
-        .card hr {
-            border: none;
-            border-top: 1px solid var(--border-color);
-            margin: 25px 0;
-        }
-
-        #profilePage button {
-            background: var(--danger-color);
-            margin-top: 20px;
-        }
-
-        .result-message {
-            padding: 16px;
-            margin-top: 20px;
-            border-radius: 8px;
-            background: #f0f9fc;
-            border-left: 3px solid var(--primary-color);
-            word-break: break-all;
-        }
-        .result-message h4 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .result-message p {
-            margin: 5px 0;
-        }
-        .result-message .url-box {
-            background-color: #ffffff;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
-            cursor: text;
-            display: block;
-            border: 1px solid #ccc;
-            margin-top: 10px;
-        }
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="css/upload.css">
 </head>
 <body>
 
@@ -359,7 +113,7 @@
             resultDiv.innerHTML = `
                 <h4>✅ 上传成功！</h4>
                 <p>${message}</p>
-                <p>文件 URL (可复制):</p>
+                <p>文件 URL (请保存):</p>
                 <span class="url-box">${url}</span>
             `;
         } else if (success === false) {
@@ -438,7 +192,139 @@
       });
     }
 
-    // 上传文件
+function getFileExtension(file) {
+    // file 是 File 对象（如从 <input type="file"> 获取的）
+    if (!file || !file.name) return '';
+
+    const dotIndex = file.name.lastIndexOf('.');
+    if (dotIndex === -1 || dotIndex === file.name.length - 1) {
+        return ''; // 没有扩展名 或 以 . 结尾（如 .gitignore）
+    }
+
+    return file.name.slice(dotIndex + 1).toLowerCase(); // 返回小写扩展名，如 "jpg"
+}
+	// ========================
+// 大文件分块上传函数
+// ========================
+	const LARGE_FILE_THRESHOLD = 1024 * 1024; // 1MB
+	const CHUNK_SIZE = 256 * 1024; // 0.5MB，必须和后端一致
+	const MAX_CONCURRENT = 4;
+
+	async function uploadLargeFile(file, md5) {
+    const uploadBtn = document.getElementById('uploadBtn');
+	const ext = getFileExtension(file);
+	const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    try {
+        // ✅ 使用 POST + JSON，和 /check 保持一致
+        const initRes = await fetch("/api/upload/init", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                filename: file.name,
+                size: totalChunks,
+                md5: md5,
+		ext: ext
+            })
+        });
+
+        if (!initRes.ok) {
+            const err = await initRes.json().catch(() => ({}));
+            throw new Error(err.message || "初始化上传失败");
+        }
+
+        const { upload_id } = await initRes.json();
+
+	    let uploadedCount = 0;
+
+	    // 创建一个队列，并发控制"Content-Type": "application/octet-stream"
+	    const uploadChunk = async (i) => {
+		const start = i * CHUNK_SIZE;
+		const end = Math.min(start + CHUNK_SIZE, file.size);
+		const chunk = file.slice(start, end);
+
+		const res = await fetch("/api/upload/chunk", {
+		    method: "POST",
+		    headers: {
+			"X-Upload-ID": upload_id,
+			"X-Chunk-Index": i.toString(),
+			"Content-Type": "application/octet-stream"
+		    },
+		    body: chunk
+		});
+
+		if (!res.ok) throw new Error(`Chunk ${i} failed`);
+
+		uploadedCount++;
+		uploadBtn.textContent = `上传中... (${uploadedCount}/${totalChunks})`;
+	    };
+	// 并发上传（带并发控制）
+	    const chunks = Array.from({ length: totalChunks }, (_, i) => i);
+	    for (let i = 0; i < chunks.length; i += MAX_CONCURRENT) {
+		const batch = chunks.slice(i, i + MAX_CONCURRENT);
+		await Promise.all(batch.map(uploadChunk)); // 等这批全部成功
+	    }
+
+        // 完成上传
+        uploadBtn.textContent = "请稍候...";
+        const finishRes = await fetch("/api/upload/finish", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ upload_id: upload_id })
+        });
+
+        if (!finishRes.ok) {
+            const err = await finishRes.json().catch(() => ({}));
+            throw new Error(err.message || "合并失败");
+        }
+
+
+
+// 开始轮询查询最终 URL
+const MAX_RETRIES = 20;
+const RETRY_INTERVAL = 1000; // 1秒
+let retries = 0;
+while (retries < MAX_RETRIES) {
+    try {
+        const queryRes = await fetch("/api/upload/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ md5: md5 })
+        });
+        if (queryRes.ok) {
+            const data = await queryRes.json();
+            // 假设成功时返回 { url: "..." }，失败时可能返回 { error: ... } 或空
+            if (data.url) {
+		return data; // 成功拿到 URL
+            }
+            // 如果返回了错误信息，也可以提前退出
+            if (data.error) {
+                throw new Error(data.error);
+            }
+        }
+        // 如果没拿到 url，继续重试
+    } catch (err) {
+        console.warn("Query failed, retrying...", err);
+    }
+    retries++;
+    // 等待一段时间再重试（最后一次不需要等）
+    if (retries < MAX_RETRIES) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
+    }
+}
+// 超时未查到
+throw new Error("文件合并超时，请稍后重试或联系管理员");
+
+
+
+
+
+    } catch (err) {
+        console.error("大文件上传出错:", err);
+        throw err;
+    }
+}
+	let MAX_FILE_SIZE = 20 * 1024 * 1024;
+	// 上传文件
     async function uploadFile() {
 	console.log("uploadFile() 被调用了");
         const fileInput = document.getElementById('fileInput');
@@ -452,6 +338,10 @@
             alert("请先选择文件！");
             return;
         }
+	if (file.size > MAX_FILE_SIZE) {
+		alert("文件不能超过20MB！");
+		return;
+		}
 
     // 禁用按钮，防止重复点击
         uploadBtn.disabled = true;
@@ -501,6 +391,9 @@
             formData.append("filename", file.name);
             formData.append("md5", md5); // 后端可二次校验
 	    //formData.append("user", name);
+
+	    const message = '文件：' + file.name;
+	if (file.size < LARGE_FILE_THRESHOLD) {
             const uploadRes = await fetch("/api/upload/file", {
                 method: "POST",
                 body: formData
@@ -512,7 +405,14 @@
                 throw new Error(uploadData.message || "上传失败");
              }
 	    console.log(uploadData);
-            displayResult(true, `文件 ID: ${uploadData.url}`, uploadData.url);
+            displayResult(true, message, uploadData.url);
+	} else {
+		console.log("文件较大，启用分块上传...");
+    		uploadData = await uploadLargeFile(file, md5);
+    		// 模拟老接口返回格式，方便 displayResult 复用	
+		console.log(uploadData);
+                displayResult(true, message, uploadData.url);
+	}
         } catch (err) {
             console.error("上传出错:", err);
             displayResult(false, err.message || "未知错误", null);
@@ -539,12 +439,6 @@
 
     // 加载我的文件
     function loadFiles() {
-	//const name = localStorage.getItem('login-name');
-        //if (!name) {
-        //	alert("请先登录！");
-        //	return;
-    	//}
-	//fetch(`/api/files?user=${encodeURIComponent(name)}`)
 	fetch(`/api/files`)
 	.then(res => {
             if (!res.ok) throw new Error("加载失败");
@@ -573,13 +467,6 @@
 
 	// 删除文件
 	function deleteFile(id) {
-	  //const user = localStorage.getItem('login-name'); // 假设你登录后存了用户名
-	  //if (!user) {
-	    //alert("请先登录");
-	    //return;
-	  //}
-
-	  //fetch(`/api/delete?user=${encodeURIComponent(user)}&id=${encodeURIComponent(id)}`, {
 	  fetch(`/api/delete?id=${encodeURIComponent(id)}`, {
 	    method: "DELETE"
 	  })
