@@ -56,16 +56,16 @@ std::string generateSixDigitCode() {
     return oss.str();
 }
 
-// 生成纯数字的四位ID
+// 生成纯数字的六位ID
 static std::string generate_upload_id() {
     // 1. 初始化随机数生成器（仅初始化一次，避免重复）
     static std::random_device rd;  // 获取随机种子（硬件熵源）
     static std::mt19937 gen(rd()); // 梅森旋转算法，高性能随机数引擎
-    // 2. 定义随机数范围：0 ~ 9999（四位数字的总范围）
-    std::uniform_int_distribution<> dis(0, 9999);
+    // 2. 定义随机数范围：0 ~ 999999（六位数字的总范围）
+    std::uniform_int_distribution<> dis(0, 999999);
     // 3. 生成随机数
     int random_num = dis(gen);
-    // 4. 格式化为四位字符串（不足四位补前导零）
+    // 4. 格式化为六位字符串（不足四位补前导零）
     std::stringstream ss;
     ss << std::setw(4) << std::setfill('0') << random_num;
     return ss.str();

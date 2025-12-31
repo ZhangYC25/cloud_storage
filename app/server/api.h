@@ -24,6 +24,9 @@ public:
     ~Api();
     //void destroyed();
     static std::shared_ptr<Api> getInstance();
+
+    bool validateUploadSession(const Pistache::Rest::Request& req, const std::string& upload_id,
+                                std::shared_ptr<Redis> redis, std::string& out_user);
     // ============= route ========================
     void setupRoutes();
 
