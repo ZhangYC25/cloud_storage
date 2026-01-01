@@ -33,38 +33,37 @@ Api::Api(){
 // 在 Api 类中（私有方法）
 bool Api::validateUploadSession(const Pistache::Rest::Request& req, const std::string& upload_user_key,
                                 std::shared_ptr<Redis> redis_ptr, std::string& user_name) {
-	auto& cookies = req.cookies();
-	std::string sessionId = "";
-	if (cookies.has("session")) {
-		sessionId = cookies.get("session").value;
+	user_name.clear();
 
-		std::string user_key = "user:" + sessionId;
-		user_name = redis_ptr -> get(user_key);
+    auto& cookies = req.cookies();
+    if (!cookies.has("session")) {
+        MY_LOG_ERROR("Upload request missing session cookie");
+        return false;
+    }
 
-		if (user_name == "") {
-			// response.send(Pistache::Http::Code::Unauthorized,
-			// 	R"({"success":false,"message":"invalid session or upload"})",
-			// 	MIME(Application, Json));
-			//_redisPool -> releaseConnection(redis_ptr);
-			return false;
-		} else if (redis_ptr -> get(upload_user_key) != user_name) {
-			MY_LOG_ERROR("Upload invalid session: ", sessionId);
-			// response.send(Pistache::Http::Code::Bad_Request,
-			// 		R"({"success":false,"message":"invalid session"})",
-			// 		MIME(Application, Json));
-			//_redisPool -> releaseConnection(redis_ptr);
-			return false;
-		}
+    std::string sessionId = cookies.get("session").value;
+    if (sessionId.empty()) {
+        MY_LOG_ERROR("Session cookie is empty");
+        return false;
+    }
 
-		return true;
-	} else {
-		MY_LOG_ERROR("Invalid or expired session: nullptr");
-		// response.send(Pistache::Http::Code::Unauthorized,
-		// 			R"({"success":false,"message":"invalid session"})",
-		// 			MIME(Application, Json));
-		//_redisPool -> releaseConnection(redis_ptr);
-		return false;
-	}
+    std::string session_user_key = "user:" + sessionId;
+    user_name = redis_ptr->get(session_user_key);
+    redis_ptr -> expire(session_user_key, 600);
+	if (user_name.empty()) {
+        MY_LOG_ERROR("Invalid or expired session: ", sessionId);
+        return false;
+    }
+
+    if (!upload_user_key.empty()) {
+        std::string key_owner = redis_ptr->get(upload_user_key);
+        if (key_owner != user_name) {
+            MY_LOG_ERROR("Upload session mismatch: session user='", user_name,
+                         "', but upload_user_key belongs to='", key_owner, "'");
+            return false;
+        }
+    }
+    return true;
 }
 
 //合理吗？之后再说
@@ -189,15 +188,6 @@ void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::Response
 					
 			std::shared_ptr<Session> session_ptr = std::make_shared<Session>();
 			session_ptr -> createSession(username);
-			auto it = _sessions.find(username);
-			if (it == _sessions.end()){
-				//说明用户第一次登录 或者 上传登录已经过期
-				_sessions[username] = session_ptr;
-			} else { //找到了，说明上传登录的信息还残留
-				_sessions.erase(it);
-				_sessions[username] = session_ptr;
-				std::cerr<<"[Session INFO] _session size: "<<_sessions.size()<<std::endl;
-			}
 		
 			//只要是登录就加入redis
 			// 添加到redis <sessionId, username>
@@ -421,26 +411,15 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 		json j = json::parse(body);
 		std::string filename = j.value("filename","");
 		std::string md5 = j.value("md5","");
-		//std::string user = j.value("name","");
 
-		auto& cookies = req.cookies();
-		std::string sessionId = "";
-		if (cookies.has("session")) {
-			sessionId = cookies.get("session").value;
-			// 验证 sessionId 是否有效...
-		} else {
-			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
-			MY_LOG_ERROR("UploadCheck invalid session: ", sessionId);
+		std::string user = "";
+		if (!validateUploadSession(req, "", redis_ptr, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
+			return;
 		}
-		std::string uses_key = "user:"+sessionId; 
-		std::string user = redis_ptr -> get(uses_key);
-		redis_ptr -> expire(uses_key, 600);
-		//std::string file_redis = redis_ptr->get(md5);
-
-		//std::cerr<<"user: "<<user<<" session: "<< sessionId <<std::endl;
 
 		if (mysql_ptr -> isInUserList(md5, user)) { // 先查 userfile 命中的话其他根本不用查。
 			std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
@@ -501,124 +480,53 @@ void Api::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::Respo
 
 // ================= POST / upload 
 void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::cout<<"upload start"<<std::endl;
-	try {
-		auto contentType = req.headers().tryGet<Pistache::Http::Header::ContentType>();
-        if (!contentType) {
-            response.send(Pistache::Http::Code::Bad_Request,
-                R"({"success":false,"message":"需要 multipart/form-data"})",
-                MIME(Application, Json));
-            return;
-        }
-
-        std::string ct = contentType->mime().toString();
-
-        // 找 boundary
-        std::string boundary;
-        {
-            auto pos = ct.find("boundary=");
-            if (pos == std::string::npos) {
-                response.send(Pistache::Http::Code::Bad_Request,
-                    R"({"success":false,"message":"未找到 boundary"})",
-                    MIME(Application, Json));
-                return;
-            }
-            boundary = "--" + ct.substr(pos + 9);  // 添加前缀 --
-        }
-
-        const std::string& body = req.body();
-
-        std::string filename, md5;// user;
-        std::vector<char> fileData;
-
-        size_t pos = 0;
-        while (true) {
-            size_t start = body.find(boundary, pos);
-            if (start == std::string::npos) break;
-            start += boundary.size() + 2; // skip CRLF
-
-            size_t headerEnd = body.find("\r\n\r\n", start);
-            if (headerEnd == std::string::npos) break;
-
-            std::string header = body.substr(start, headerEnd - start);
-            size_t contentStart = headerEnd + 4;
-
-            // 找下一段
-            size_t nextBoundary = body.find(boundary, contentStart);
-            if (nextBoundary == std::string::npos) break;
-
-            size_t contentEnd = nextBoundary - 2; // remove \r\n
-
-            std::string content = body.substr(contentStart, contentEnd - contentStart);
-
-            // 解析 header
-            if (header.find("name=\"file\"") != std::string::npos) {
-                // 文件名
-                auto fnPos = header.find("filename=\"");
-                if (fnPos != std::string::npos) {
-                    fnPos += 10;
-                    size_t fnEnd = header.find("\"", fnPos);
-                    filename = header.substr(fnPos, fnEnd - fnPos);
-                }
-                fileData.assign(content.begin(), content.end());
-            }
-            else if (header.find("name=\"filename\"") != std::string::npos) {
-                filename = content;
-            }
-            else if (header.find("name=\"md5\"") != std::string::npos) {
-                md5 = content;
-            }
-
-            pos = nextBoundary;
-        }
-
-        if (fileData.empty()) {
-            response.send(Pistache::Http::Code::Bad_Request,
-                R"({"success":false,"message":"文件为空"})",
-                MIME(Application, Json));
-            return;
-        }
+	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+	try {	
+		auto file_name_header = req.headers().tryGetRaw("X-Filename");
+		auto file_md5 = req.headers().tryGetRaw("X-File-MD5");
+		
+		if (!file_name_header || !file_md5) {
+			response.send(Pistache::Http::Code::Bad_Request,
+				R"({"success":false,"message":"Missing X-Filename or X-File-MD5"})",
+				MIME(Application, Json));
+			return;
+		}
+		std::string file_name   = url_decode(file_name_header -> value());
+		std::string md5         = file_md5 -> value();
 		
 		auto& cookies = req.cookies();
-		std::string sessionId = "";
-		if (cookies.has("session")) {
-			sessionId = cookies.get("session").value;
-			// 验证 sessionId 是否有效...
-		} else {
-			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
-			MY_LOG_ERROR("Upload invalid session: ", sessionId);
+		std::string user = "";
+		if (!validateUploadSession(req, "", redis_ptr, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
+			return;
 		}
-		std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
-		std::string uses_key = "user:" + sessionId;
-		std::string user = redis_ptr -> get(uses_key);
-		redis_ptr -> expire(uses_key, 600);
 
-		std::shared_ptr<Mysql> connPtr = _mysqlPool -> getConnection();
+		auto body = req.body();
 
-		if (!connPtr->beginTransaction()) {
+		std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
+
+		if (!mysql_ptr->beginTransaction()) {
 			// 事务开启失败，需要清理 FastDFS 上已上传的文件
 			//fdfs_ptr -> delete_file_from_fastdfs();
-			_mysqlPool->releaseConnection(connPtr);
+			_mysqlPool->releaseConnection(mysql_ptr);
 			return;
 		}
 		//入数据库
 		std::shared_ptr<FdfsClient> fdfs_ptr = _fdfsPool -> getConnection();
-		std::string temp_path = fdfs_ptr -> create_temp_file(fileData);
+		std::string temp_path = fdfs_ptr -> create_temp_file(body);
 		if (temp_path.empty()) {
            response.send(Pistache::Http::Code::Bad_Request,
                 R"({"success":false,"message":"/write /tmp/ false"})",
                 MIME(Application, Json));
             return;
         }
-		const char* ext = strrchr(filename.c_str(),'.');
+		const char* ext = strrchr(file_name.c_str(),'.');
 		const char* file_ext = ext?ext+1:"";
 		//upload
 		std::string fastdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str(), file_ext);
-		//std::cerr<<"user: "<< user <<" up file"<<std::endl;
-		//std::string fastdfs_path = upload_file_to_fastdfs(temp_path.c_str());
 		if (fastdfs_path.empty()) {
 			_fdfsPool -> releaseConnection(fdfs_ptr);
            	response.send(Pistache::Http::Code::Bad_Request,
@@ -631,31 +539,31 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 		_fdfsPool -> releaseConnection(fdfs_ptr);
 
 		bool db_success = false;
-		if (!(connPtr -> insertUserFile(md5, user, filename))){
+		if (!(mysql_ptr -> insertUserFile(md5, user, file_name))){
 			//std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<user<<"file: "<<filename<<"to user_file_list"<<std::endl;
 		}
-		if (!(connPtr -> insertFileInfo(md5, fastdfs_path, file_ext))){
+		if (!(mysql_ptr -> insertFileInfo(md5, fastdfs_path, file_ext))){
 			//std::cerr<<"[MySQL ERROE] Failed Insert file: "<<filename<<"to file_info" <<std::endl;
 		}
 		db_success = true;
 		
 
-		if (!(connPtr -> commit())) {
+		if (!(mysql_ptr -> commit())) {
 			db_success = false;
 			//std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
 		}
 		if (!db_success) {
-			connPtr->rollback();
+			mysql_ptr->rollback();
 			//std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
 			//std::string url = fastdfs_path;
 			deleteFiles(fastdfs_path); 
-			_mysqlPool -> releaseConnection(connPtr);
+			_mysqlPool -> releaseConnection(mysql_ptr);
 			response.send(Pistache::Http::Code::Internal_Server_Error,
 				R"({"success":false,"message":"数据库操作失败或事务提交失败，文件已回滚"})",
 				MIME(Application, Json));
 		}
 
-		_mysqlPool -> releaseConnection(connPtr);
+		_mysqlPool -> releaseConnection(mysql_ptr);
 
 		//std::shared_ptr<Redis> redisConn = _redisPool->getConnection();
 		//std::cout << fastdfs_path << std::endl;
@@ -691,23 +599,16 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 
 // ===============================POST / large upload
 void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::cout<<"largeInit start"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection(); 
 	try {
-
-		auto& cookies = req.cookies();
-		std::string sessionId = "";
-		if (cookies.has("session")) {
-			sessionId = cookies.get("session").value;
-		} else {
-			MY_LOG_ERROR("Upload invalid session: ", sessionId);
+		std::string user = "";
+		if (!validateUploadSession(req, "", redis_ptr, user)) {
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session"})",
                     MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
+			return;
 		}
-
-		std::string uses_key = "user:" + sessionId;
-		std::string user = redis_ptr -> get(uses_key);
 
 		auto body = req.body();
 		json j = json::parse(body);
@@ -715,43 +616,35 @@ void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::Response
 		uint64_t total_chunks = j.value("size", 0ULL);
 		std::string md5 = j.value("md5", "");
 		std::string file_ext = j.value("ext", "");
+
 		if (total_chunks == 0) {
         	response.send(Pistache::Http::Code::Bad_Request, 
 				R"({"success":false,"message":"size is null"})",
                     MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
         	return;
     	}
 
 		std::string upload_id = generate_upload_id();
-
 		std::string temp_dir = TEMP_BASE_DIR + "/" + upload_id;
 		std::filesystem::create_directories(temp_dir);
-		// 构造 session
-		//std::shared_ptr<UploadFile> files = std::make_shared<UploadFile>(filename, total_size, temp_dir);
-		//_files.emplace(upload_id, files);
 
 		std::string info_key = "upload:" + upload_id + ":info";
 		std::string status_key = "upload:" + upload_id + ":status";
-		//std::string upload_user_key = "upload:" + upload_id + ":ID";
-		std::string upload_user_key = "upload:" + upload_id + ":ID";
+		std::string upload_user_key = md5 + upload_id + ":ID";
+
 		redis_ptr -> set(upload_user_key, user, 3600);
-
-		std::cout<<"init for large file, user:"<<redis_ptr->get(upload_user_key)<<std::endl;
-
 		redis_ptr -> set(status_key, "initial", 3600);
+
 		if (redis_ptr -> hset(info_key, "filename", filename) &&
         	redis_ptr -> hset(info_key, "temp_dir", temp_dir) &&
         	redis_ptr -> hset(info_key, "total_chunks", std::to_string(total_chunks)) &&
         	redis_ptr -> hset(info_key, "md5", md5) &&
-			redis_ptr -> hset(info_key, "file_ext", file_ext) &&
-			redis_ptr -> hset(info_key, "upload_id", upload_id)) {
+			redis_ptr -> hset(info_key, "file_ext", file_ext)) {
 			nlohmann::json res;
 			res["upload_id"] = upload_id;
 			response.send(Pistache::Http::Code::Ok, res.dump(), MIME(Application, Json));
 		}
-		//redis_ptr -> sadd(chunk_key, "0");
-		_redisPool -> releaseConnection(redis_ptr);
-		return;
 	} catch (const std::exception& e) {
         response.send(Pistache::Http::Code::Bad_Request,
                       R"({"success":false,"message":"Invalid JSON"})",
@@ -762,40 +655,38 @@ void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::Response
                       MIME(Application, Json));
     }
 	_redisPool -> releaseConnection(redis_ptr);
-	std::cout<<"end Init"<<std::endl;
 	return;
 }
 
 void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::cout<<"largeFileUpload start"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try {
 		auto upload_id_header = req.headers().tryGetRaw("X-Upload-ID");
 		auto index_header = req.headers().tryGetRaw("X-Chunk-Index");
-
-		if (!upload_id_header || !index_header) {
+		auto file_md5 = req.headers().tryGetRaw("X-File-MD5");
+		
+		if (!upload_id_header || !index_header || !file_md5) {
 			response.send(Pistache::Http::Code::Bad_Request,
 				R"({"success":false,"message":"Missing X-Upload-ID or X-Chunk-Index"})",
 				MIME(Application, Json));
 			return;
 		}
-		std::string upload_id = upload_id_header -> value();
-		//int chunk_index = std::stoi(index_header -> value());
+		std::string upload_id   = upload_id_header -> value();
 		std::string chunk_index = index_header -> value();
+		std::string md5         = file_md5 -> value();
 
 		std::string info_key   = "upload:" + upload_id + ":info";
         std::string chunks_key = "upload:" + upload_id + ":chunks";
 		std::string status_key = "upload:" + upload_id + ":status";
-		//std::string upload_user_key = "upload:" + upload_id + ":ID";
+		std::string upload_user_key = md5 + upload_id + ":ID";
 
-	// 	std::string user = "";
-	// 	if (!validateUploadSession(req, upload_user_key, redis_ptr, user)) {
-    //     response.send(Pistache::Http::Code::Unauthorized,
-    //                   R"({"success":false,"message":"invalid session"})",
-    //                   MIME(Application, Json));
-    //     return;
-    // }
-
+		std::string user = "";
+		if (!validateUploadSession(req, upload_user_key, redis_ptr, user)) {
+        	response.send(Pistache::Http::Code::Unauthorized,
+                      R"({"success":false,"message":"invalid session"})",
+                      MIME(Application, Json));
+        	return;
+    	}
 
 		if (!redis_ptr->exists(info_key)) {
 			_redisPool -> releaseConnection(redis_ptr);
@@ -805,10 +696,7 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
             return;
         }
 
-		    // 从 Redis 获取 session
-		//std::string key = "upload:" + upload_id;
 		std::string temp_dir = redis_ptr -> hget(info_key, "temp_dir");
-		//std::string total_chunks_str = redis_ptr->hget(info_key, "total_chunks");
 
 		if (temp_dir.empty()) {
 			_redisPool -> releaseConnection(redis_ptr);
@@ -828,14 +716,9 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
 		}
 
 		// 写入临时文件
-		//std::string chunk_path = obj -> _temp_dir + "/chunk_" + std::to_string(chunk_index);
-		std::string chunk_path = temp_dir + "/chunk_" + chunk_index;
-		// {
-		// 	std::ofstream ofs(chunk_path, std::ios::binary);
-		// 	ofs.write(body.data(), body.size());
-		// 	ofs.close();
-		// }
-		// int added = redis_ptr->sadd(chunks_key, chunk_index);
+		//std::string chunk_path = temp_dir + "/chunk_" + chunk_index;
+		
+		//写入失败了怎么办？
 		if (redis_ptr->sadd(chunks_key, chunk_index) == 1) {
 			// 成功加入集合 → 说明是首次
 			std::string chunk_path = temp_dir + "/chunk_" + chunk_index;
@@ -864,36 +747,46 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
 
 void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response) {
 	//auto responseTime = std::chrono::system_clock::now();
-	std::cout<<"uploadLargeFileFinish start"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try{
 		auto body = req.body(); //filename md5 filesize;
 		json j = json::parse(body);
+		std::string md5 = j.value("md5","");
 		std::string upload_id = j.value("upload_id","");
 
 		std::string chunks_key = "upload:" + upload_id + ":chunks";
-		std::string upload_user_key = "upload:" + upload_id + ":ID";
-		std::cout<<chunks_key<<"  "<<upload_user_key<<std::endl;
+		std::string upload_user_key = md5 + upload_id + ":ID";
+		std::string status_key = "upload:" + upload_id + ":status";
+		
+		redis_ptr -> set(status_key, "mergeing", 3600);
+
 		auto& cookies = req.cookies();
 		std::string user = "";
-		if (cookies.has("session")) {
-			std::string sessionId = cookies.get("session").value;
-			std::string user_key = "user:" + sessionId;
-			user = redis_ptr -> get(user_key);
-			if (redis_ptr -> get(upload_user_key) != user) {
-				MY_LOG_ERROR("Upload invalid session: ", sessionId);
-				response.send(Pistache::Http::Code::Bad_Request,
-						R"({"success":false,"message":"invalid session"})",
-						MIME(Application, Json));
-				return;
-			}
-		} else {
-			MY_LOG_ERROR("Invalid or expired session: nullptr");
-			response.send(Pistache::Http::Code::Unauthorized,
-						R"({"success":false,"message":"invalid session"})",
-						MIME(Application, Json));
+		if (!validateUploadSession(req, upload_user_key, redis_ptr, user)){
+			response.send(Pistache::Http::Code::Bad_Request,
+					R"({"success":false,"message":"invalid session"})",
+					MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
 			return;
 		}
+		// if (cookies.has("session")) {
+		// 	std::string sessionId = cookies.get("session").value;
+		// 	std::string user_key = "user:" + sessionId;
+		// 	user = redis_ptr -> get(user_key);
+		// 	if (redis_ptr -> get(upload_user_key) != user) {
+		// 		MY_LOG_ERROR("Upload invalid session: ", sessionId);
+		// 		response.send(Pistache::Http::Code::Bad_Request,
+		// 				R"({"success":false,"message":"invalid session"})",
+		// 				MIME(Application, Json));
+		// 		return;
+		// 	}
+		// } else {
+		// 	MY_LOG_ERROR("Invalid or expired session: nullptr");
+		// 	response.send(Pistache::Http::Code::Unauthorized,
+		// 				R"({"success":false,"message":"invalid session"})",
+		// 				MIME(Application, Json));
+		// 	return;
+		// }
 
 		response.send(Pistache::Http::Code::Ok,
                     R"({"success":true,"status":"already_owned"})",
@@ -918,73 +811,44 @@ void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Ht
 }
 
 void Api::queryFileURL(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::cout<<"queryFileURL start"<<std::endl;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try{
 		auto body = req.body();
 		json j = json::parse(body);
-		std::string key = j.value("md5","");
-		std::cout<<key<<std::endl;
+
+		std::string md5 = j.value("md5","");
 		std::string upload_id = j.value("upload_id", "");
-		std::cout<<upload_id<<std::endl;
-		std::cout<<"here2"<<std::endl;
+
 		std::string status_key = "upload:" + upload_id + ":status";
-		std::string upload_user_key = "upload:" + upload_id + ":ID";
-		std::cout<<status_key<<"  "<<upload_user_key<<std::endl;
+		std::string upload_user_key = md5 + upload_id + ":ID";
+
 		auto& cookies = req.cookies();
-
-		// if (cookies.has("session")) {
-		// 	std::string sessionId = cookies.get("session").value;
-		// 	std::string user_key = "user:" + sessionId;
-		// 	std::string user = redis_ptr -> get(user_key);
-		// 	std::string file_for_user = redis_ptr -> get(upload_user_key);
-		// 	std::cout<<user<<std::endl;
-		// 	std::cout<<file_for_user<<std::endl;
-		// 	if (file_for_user != user) {
-		// 		std::cout<<"here3"<<std::endl;
-		// 		MY_LOG_ERROR("Upload invalid session: ", sessionId);
-		// 		response.send(Pistache::Http::Code::Bad_Request,
-		// 				R"({"success":false,"message":"invalid session"})",
-		// 				MIME(Application, Json));
-		// 		return;
-		// 	}
-		// } else {
-		// 	MY_LOG_ERROR("Invalid or expired session: nullptr");
-		// 	response.send(Pistache::Http::Code::Unauthorized,
-		// 				R"({"success":false,"message":"invalid session"})",
-		// 				MIME(Application, Json));
-		// 	return;
-		// }
-
-		//std::string user = redis_ptr -> get(user_key);
-		std::string file_for_user = redis_ptr -> get(upload_user_key);
-
-		//std::cout<<user<<std::endl;
-		std::cout<<file_for_user<<std::endl;
+		std::string user = "";
+		if (!validateUploadSession(req, upload_user_key, redis_ptr, user)){
+			response.send(Pistache::Http::Code::Bad_Request,
+					R"({"success":false,"message":"invalid session"})",
+					MIME(Application, Json));
+			_redisPool -> releaseConnection(redis_ptr);
+			return;
+		}
+		
 		std::string upload_status = redis_ptr -> get(status_key);
+		
+		if (upload_status != "finish") { // 说明合并并上传文件系统没有完成
+			if (upload_status != "mergeing") { // 说明 合并并上传文件系统 没有被调用
+				response.send(Pistache::Http::Code::Ok,
+					R"({"success":false,"error":"invalid merging"})",
+					MIME(Application, Json));
+				_redisPool -> releaseConnection(redis_ptr);
+				return;
+			}
+		}
 
-		std::cout<<"有效性 start"<<std::endl;
-		// if (upload_status != "finish") { // 说明合并并上传文件系统没有完成
-		// 	if (upload_status != "upload") { // 说明上传到本机存储没有完成
-		// 		response.send(Pistache::Http::Code::Ok,
-		// 			R"({"success":false,"error":"Upload task invalid or expired"})",
-		// 			MIME(Application, Json));
-		// 	} else {
-		// 		response.send(Pistache::Http::Code::Ok,
-		// 			R"({"success":false,"error":"Merge task invalid or expired"})",
-		// 			MIME(Application, Json));
-		// 	}
-		// 	_redisPool->releaseConnection(redis_ptr);
-		// 	return;
-		// }
-		// std::cout<<"有效性 end"<<std::endl;
-
-		std::string URL = redis_ptr -> get(key);
+		std::string URL = redis_ptr -> get(md5);
 		if (URL != "") {
 			URL = "https://goodfloat.cloud/" + URL;
 		}
-		redis_ptr -> expire(key, 3600);
-		_redisPool->releaseConnection(redis_ptr);
+		redis_ptr -> expire(md5, 3600);
 		json response_json = {{"url", URL}};
 
 		response.headers().add<Pistache::Http::Header::ContentType>(
@@ -992,10 +856,10 @@ void Api::queryFileURL(const Pistache::Rest::Request& req, Pistache::Http::Respo
     	response.send(Pistache::Http::Code::Ok, response_json.dump());
 	}
 	catch (const std::exception& e) {
-		//std::cerr << "Error in queryUserFiles: " << e.what() << std::endl;
 		MY_LOG_ERROR("Error in queryUserFiles: ", e.what());
         response.send(Pistache::Http::Code::Internal_Server_Error, "Server error");
 	}
+	_redisPool->releaseConnection(redis_ptr);
 }
 
 void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response){
@@ -1006,11 +870,11 @@ void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::Res
 			sessionId = cookies.get("session").value;
 			// 验证 sessionId 是否有效...
 		} else {
-			//std::cerr<<"[UploadCheck ERROR] "<<"invalid session"<<std::endl;
 			MY_LOG_ERROR("queryUserFiles invalid session: ", sessionId);
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
+			return;
 		}
 		std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 		std::string uses_key = "user:" + sessionId;
@@ -1020,10 +884,11 @@ void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::Res
 		
 		json array = json::array();
 
-		std::shared_ptr<Mysql> connPtr = _mysqlPool->getConnection();
+		std::shared_ptr<Mysql> mysql_ptr = _mysqlPool->getConnection();
 
-		connPtr -> queryUserFiles(username, array);
-		_mysqlPool -> releaseConnection(connPtr);
+		mysql_ptr -> queryUserFiles(username, array);
+		_mysqlPool -> releaseConnection(mysql_ptr);
+
 		// 转为字符串并返回
         std::string jsonString = array.dump();
 		
@@ -1042,22 +907,16 @@ void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::Res
 // ==================Delete / deleteFiles ================
 void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
 	bool success = false;
-
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 
 	try {
-		//auto userOpt = req.query().get("user");
         auto idOpt   = req.query().get("id");
-
-        //if (!userOpt || !idOpt) {
 		if (!idOpt) {
             response.send(Pistache::Http::Code::Bad_Request,
                 R"({"success":false,"message":"Missing user or id"})",
                 MIME(Application, Json));
             return;
         }
-
-        //std::string user = userOpt.value();
         std::string md5  = idOpt.value();
 
 		auto& cookies = req.cookies();
@@ -1156,7 +1015,6 @@ void Api::deleteFiles(const std::string& url){
 
 // ====================== Merge =======================
 void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& user){
-	std::cout<<"mergeChunksAndUpload start"<<std::endl;
 	std::shared_ptr<FdfsClient> fdfs_ptr = _fdfsPool -> getConnection();
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
@@ -1270,7 +1128,6 @@ void Api::mergeChunksAndUpload(const std::string& upload_id, const std::string& 
 		std::string status_key = "upload:" + upload_id + ":status";
 		redis_ptr -> set(status_key, "finish", 3600);
 		_redisPool -> releaseConnection(redis_ptr);
-		std::cout<<"mergeChunksAndUpload start"<<std::endl;
     } catch (...) {}
 }
 

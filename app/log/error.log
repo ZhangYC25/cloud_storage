@@ -379,3 +379,77 @@
 2025-12-31 20:32:26 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
 2025-12-31 20:32:27 [ERROR] Redis GET failed: no value or invalid type for key:  upload::ID 
 2025-12-31 20:32:27 [ERROR] Redis GET failed: no value or invalid type for key:  upload::status 
+2026-01-01 12:50:22 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:50:23 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:50:24 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:50:25 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:50:26 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:50:27 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:52:57 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:52:58 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:52:59 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:53:00 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:53:01 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 12:53:02 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:00:32 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:00:33 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:00:34 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:00:35 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:00:36 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:00:38 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:08:58 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:08:59 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:09:00 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:09:01 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:09:02 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:09:03 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:27:07 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:27:08 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:27:10 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:27:11 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:27:12 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:27:13 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:33:09 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:33:10 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:33:11 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:33:12 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:33:13 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 13:33:14 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:33:08 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:33:09 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:33:10 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:33:11 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:33:13 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:33:14 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:39:32 [ERROR] Redis connection invalid, non-exist 
+2026-01-01 14:40:30 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:40:31 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:40:32 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:40:33 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:40:34 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:40:35 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:57:17 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:57:18 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:57:19 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:57:20 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:57:21 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 14:57:22 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 16:18:08 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 16:18:09 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 16:18:10 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 16:18:11 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 16:18:12 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-01 16:18:13 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 

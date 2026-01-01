@@ -5,6 +5,7 @@
 #include <pistache/router.h>
 #include <pistache/http.h>
 #include <pistache/cookie.h>
+#include <pistache/http_headers.h>
 #include <bcrypt.h>
 #include <unordered_set>
 #include <nlohmann/json.hpp>
@@ -25,8 +26,6 @@ public:
     //void destroyed();
     static std::shared_ptr<Api> getInstance();
 
-    bool validateUploadSession(const Pistache::Rest::Request& req, const std::string& upload_id,
-                                std::shared_ptr<Redis> redis, std::string& out_user);
     // ============= route ========================
     void setupRoutes();
 
@@ -77,9 +76,6 @@ private:
     Pistache::Rest::Router router;
     using json = nlohmann::json;
     //================== Session ===============
-    //<user, Session>
-    //<Session session -> getUsername(), Session>
-    //手动修改 短Session；Redis 自动释放过期session
-    std::unordered_map<std::string, std::shared_ptr<Session>> _sessions;
-    //std::unordered_map<std::string, std::shared_ptr<UploadFile>> _files;
+    bool validateUploadSession(const Pistache::Rest::Request& req, const std::string& upload_id,
+                            std::shared_ptr<Redis> redis, std::string& out_user);
 };

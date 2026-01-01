@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <iomanip>
 #include <random>
+#include <cctype>
 
 bool isValidEmail(const std::string& email){
     static const std::regex pattern(
@@ -69,6 +70,26 @@ static std::string generate_upload_id() {
     std::stringstream ss;
     ss << std::setw(4) << std::setfill('0') << random_num;
     return ss.str();
+}
+
+
+std::string url_decode(const std::string& src) {
+    std::string ret;
+    ret.reserve(src.size());
+
+    for (size_t i = 0; i < src.size(); ++i) {
+        if (src[i] == '%' && i + 2 < src.size()) {
+            int val = 0;
+            std::sscanf(src.substr(i + 1, 2).c_str(), "%x", &val);
+            ret.push_back(static_cast<char>(val));
+            i += 2;
+        } else if (src[i] == '+') {
+            ret.push_back(' ');  // 表单编码才会有，encodeURIComponent 通常不会
+        } else {
+            ret.push_back(src[i]);
+        }
+    }
+    return ret;
 }
 
 
