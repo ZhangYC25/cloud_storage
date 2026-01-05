@@ -5,25 +5,26 @@
 
 #include "Mysql.h"
 #include "../utils/confRead.h"
-//std::string Mysql::_mysql_host = "127.0.0.1";
-// std::string Mysql::_mysql_user;// = "zhangyc";
-// std::string Mysql::_mysql_pass;// = "zhangyc@APEX!!!";
-// std::string Mysql::_mysql_db;// = "cloud_storage";
-//int Mysql::_port = 3306;
+std::string Mysql::_mysql_host;
+std::string Mysql::_mysql_user;
+std::string Mysql::_mysql_pass;
+std::string Mysql::_mysql_db;
+int Mysql::_port;
 namespace {
     std::once_flag config_loaded;
 }
 
-// void Mysql::setConfig(){
-//     std::call_once(config_loaded, []() {
-//         ConfigReader config("../../conf/config.env");
-//         //_mysql_host = config.get("MYSQL_HOST", "127.0.0.1");
-//         _mysql_user = config.get("MYSQL_USER");
-//         _mysql_pass = config.get("MYSQL_PASS");
-//         _mysql_db   = config.get("MYSQL_DB", "cloud_storage");
-//         _port       = config.get_int("MYSQL_PORT", 3306); // 使用前面实现的 get_uint
-//     });
-// }
+void Mysql::setConfig(){
+    std::call_once(config_loaded, []() {
+        ConfigReader config("../../conf/config.env");
+        _mysql_host = config.get("MYSQL_HOST", "127.0.0.1");
+        _mysql_user = config.get("MYSQL_USER");
+        _mysql_pass = config.get("MYSQL_PASS");
+        _mysql_db   = config.get("MYSQL_DB", "cloud_storage");
+        _port       = config.get_int("MYSQL_PORT", 3306); // 使用前面实现的 get_uint
+        //std::cout<<_mysql_host<<_mysql_user<<_port<<std::endl;
+    });
+}
 
 Mysql::Mysql(){  
     //setConfig();
@@ -33,16 +34,44 @@ Mysql::Mysql(){
         MY_LOG_ERROR("Error: mysql_init failed.");
         return;
     }
+
     // 尝试连接数据库
     if (mysql_real_connect(conn, _mysql_host.c_str(), _mysql_user.c_str(), _mysql_pass.c_str(),
                 _mysql_db.c_str(), _port, nullptr, 0) == nullptr) {
         //std::cerr << "Error: mysql_real_connect failed: " << mysql_error(conn) << std::endl;
+        // MY_LOG_ERROR("Error: mysql_real_connect failed: ", mysql_error(conn));
+        
         MY_LOG_ERROR("Error: mysql_real_connect failed: ", mysql_error(conn));
         mysql_close(conn);
+        conn = nullptr; // 必须置空！
         return;
     }
             //std::cout << "Debug: Successfully created new connection." << std::endl;
 };
+
+// Mysql.cpp 中实现
+std::vector<FileRecord> Mysql::getFileRecordsBatch(int limit, int offset) {
+    std::vector<FileRecord> batch;
+    char sql[256];
+    // 使用 LIMIT 和 OFFSET 进行分页查询
+    snprintf(sql, sizeof(sql), "SELECT md5, url FROM file_info LIMIT %d OFFSET %d", limit, offset);
+
+    if (mysql_query(conn, sql)) {
+        MY_LOG_ERROR("Query batch failed: ", mysql_error(conn));
+        return batch;
+    }
+
+    MYSQL_RES* res = mysql_store_result(conn);
+    if (!res) return batch;
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res))) {
+        batch.push_back({row[0] ? row[0] : "", row[1] ? row[1] : ""});
+    }
+
+    mysql_free_result(res);
+    return batch;
+}
 
 Mysql::~Mysql() {
     if (conn) {

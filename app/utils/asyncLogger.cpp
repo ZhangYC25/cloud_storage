@@ -29,30 +29,30 @@ void AsyncLogger::start(const std::string& path){
 }
 
 void AsyncLogger::run(){
+    
     while (running.load(std::memory_order_acquire)) {
-        // 交换队列
-        //swap_queues();
+        std::queue<std::string> tmp_queue;
         {
-            std::lock_guard<std::mutex> lock(_mtx);
-            std::swap(_write_queue, _read_queue);
+            std::unique_lock<std::mutex> lock(_mtx);
+            // 等待直到：1. 停止运行 2. 写队列有东西
+            _cv.wait_for(lock, std::chrono::seconds(1), [this] {
+                return !running.load(std::memory_order_acquire) || !_write_queue.empty();
+            });
+
+            if (_write_queue.empty() && !running.load(std::memory_order_acquire)) {
+                break; 
+            }
+
+            // 交换到临时队列，这样写磁盘时不需要占用主互斥锁
+            std::swap(_write_queue, tmp_queue);
         }
 
-        // 处理读队列
-        flush_queue(_read_queue);
+        // 在锁外处理 IO，不阻塞前台业务
+        flush_queue(tmp_queue);
         if (_file.is_open()) {
             _file.flush();
         }
-        // 等待：要么被通知，要么超时
-        std::unique_lock<std::mutex> lock(_mtx);
-        _cv.wait_for(lock, std::chrono::seconds(2),[this](){
-            return !running.load(std::memory_order_acquire)|| !_write_queue.empty();
-        });
     }
-    {
-        std::lock_guard<std::mutex> lock(_mtx);
-        std::swap(_write_queue, _read_queue);
-    }
-    flush_queue(_read_queue);
 }
 
 void AsyncLogger::stop(){

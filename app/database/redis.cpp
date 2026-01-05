@@ -5,22 +5,22 @@
 #include "../utils/confRead.h"
 
 
-// std::string Redis::redis_host;// = "127.0.0.1";
-// std::string Redis::redis_pass;// = "ZYCzyc520@APEX!";
-// int Redis::port = 6379;
+std::string Redis::redis_host;
+std::string Redis::redis_pass;
+int Redis::port;
 
 namespace {
     std::once_flag config_loaded;
 }
 
-// void Redis::setConfig(){
-//     std::call_once(config_loaded, []() {
-//         ConfigReader config("../../conf/config.env");
-//         redis_host = config.get("REDIS_HOST");
-//         redis_pass = config.get("REDIS_PASS");
-//         port       = config.get_int("REDIS_PORT", 6379);
-//     });
-// }
+void Redis::setConfig(){
+    std::call_once(config_loaded, []() {
+        ConfigReader config("../../conf/config.env");
+        redis_host = config.get("REDIS_HOST");
+        redis_pass = config.get("REDIS_PASS");
+        port       = config.get_int("REDIS_PORT", 6379);
+    });
+}
 
 Redis::Redis():redis_ctx(nullptr){
     //setConfig();
@@ -48,6 +48,7 @@ bool Redis::connect(){
 	if (redis_ctx == nullptr || redis_ctx->err) {
 		//std::cerr << "Redis连接失败: " << (redis_ctx ? redis_ctx->errstr : "内存分配错误") << std::endl;
 		MY_LOG_ERROR("Redis Connect failed: ", (redis_ctx ? redis_ctx->errstr : "invalid memory alloc"));
+
         // 释放连接（若存在）
 		if (redis_ctx) close();			// 返回服务端错误响应
 		return false;

@@ -5,14 +5,16 @@
 
 // 静态成员初始化
 MySQLConnPool* MySQLConnPool::_poolInstance = nullptr;
+std::mutex MySQLConnPool::_instanceMtx;
 
 // 私有构造函数
-MySQLConnPool::MySQLConnPool() : _minConn(2), _maxConn(10){}
+MySQLConnPool::MySQLConnPool() : _minConn(2), _maxConn(20){}
 
 // 私有析构函数
 MySQLConnPool::~MySQLConnPool() {
     //destroyPool();
 }
+
 
 MySQLConnPool* MySQLConnPool::getInstance() {
     // 线程安全的单例初始化（C++11 magic static 保证线程安全）
@@ -23,6 +25,7 @@ MySQLConnPool* MySQLConnPool::getInstance() {
         if (_poolInstance == nullptr) {
             _poolInstance = new MySQLConnPool();
         }
+        Mysql::setConfig();
     }
     return _poolInstance;
 }
@@ -140,10 +143,15 @@ void MySQLConnPool::destroyPool() {
     }
     
     _currentConn = 0;
-    std::cout << "Info: Connection pool destroyed." << std::endl;
-    
-    //delete _poolInstance;
-    // 注意：如果是堆上创建的单例，需要 delete _poolInstance
-    // 但在 C++ 中，单例的销毁时机通常由程序结束时自动管理
-    // 这里我们只清理连接资源
+    //std::cout << "Info: MySQL Connection pool destroyed." << std::endl;
+}
+
+void MySQLConnPool::destroyInstance() {
+    std::lock_guard<std::mutex> lock(_instanceMtx); // 注意这里用的是保护单例的静态锁
+    if (_poolInstance) {
+        _poolInstance->destroyPool(); // 先清理内部连接
+        delete _poolInstance;         // 再释放池对象本身
+        _poolInstance = nullptr;      // 置空，防止野指针
+    }
+    //std::cout<<"Info: MySQL Instance destroyed."<<std::endl;
 }

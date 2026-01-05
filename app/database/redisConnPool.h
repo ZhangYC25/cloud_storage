@@ -14,7 +14,7 @@ class RedisConnPool {
 public:
     // 获取连接池单例
     static RedisConnPool* getInstance();
-
+    static void destroyInstance();
     // 显式初始化连接池（必须在 main 函数中调用）
     void init();
 
@@ -27,6 +27,7 @@ public:
     // 销毁连接池
     void destroyPool();
 
+    bool isRelax(){return _connQueue.size() == _currentConn;}
 private:
     RedisConnPool();
     ~RedisConnPool();
@@ -34,10 +35,7 @@ private:
     RedisConnPool(const RedisConnPool&) = delete;
     RedisConnPool& operator=(const RedisConnPool&) = delete;
 
-    // DCLP 需要的成员
     static RedisConnPool* _redisInstance;
-
-    //static std::mutex _instanceMutex;
 
     // 连接池状态和配置
     int8_t _minConn = 0;
@@ -53,6 +51,7 @@ private:
     // 队列和同步原语
     std::queue<std::shared_ptr<Redis>> _connQueue;
     std::mutex _mtx;
+    static std::mutex _instanceMtx;
     std::condition_variable _cv;
 };
 

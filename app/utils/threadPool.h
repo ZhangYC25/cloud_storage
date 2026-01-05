@@ -17,6 +17,8 @@ class uploadThreadPool{
 public:
     static uploadThreadPool* getInstance(int8_t pt_num = 4, int8_t max_size = 10);
 
+    // 销毁单例的接口
+    static void destroyInstance();
 
     template<typename F>
     void submit(F&& f) {
@@ -61,7 +63,7 @@ public:
     uploadThreadPool& operator=(const uploadThreadPool&&) = delete;
 
 private:
-    explicit uploadThreadPool(int8_t& pt_num, int8_t& max_size):_stop{false}, _max_size(max_size){
+    explicit uploadThreadPool(int8_t pt_num, int8_t max_size):_stop{false}, _max_size(max_size){
             for(int8_t i=0; i < pt_num; i++) {
                 _works_queue.emplace_back([this]{
                     std::function<void()> task;
@@ -92,16 +94,3 @@ private:
     uint8_t _max_size;
     static uploadThreadPool* _instance;
 };
-
-uploadThreadPool* uploadThreadPool::_instance = nullptr;
-
-uploadThreadPool* uploadThreadPool::getInstance(int8_t pt_num, int8_t max_size){
-    if (_instance == nullptr) {
-        static std::mutex instanceMutex;
-        {
-            std::lock_guard<std::mutex> lock(instanceMutex);
-            _instance = new uploadThreadPool(pt_num, max_size);
-        }
-    }
-    return _instance;
-}

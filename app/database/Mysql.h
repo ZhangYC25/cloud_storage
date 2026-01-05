@@ -9,6 +9,14 @@
 #include <mysql/mysql.h>
 
 #include "../utils/asyncLogger.h"
+
+
+struct FileRecord {
+    std::string md5;
+    std::string url;
+};
+
+
 class Mysql
 {
 public:
@@ -16,6 +24,7 @@ public:
     //连接与销毁
     Mysql();
     ~Mysql();
+    static void setConfig();
     
     //获得数据库的信息
     std::string getPassword() const;
@@ -28,6 +37,8 @@ public:
     bool beginTransaction();
     bool commit();
     bool rollback();
+
+    std::vector<FileRecord> getFileRecordsBatch(int limit, int offset);
 // =========== 实现增删查改 ==============
     // for user_info table
     bool insertUser(const std::string& username, const std::string& password_hash, const std::string& email);
@@ -49,12 +60,11 @@ public:
 // ============= end ===================
 
 private:
-    const std::string _mysql_host = "127.0.0.1";
-    const std::string _mysql_user = "zhangyc";
-    const std::string _mysql_pass = "zhangyc@APEX!!!";
-    const std::string _mysql_db = "cloud_storage";
-    const int _port = 3306;
-    //static void setConfig();
+    static std::string _mysql_host;
+    static std::string _mysql_user;
+    static std::string _mysql_pass;
+    static std::string _mysql_db;
+    static int _port;
     MYSQL* conn;
 
 };

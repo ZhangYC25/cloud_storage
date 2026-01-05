@@ -53,6 +53,7 @@ set(SOURCES
     myfastdfs/fdfsConnPool.cpp
     utils/confRead.cpp
     utils/asyncLogger.cpp
+    utils/threadPool.cpp
 )
 
 

@@ -1,10 +1,11 @@
 #include "redisConnPool.h"
 
 RedisConnPool* RedisConnPool::_redisInstance = nullptr;
+std::mutex RedisConnPool::_instanceMtx;
 
-RedisConnPool::RedisConnPool():_minConn(8),_maxConn(16){}
+RedisConnPool::RedisConnPool():_minConn(5),_maxConn(16){}
 RedisConnPool::~RedisConnPool(){
-    destroyPool();
+    //destroyPool();
 }
 // 销毁连接池：清空所有连接
 
@@ -15,6 +16,7 @@ RedisConnPool* RedisConnPool::getInstance(){
         if (_redisInstance == nullptr) {
             _redisInstance = new RedisConnPool();
         }
+        Redis::setConfig();
     }
     return _redisInstance;
 }
@@ -25,8 +27,19 @@ void RedisConnPool::destroyPool() {
         _connQueue.pop();
     }
     _currentConn = 0;
-    std::cout << "[RedisConnPool] destroyed" << std::endl;
+    //std::cout << "Info: Redis Connection pool destroyed." << std::endl;
 }
+
+void RedisConnPool::destroyInstance() {
+    std::lock_guard<std::mutex> lock(_instanceMtx); // 注意这里用的是保护单例的静态锁
+    if (_redisInstance) {
+        _redisInstance->destroyPool(); // 先清理内部连接
+        delete _redisInstance;         // 再释放池对象本身
+        _redisInstance = nullptr;      // 置空，防止野指针
+    }
+    //std::cout<<"Info: Redis Instance destroyed."<<std::endl;
+}
+
 
 void RedisConnPool::init(){
     std::lock_guard<std::mutex> lock(_mtx);

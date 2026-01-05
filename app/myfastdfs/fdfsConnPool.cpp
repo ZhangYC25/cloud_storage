@@ -3,13 +3,15 @@
 
 FdfsConnPool* FdfsConnPool::_poolInstance = nullptr;
 bool FdfsConnPool::_global_init_done = false;
+std::mutex FdfsConnPool::_instanceMtx;
 // 私有构造函数
-FdfsConnPool::FdfsConnPool() : _currentConn(0), _minConn(3), _maxConn(10){}
+FdfsConnPool::FdfsConnPool() :_minConn(3), _maxConn(10){}
 
 // 私有析构函数
 FdfsConnPool::~FdfsConnPool() {
     //destroyPool();
 }
+
 FdfsConnPool* FdfsConnPool::getInstance(){
         if (_poolInstance == nullptr) {
             static std::mutex instanceMutex;
@@ -62,12 +64,17 @@ void FdfsConnPool::destroyPool() {
     }
     
     _currentConn = 0;
-    std::cout << "Info: Connection pool destroyed." << std::endl;
-    
-    //delete _poolInstance;
-    // 注意：如果是堆上创建的单例，需要 delete _poolInstance
-    // 但在 C++ 中，单例的销毁时机通常由程序结束时自动管理
-    // 这里我们只清理连接资源
+    //std::cout << "Info: Fdfs Connection pool destroyed." << std::endl;
+}
+
+void FdfsConnPool::destroyInstance() {
+    std::lock_guard<std::mutex> lock(_instanceMtx); // 注意这里用的是保护单例的静态锁
+    if (_poolInstance) {
+        _poolInstance->destroyPool(); // 先清理内部连接
+        delete _poolInstance;         // 再释放池对象本身
+        _poolInstance = nullptr;      // 置空，防止野指针
+    }
+    //std::cout<<"Info: Fdfs Instance destroyed."<<std::endl;
 }
 
 // 从连接池中获取一个连接

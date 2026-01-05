@@ -14,7 +14,8 @@ class MySQLConnPool {
 public:
     // 获取连接池单例
     static MySQLConnPool* getInstance();
-
+    static void destroyInstance();
+    
     MySQLConnPool(const MySQLConnPool&) = delete;
     MySQLConnPool& operator=(const MySQLConnPool&) = delete;
     MySQLConnPool(MySQLConnPool&&) = delete;
@@ -29,6 +30,8 @@ public:
 
     // 将连接放回连接池
     bool releaseConnection(std::shared_ptr<Mysql>);
+
+    bool isRelax(){return _connQueue.size() == _currentConn;}
 private:
     //建立连接、释放连接
     MySQLConnPool();
@@ -43,7 +46,8 @@ private:
     
     std::mutex _mtx;
     std::condition_variable _cv;
-
+    static std::mutex _instanceMtx;
+    
     // 静态指针，指向唯一的连接池实例
     static MySQLConnPool* _poolInstance;
 };

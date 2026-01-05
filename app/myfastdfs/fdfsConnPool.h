@@ -11,6 +11,7 @@
 class FdfsConnPool{
 public:
     static FdfsConnPool* getInstance();
+    static void destroyInstance();
 
     FdfsConnPool(const FdfsConnPool&) = delete;
     FdfsConnPool& operator=(const FdfsConnPool&) = delete;
@@ -21,6 +22,8 @@ public:
 
     void init();
 
+    bool isRelax(){return _connQueue.size() == _currentConn;}
+
     // 从连接池中获取一个连接
     std::shared_ptr<FdfsClient> getConnection();
 
@@ -30,7 +33,7 @@ private:
     FdfsConnPool();
     ~FdfsConnPool();
 
-    int8_t _currentConn;
+    std::atomic<int8_t> _currentConn{0};
     int8_t _maxConn;
     int8_t _minConn;
 
@@ -38,6 +41,7 @@ private:
     std::queue<std::shared_ptr<FdfsClient>> _connQueue;
     
     std::mutex _mtx;
+    static std::mutex _instanceMtx;
     std::condition_variable _cv;
     // 静态指针，指向唯一的连接池实例
     static FdfsConnPool* _poolInstance;

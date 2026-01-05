@@ -4,12 +4,13 @@
 #include "session.h"
 #include "../utils/utils.h"
 #include "../utils/file.hpp"
-#include "../utils/threadPool.h"
+//#include "../utils/threadPool.h"
 
 //#include "email.h"
 
 
 std::shared_ptr<Api> Api::_apiInstance = nullptr;
+std::mutex Api::_instanceMtx;
 
 std::shared_ptr<Api> Api::getInstance(){
 	if (_apiInstance == nullptr) {
@@ -17,17 +18,58 @@ std::shared_ptr<Api> Api::getInstance(){
 		std::lock_guard<std::mutex> lock(instanceMutex);
 		if (_apiInstance == nullptr) {
                 std::shared_ptr<Api> instance(new Api());
+				//std::shared_ptr<Api> instance = std::make_shared<Api>();
 				_apiInstance = instance;
-            }
+            }	
 	}
 	return _apiInstance;
 }
+
+void Api::destroyInstance(){
+	std::lock_guard<std::mutex> lock(_instanceMtx); // 注意这里用的是保护单例的静态锁
+    if (_apiInstance) {
+        _apiInstance.reset();
+    }
+}
+
+void Api::shutdown() {
+    this->running.store(false); 
+    this->_cv.notify_all(); // 这一行是“叫醒服务”，非常重要！
+}
+
 
 Api::Api(){ 
 	_mysqlPool = MySQLConnPool::getInstance();
 	_fdfsPool = FdfsConnPool::getInstance();
 	_redisPool = RedisConnPool::getInstance();
 	_pthreadPool = uploadThreadPool::getInstance();
+
+	_pthreadPool -> submit([this](){
+		this -> healthCheckLoop();
+	});
+	
+}
+
+void Api::healthCheckLoop() {
+    std::this_thread::sleep_for(std::chrono::minutes(1));
+
+    while (running.load()) {
+        MY_LOG_INFO("Starting daily consistency check...");
+        
+        // 执行实际的数据库与 FDFS 对比逻辑
+        this->runConsistencyCheck(); 
+
+        // 关键点：这里不再使用 sleep，而是使用 wait_for
+        std::unique_lock<std::mutex> lock(_mtx);
+        bool stopped = _cv.wait_for(lock, std::chrono::hours(24), [this] {
+            return !this->running.load(); // 如果收到 shutdown，这里返回 true，停止等待
+        });
+
+        if (stopped || !running.load()) {
+            break; // 优雅退出循环
+        }
+    }
+    MY_LOG_INFO("Health Check task exited safely.");
 }
 
 // 在 Api 类中（私有方法）
@@ -64,6 +106,47 @@ bool Api::validateUploadSession(const Pistache::Rest::Request& req, const std::s
         }
     }
     return true;
+}
+
+void Api::runConsistencyCheck() {
+    MY_LOG_INFO("=== [Health Check] Task Started ===");
+    
+    int offset = 0;
+    const int batch_size = 100;
+    int total_checked = 0;
+    std::vector<std::string> corrupted_md5s;
+
+    // 获取数据库和FDFS连接
+    auto mysql_ptr = _mysqlPool->getConnection();
+    auto fdfs_ptr = _fdfsPool->getConnection();
+
+    while (true) {
+        std::vector<FileRecord> batch = mysql_ptr->getFileRecordsBatch(batch_size, offset);
+        if (batch.empty()) break; // 查完了
+
+        for (const auto& record : batch) {
+            total_checked++;
+            
+            if (!fdfs_ptr->check_file_exists(record.url)) {
+                corrupted_md5s.push_back(record.md5);
+                MY_LOG_ERROR("[ALARM] Physical file missing! MD5: ", record.md5, " URL: ", record.url);
+            }
+        }
+
+        offset += batch_size;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+
+    _mysqlPool->releaseConnection(mysql_ptr);
+    _fdfsPool->releaseConnection(fdfs_ptr);
+
+    MY_LOG_INFO("=== [Health Check] Summary ===");
+    MY_LOG_INFO("Total files scanned: ", total_checked);
+    if (corrupted_md5s.empty()) {
+        MY_LOG_INFO("Result: ALL DATA HEALTHY.");
+    } else {
+        MY_LOG_ERROR("Result: FOUND ", corrupted_md5s.size(), " CORRUPTED RECORDS.");
+    }
 }
 
 //合理吗？之后再说
@@ -158,7 +241,6 @@ void Api::setupRoutes(){
 }
 
 void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-    std::cout<<"loginUser start"<<std::endl;
 	std::shared_ptr<Mysql> mysql_ptr = _mysqlPool->getConnection();
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try {
@@ -598,6 +680,7 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
 }
 
 // ===============================POST / large upload
+// ============== 可以做断点续传 =============
 void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection(); 
 	try {
@@ -904,11 +987,11 @@ void Api::queryUserFiles(const Pistache::Http::Request& req, Pistache::Http::Res
 	}
 }
 
-// ==================Delete / deleteFiles ================
+// ==================Delete / deleteFiles , 异步删除比较好，这里就不做了，逻辑和大文件上传一样的================
 void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
 	bool success = false;
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
-
+	std::shared_ptr<Mysql> mysql_ptr = _mysqlPool->getConnection();
 	try {
         auto idOpt   = req.query().get("id");
 		if (!idOpt) {
@@ -940,31 +1023,32 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
             return;
         }
 
-		std::shared_ptr<Mysql> connPtr = _mysqlPool->getConnection();
-		if (connPtr -> deleteUserFile(user, md5)) { // 先给用户删除
+		if (mysql_ptr -> deleteUserFile(user, md5)) { // 先给用户删除
 			std::cout << "[MySQL INFO] Successed user: "<<user<<" deleted file: "<< md5<< std::endl;
 			//MY_LOG_INFO("MySQL user", user, " Delete file: ", md5, "Succeeded");
 		}
-		if (connPtr -> updateCount(md5, -1)) { // 给文件 count -1;
+		if (mysql_ptr -> updateCount(md5, -1)) { // 给文件 count -1;
 			//std::cerr<<"user: "<< user <<" delete file"<<std::endl;
 			//MY_LOG_INFO("MySQL update file", md5, " Succeeded");
 		}
 		int count = 0;
 		std::string url;
-		if (connPtr -> getCount(md5, count, url)) {
+		if (mysql_ptr -> getCount(md5, count, url)) {
 			std::cout << "[MySQL INFO] Successed file: "<<md5<<" update count: "<<count<<std::endl;
 			//MY_LOG_INFO("MySQL Update file: ", md5, "count: ",count, " Successed");
 		 } //else {
 		// 	std::cout << "[MySQL INFO] Failed file: "<<md5<<" update count: "<<count<<std::endl;
 		// }
-		_mysqlPool -> releaseConnection(connPtr);
 		if (count == 0) { // 已经没有用户需要这个文件
-			//this->deleteFiles(url, md5); // 从 redis fdfs 中删除
-			this->deleteFiles(url);
-			//std::shared_ptr<Redis> redis_ptr = _redisPool->getConnection();
 			redis_ptr -> del(md5);
-			_redisPool -> releaseConnection(redis_ptr);
-			if (connPtr -> deleteSysFile(md5)) {
+
+			// _pthreadPool -> submit([this, &url](){
+			// 	this->deleteFiles(url);
+			// });
+
+			this->deleteFiles(url);
+
+			if (mysql_ptr -> deleteSysFile(md5)) {
 				std::cerr<<"[MySQL INFO] "<<"Successed user: "<<user<<" delete file: "<<md5<<std::endl;
 			} // 从 file_info 中删除
 			//std::cerr<<"[MySQL INFO] "<<"Successed user: "<<user<<" delete file: "<<md5<<std::endl;
@@ -985,6 +1069,8 @@ void Api::deleteCheck(const Pistache::Rest::Request& req, Pistache::Http::Respon
             R"({"success":false,"message":"服务器异常"})",
             MIME(Application, Json));
 	}
+	_redisPool -> releaseConnection(redis_ptr);
+	_mysqlPool -> releaseConnection(mysql_ptr);
 }
 
 void Api::deleteFiles(const std::string& url){

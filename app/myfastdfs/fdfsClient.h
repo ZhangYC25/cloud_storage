@@ -28,7 +28,9 @@ public:
 
     bool delete_file_from_fastdfs(const std::string& group_name, const std::string& file);
 
-    private:
+    bool check_file_exists(const std::string& file_id);
+
+private:
     const char* conf_path;
     ConnectionInfo* pTrackerServer;
 

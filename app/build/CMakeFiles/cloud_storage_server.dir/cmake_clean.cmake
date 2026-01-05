@@ -25,6 +25,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cloud_storage_server.dir/utils/asyncLogger.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.o.d"
+  "CMakeFiles/cloud_storage_server.dir/utils/threadPool.cpp.o"
+  "CMakeFiles/cloud_storage_server.dir/utils/threadPool.cpp.o.d"
   "cloud_storage_server"
   "cloud_storage_server.pdb"
 )

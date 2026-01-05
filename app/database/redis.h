@@ -15,6 +15,7 @@ public:
     // 构造函数负责创建和认证连接
     Redis();
     ~Redis();
+    static void setConfig();
 
     redisContext* getRedisContext();
     Redis(const Redis&) = delete;
@@ -44,9 +45,9 @@ public:
 
 private:
     redisContext* redis_ctx; 
-    const std::string redis_host = "127.0.0.1";
-    const std::string redis_pass= "ZYCzyc520@APEX!";
+    
     int redis_timeout = 5000;
-    const int port = 6379;
-
+    static std::string redis_host;
+    static std::string redis_pass;
+    static int port;
 };

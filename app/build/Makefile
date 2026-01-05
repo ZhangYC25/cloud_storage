@@ -441,6 +441,30 @@ utils/confRead.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/confRead.cpp.s
 .PHONY : utils/confRead.cpp.s
 
+utils/threadPool.o: utils/threadPool.cpp.o
+.PHONY : utils/threadPool.o
+
+# target to build an object file
+utils/threadPool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/threadPool.cpp.o
+.PHONY : utils/threadPool.cpp.o
+
+utils/threadPool.i: utils/threadPool.cpp.i
+.PHONY : utils/threadPool.i
+
+# target to preprocess a source file
+utils/threadPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/threadPool.cpp.i
+.PHONY : utils/threadPool.cpp.i
+
+utils/threadPool.s: utils/threadPool.cpp.s
+.PHONY : utils/threadPool.s
+
+# target to generate assembly for a file
+utils/threadPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/utils/threadPool.cpp.s
+.PHONY : utils/threadPool.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -489,6 +513,9 @@ help:
 	@echo "... utils/confRead.o"
 	@echo "... utils/confRead.i"
 	@echo "... utils/confRead.s"
+	@echo "... utils/threadPool.o"
+	@echo "... utils/threadPool.i"
+	@echo "... utils/threadPool.s"
 .PHONY : help
 
 

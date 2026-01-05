@@ -41,17 +41,8 @@ public:
         {
             std::lock_guard<std::mutex> lock(_mtx);
             _write_queue.push(std::move(msg));
-
-            // 可选：队列太长时立即交换（防止内存爆炸）
-            if (_write_queue.size() > 10000) {
-                //swap_queues();
-                {
-                    std::lock_guard<std::mutex> lock(_mtx);
-                    std::swap(_write_queue, _read_queue);
-                }
-                _cv.notify_one();
-            }
         }
+        _cv.notify_one(); // 唤醒后台线程开始干活
     }
 
 
@@ -65,7 +56,7 @@ private:
 private:
     std::ofstream _file;
     std::queue<std::string> _write_queue;
-    std::queue<std::string> _read_queue;
+    //std::queue<std::string> _read_queue;
 
     std::mutex _mtx;
     std::condition_variable _cv;

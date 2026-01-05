@@ -77,29 +77,6 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path, const cha
     return "";
 }
 
-// std::string FdfsClient::create_temp_file(const std::vector<char>& data) {
-//     char temp_template[] = "/tmp/fastdfs_upload_XXXXXX";
-//     int fd = mkstemp(temp_template);
-//     if (fd == -1) {
-//         //std::cerr <<"[Fdfs ERROR] Failed create tmp file!"<<std::endl;
-//         MY_LOG_ERROR("Fdfs Create tmp file failed");
-//         return "";
-//     }
-    
-//     ssize_t written = write(fd, data.data(), data.size());
-    
-//     if (written != static_cast<ssize_t>(data.size())) {
-//         close(fd);
-//         //std::cerr <<"[Fdfs ERROR] Failed written tmp file!"<<std::endl;
-//         MY_LOG_ERROR("Fdfs written tmp file failed");
-//         unlink(temp_template); // 删除创建的临时文件
-//         return "";
-//     }
-//     close(fd);
-//     std::cerr <<"[Fdfs INFO] Successed create tmp file!"<<std::endl;
-//     return std::string(temp_template);
-// }
-
 // 新版本：支持零拷贝写入
 std::string FdfsClient::create_temp_file(std::string_view data) {
     char temp_template[] = "/tmp/fastdfs_upload_XXXXXX";
@@ -149,4 +126,26 @@ bool FdfsClient::delete_file_from_fastdfs(const std::string& group_name, const s
         }
     return true;
     
+}
+
+
+bool FdfsClient::check_file_exists(const std::string& url) {
+    // 1. 解析 URL (group1/M00/00/00/xxx.jpg -> group_name 和 remote_filename)
+    size_t firstSlash = url.find('/');
+    if (firstSlash == std::string::npos) return false;
+
+    std::string group_name = url.substr(0, firstSlash);
+    std::string remote_filename = url.substr(firstSlash + 1);
+
+    // 2. 准备接收信息的结构体
+    FDFSFileInfo file_info;
+    memset(&file_info, 0, sizeof(file_info));
+
+    int result = fdfs_get_file_info(group_name.c_str(), remote_filename.c_str(), &file_info);
+
+    if (result == 0) {
+        return true; 
+    } else {
+        return false;
+    }
 }

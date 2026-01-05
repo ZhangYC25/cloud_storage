@@ -1,13 +1,15 @@
 #pragma once
 
-#include "api.h"
 #include <csignal>
 #include <memory>
 #include <string>
 #include <mutex>
-
+#include "api.h"
 
 // 封装Pistache服务器的类
+
+class Api;
+
 class Server {
 public:
     // 单例模式（可选，也可直接实例化）
@@ -18,13 +20,19 @@ public:
     Server(Server&&) = delete;
     Server& operator=(Server&&) = delete;
 
-    void setApi(std::shared_ptr<Api> api) {
+    // void setApi(std::shared_ptr<Api> api) {
+    //     std::lock_guard<std::mutex> lock(_mutex); // 线程安全
+    //     if (!_api && api) { // 仅未初始化时注入
+    //         _api = api;
+    //         _api -> setupRoutes();
+    //         std::cout << "Routes registered successfully." << std::endl;
+    //     }
+    // }
+
+    void setApi() {
         std::lock_guard<std::mutex> lock(_mutex); // 线程安全
-        if (!_api && api) { // 仅未初始化时注入
-            _api = api;
-            _api -> setupRoutes();
-            std::cout << "Routes registered successfully." << std::endl;
-        }
+        Api::getInstance() -> setupRoutes();
+        std::cout << "Routes registered successfully." << std::endl;
     }
 
     // 初始化服务器（配置端口、线程数、最大请求大小等）
@@ -44,11 +52,12 @@ public:
 
 private:
     // 私有构造/析构（单例模式）
-    Server():_api(nullptr){}
+    //Server():_api(nullptr){}
+    Server(){}
     ~Server() = default;
 
     // 成员变量（替代全局变量g_server）
-    std::shared_ptr<Api> _api;
+    //std::shared_ptr<Api> _api;
     std::shared_ptr<Pistache::Http::Endpoint> m_server;
     Pistache::Rest::Router m_router;
     static std::atomic<Server*> s_instance; // 原子指针保证线程安全

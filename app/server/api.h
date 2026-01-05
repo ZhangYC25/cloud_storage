@@ -13,6 +13,7 @@
 #include "../database/mysqlConnPool.h"
 #include "../database/redisConnPool.h"
 #include "../myfastdfs/fdfsConnPool.h"
+#include "../utils/threadPool.h"
 
 class Session;
 class UploadFile;
@@ -25,7 +26,12 @@ public:
     ~Api();
     //void destroyed();
     static std::shared_ptr<Api> getInstance();
+    static void destroyInstance();
+    void shutdown();
 
+
+    void healthCheckLoop();
+    void runConsistencyCheck();
     // ============= route ========================
     void setupRoutes();
 
@@ -75,6 +81,12 @@ private:
     uploadThreadPool* _pthreadPool;
     Pistache::Rest::Router router;
     using json = nlohmann::json;
+
+    std::atomic<bool> running{true};
+    std::mutex _mtx;                 // 配合条件变量使用
+    std::condition_variable _cv;
+    static std::mutex _instanceMtx;
+
     //================== Session ===============
     bool validateUploadSession(const Pistache::Rest::Request& req, const std::string& upload_id,
                             std::shared_ptr<Redis> redis, std::string& out_user);

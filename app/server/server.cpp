@@ -1,7 +1,9 @@
-#include "server.h"
+
 #include <iostream>
 #include <stdexcept>
-
+//#include "../utils/threadPool.h"
+#include "server.h"
+//#include "api.h"
 // 静态成员初始化
 std::atomic<Server*> Server::s_instance{nullptr};
 
@@ -35,7 +37,7 @@ bool Server::init(uint16_t port, int threads, size_t maxReqSize) {
 
 // 注册路由
 void Server::setRoutes() {
-    m_router = _api -> getRouter();
+    m_router = Api::getInstance() -> getRouter();
     if (!m_server) {
         std::cerr << "Server not initialized! Call init() first." << std::endl;
         return;
@@ -46,7 +48,7 @@ void Server::setRoutes() {
 // 启动服务器（阻塞）
 void Server::start() {
     if (!m_server) {
-        std::cerr << "Server not initialized! Call init() first." << std::endl;
+        MY_LOG_ERROR("Server not initialized! Call init() first.");
         return;
     }
     // 注册信号处理（捕获Ctrl+C）
@@ -54,25 +56,32 @@ void Server::start() {
     std::cout << "Server started, press Ctrl+C to stop..." << std::endl;
     
     m_server->serve();
+
+    // 按依赖顺序销毁
+    uploadThreadPool::destroyInstance();
+    
+    // 确保任务执行完再关连接池
+    MySQLConnPool::destroyInstance();
+    FdfsConnPool::destroyInstance();
+    RedisConnPool::destroyInstance();
+
+    m_server.reset();
+    //_api.reset();
+    Api::destroyInstance();
 }
 
 // 关闭服务器
 void Server::shutdown() {
     if (m_server) {
         std::cout << "\nShutting down server..." << std::endl;
-        //_api -> destroyed();
         m_server->shutdown();
-        m_server.reset(); // 释放资源
-        _api.reset();
-        exit(0);
     }
 }
 
 // 信号处理静态函数
 void Server::handleSignal(int sig) {
     if (sig == SIGINT) {
-        // 获取单例实例并关闭,这里应该还要关闭连接池等
-        
+        Api::getInstance() -> shutdown();
         Server::getInstance().shutdown();
         std::cout << "\nInstance shutdown..." << std::endl;
     }
