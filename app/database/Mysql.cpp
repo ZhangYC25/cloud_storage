@@ -49,6 +49,12 @@ Mysql::Mysql(){
             //std::cout << "Debug: Successfully created new connection." << std::endl;
 };
 
+bool Mysql::ping() {
+    if (conn == nullptr) return false;
+    // mysql_ping 是官方心跳API，断开会自动重连
+    return mysql_ping(conn) == 0;
+}
+
 // Mysql.cpp 中实现
 std::vector<FileRecord> Mysql::getFileRecordsBatch(int limit, int offset) {
     std::vector<FileRecord> batch;

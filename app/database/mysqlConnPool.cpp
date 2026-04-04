@@ -64,11 +64,20 @@ std::shared_ptr<Mysql> MySQLConnPool::getConnection() {
         if (!_connQueue.empty()) {
             connPtr = _connQueue.front();
             _connQueue.pop();
-            std::cerr << "[MySQLConnPool] Success get connection! Queue size = " 
-                            << _connQueue.size() << ", Current conn nums: "<<static_cast<int>(_currentConn)<<std::endl;
-            //MY_LOG_INFO("MySQLConnPool Success get connection! Queue Size: ", _connQueue.size(), 
-            //              ", Current conn nums: ", static_cast<int>(_currentConn));
-            return connPtr;
+            if (connPtr && connPtr -> ping()) { // 连接有效
+                std::cerr << "[MySQLConnPool] Get conn from pool success!" << " Queue size: "<< _connQueue.size()
+                 <<", Current conn nums: "<< static_cast<int>(_currentConn) << std::endl;
+                //MY_LOG_INFO("MySQLConnPool Get conn from pool success! Queue size: ", _connQueue.size(),
+                 //", Current conn nums: ", static_cast<int>(_currentConn));
+                return connPtr;
+            } else {
+                // 连接无效，丢弃并继续循环尝试获取
+                _currentConn--;
+                //std::cerr << "[MySQLConnPool] Found invalid conn, discard it. CurrentConn=" 
+                            //<< static_cast<int>(_currentConn) << std::endl;
+                MY_LOG_ERROR("MySQLConnPool Found invalid conn, discard it. CurrentConn= ", static_cast<int>(_currentConn));
+                continue; 
+            }   
         }
 
         // 2. 队列为空，但未达到最大连接数，则创建新连接

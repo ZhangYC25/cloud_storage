@@ -37,7 +37,7 @@ public:
     bool beginTransaction();
     bool commit();
     bool rollback();
-
+    bool Mysql::ping();
     std::vector<FileRecord> getFileRecordsBatch(int limit, int offset);
 // =========== 实现增删查改 ==============
     // for user_info table
