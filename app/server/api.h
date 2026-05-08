@@ -9,7 +9,7 @@
 #include <bcrypt.h>
 #include <unordered_set>
 #include <nlohmann/json.hpp>
-
+#include <filesystem>
 #include "../database/mysqlConnPool.h"
 #include "../database/redisConnPool.h"
 #include "../myfastdfs/fdfsConnPool.h"

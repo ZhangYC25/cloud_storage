@@ -1,5 +1,5 @@
 #include <curl/curl.h>
-
+#include<iostream>
 #include "api.h"
 #include "session.h"
 #include "../utils/utils.h"
@@ -284,8 +284,8 @@ void Api::loginUser(const Pistache::Rest::Request& req, Pistache::Http::Response
 			Pistache::Http::Cookie cookie("session", sessionId);
 			cookie.httpOnly = true;
 			cookie.secure = true;
-			cookie.maxAge = 600; 
-			cookie.path = "/";
+			//cookie.maxAge = 600; 
+			//cookie.path = "/";
 			response.cookies().add(cookie);
 			//response.headers().add<Pistache::Http::Header::ContentType>(Pistache::Http::Mime::MediaType("application/json"));
 			response.send(Pistache::Http::Code::Ok, R"({"message": "login successful"})");
@@ -662,7 +662,7 @@ void Api::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWri
     		{"success", true},
     		{"message", "file uploaded successfully"},
     		//{"url", "http://146.56.194.96/" + fastdfs_path},
-			{"url", "https://goodflaot.cloud/" + fastdfs_path},
+			{"url", "https://goodfloat.cloud/" + fastdfs_path},
     		{"fastdfs_path", fastdfs_path+file_ext}
 		};
 
@@ -740,6 +740,8 @@ void Api::largeInit(const Pistache::Rest::Request& req, Pistache::Http::Response
 	_redisPool -> releaseConnection(redis_ptr);
 	return;
 }
+
+//std::chrono::_V2::system_clock::time_point responseTime;
 
 void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
@@ -826,10 +828,10 @@ void Api::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::Re
                       MIME(Application, Json));
     }
 	_redisPool -> releaseConnection(redis_ptr);
+	//responseTime = std::chrono::system_clock::now();
 }
 
 void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response) {
-	//auto responseTime = std::chrono::system_clock::now();
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
 	try{
 		auto body = req.body(); //filename md5 filesize;
@@ -852,24 +854,6 @@ void Api::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Ht
 			_redisPool -> releaseConnection(redis_ptr);
 			return;
 		}
-		// if (cookies.has("session")) {
-		// 	std::string sessionId = cookies.get("session").value;
-		// 	std::string user_key = "user:" + sessionId;
-		// 	user = redis_ptr -> get(user_key);
-		// 	if (redis_ptr -> get(upload_user_key) != user) {
-		// 		MY_LOG_ERROR("Upload invalid session: ", sessionId);
-		// 		response.send(Pistache::Http::Code::Bad_Request,
-		// 				R"({"success":false,"message":"invalid session"})",
-		// 				MIME(Application, Json));
-		// 		return;
-		// 	}
-		// } else {
-		// 	MY_LOG_ERROR("Invalid or expired session: nullptr");
-		// 	response.send(Pistache::Http::Code::Unauthorized,
-		// 				R"({"success":false,"message":"invalid session"})",
-		// 				MIME(Application, Json));
-		// 	return;
-		// }
 
 		response.send(Pistache::Http::Code::Ok,
                     R"({"success":true,"status":"already_owned"})",

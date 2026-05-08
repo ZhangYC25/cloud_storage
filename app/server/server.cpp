@@ -25,7 +25,8 @@ bool Server::init(uint16_t port, int threads, size_t maxReqSize) {
         auto opts = Pistache::Http::Endpoint::options()
             .threads(threads)
             .maxRequestSize(maxReqSize);
-        
+            .socketOptions(SO_REUSEPORT, 1); 
+            
         m_server->init(opts);
         std::cout << "Server initialized on port " << port << std::endl;
         return true;

@@ -11,3 +11,211 @@
 2026-01-05 18:52:42 [INFO] Total files scanned:  0 
 2026-01-05 18:52:42 [INFO] Result: ALL DATA HEALTHY. 
 2026-01-05 18:53:45 [INFO] Health Check task exited safely. 
+2026-01-07 13:48:06 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-07 13:48:08 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-07 13:48:09 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-07 13:48:10 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-07 13:48:11 [ERROR] Redis GET failed: no value or invalid type for key:  2161858546ecd11f577791236af027b2 
+2026-01-07 13:48:42 [INFO] Health Check task exited safely. 
+2026-02-01 20:32:09 [INFO] Health Check task exited safely. 
+2026-02-05 16:24:40 [INFO] Health Check task exited safely. 
+2026-02-05 16:30:31 [INFO] Starting daily consistency check... 
+2026-02-05 16:30:31 [INFO] === [Health Check] Task Started === 
+2026-02-05 16:30:31 [INFO] === [Health Check] Summary === 
+2026-02-05 16:30:31 [INFO] Total files scanned:  0 
+2026-02-05 16:30:31 [INFO] Result: ALL DATA HEALTHY. 
+2026-02-05 16:32:37 [INFO] Health Check task exited safely. 
+2026-02-05 16:44:43 [INFO] Starting daily consistency check... 
+2026-02-05 16:44:43 [INFO] === [Health Check] Task Started === 
+2026-02-05 16:44:44 [INFO] === [Health Check] Summary === 
+2026-02-05 16:44:44 [INFO] Total files scanned:  1 
+2026-02-05 16:44:44 [INFO] Result: ALL DATA HEALTHY. 
+2026-02-05 16:59:45 [ERROR] Redis connection invalid, non-exist 
+2026-02-05 16:59:45 [ERROR] Redis connection invalid, non-exist 
+2026-02-05 16:59:45 [ERROR] Redis connection invalid, non-exist 
+2026-02-05 16:59:45 [ERROR] Redis connection invalid, non-exist 
+2026-02-05 16:59:45 [ERROR] Redis connection invalid, non-exist 
+2026-02-05 17:36:25 [INFO] Health Check task exited safely. 
+2026-02-05 17:39:54 [INFO] Starting daily consistency check... 
+2026-02-05 17:39:54 [INFO] === [Health Check] Task Started === 
+2026-02-05 17:39:55 [INFO] === [Health Check] Summary === 
+2026-02-05 17:39:55 [INFO] Total files scanned:  4 
+2026-02-05 17:39:55 [INFO] Result: ALL DATA HEALTHY. 
+2026-02-05 17:46:32 [INFO] Health Check task exited safely. 
+2026-02-05 18:19:01 [INFO] Starting daily consistency check... 
+2026-02-05 18:19:01 [INFO] === [Health Check] Task Started === 
+2026-02-05 18:19:02 [INFO] === [Health Check] Summary === 
+2026-02-05 18:19:02 [INFO] Total files scanned:  5 
+2026-02-05 18:19:02 [INFO] Result: ALL DATA HEALTHY. 
+2026-02-05 18:21:03 [INFO] Health Check task exited safely. 
+2026-02-05 18:23:37 [INFO] Starting daily consistency check... 
+2026-02-05 18:23:37 [INFO] === [Health Check] Task Started === 
+2026-02-05 18:23:38 [INFO] === [Health Check] Summary === 
+2026-02-05 18:23:38 [INFO] Total files scanned:  4 
+2026-02-05 18:23:38 [INFO] Result: ALL DATA HEALTHY. 
+2026-02-05 18:26:35 [INFO] Health Check task exited safely. 
+2026-03-14 22:38:48 [INFO] Starting daily consistency check... 
+2026-03-14 22:38:48 [INFO] === [Health Check] Task Started === 
+2026-03-14 22:38:49 [INFO] === [Health Check] Summary === 
+2026-03-14 22:38:49 [INFO] Total files scanned:  6 
+2026-03-14 22:38:49 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-14 22:39:36 [INFO] Health Check task exited safely. 
+2026-03-14 22:40:38 [INFO] Starting daily consistency check... 
+2026-03-14 22:40:38 [INFO] === [Health Check] Task Started === 
+2026-03-14 22:40:39 [INFO] === [Health Check] Summary === 
+2026-03-14 22:40:39 [INFO] Total files scanned:  6 
+2026-03-14 22:40:39 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-14 22:40:52 [INFO] Health Check task exited safely. 
+2026-03-14 22:42:20 [INFO] Health Check task exited safely. 
+2026-03-14 22:43:24 [INFO] Starting daily consistency check... 
+2026-03-14 22:43:24 [INFO] === [Health Check] Task Started === 
+2026-03-14 22:43:25 [INFO] === [Health Check] Summary === 
+2026-03-14 22:43:25 [INFO] Total files scanned:  6 
+2026-03-14 22:43:25 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-14 22:43:51 [INFO] Health Check task exited safely. 
+2026-03-14 22:47:50 [INFO] Starting daily consistency check... 
+2026-03-14 22:47:50 [INFO] === [Health Check] Task Started === 
+2026-03-14 22:47:51 [INFO] === [Health Check] Summary === 
+2026-03-14 22:47:51 [INFO] Total files scanned:  6 
+2026-03-14 22:47:51 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-14 22:53:57 [ERROR] Redis connection invalid, non-exist 
+2026-03-14 22:53:57 [ERROR] Redis connection invalid, non-exist 
+2026-03-14 22:53:57 [ERROR] Redis connection invalid, non-exist 
+2026-03-14 22:54:18 [ERROR] Redis connection invalid, non-exist 
+2026-03-14 22:58:19 [INFO] Health Check task exited safely. 
+2026-03-15 08:41:28 [INFO] Starting daily consistency check... 
+2026-03-15 08:41:28 [INFO] === [Health Check] Task Started === 
+2026-03-15 08:41:29 [INFO] === [Health Check] Summary === 
+2026-03-15 08:41:29 [INFO] Total files scanned:  6 
+2026-03-15 08:41:29 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-15 08:47:17 [INFO] Starting daily consistency check... 
+2026-03-15 08:47:17 [INFO] === [Health Check] Task Started === 
+2026-03-15 08:47:26 [INFO] === [Health Check] Summary === 
+2026-03-15 08:47:26 [INFO] Total files scanned:  6 
+2026-03-15 08:47:26 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-15 08:49:17 [INFO] Starting daily consistency check... 
+2026-03-15 08:49:17 [INFO] === [Health Check] Task Started === 
+2026-03-15 08:49:18 [INFO] === [Health Check] Summary === 
+2026-03-15 08:49:18 [INFO] Total files scanned:  6 
+2026-03-15 08:49:18 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-15 08:58:59 [INFO] Starting daily consistency check... 
+2026-03-15 08:58:59 [INFO] === [Health Check] Task Started === 
+2026-03-15 08:59:00 [INFO] === [Health Check] Summary === 
+2026-03-15 08:59:00 [INFO] Total files scanned:  7 
+2026-03-15 08:59:00 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-15 09:02:57 [INFO] Starting daily consistency check... 
+2026-03-15 09:02:57 [INFO] === [Health Check] Task Started === 
+2026-03-15 09:02:58 [INFO] === [Health Check] Summary === 
+2026-03-15 09:02:58 [INFO] Total files scanned:  7 
+2026-03-15 09:02:58 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-15 09:03:39 [INFO] Health Check task exited safely. 
+2026-03-30 14:32:11 [INFO] Starting daily consistency check... 
+2026-03-30 14:32:11 [INFO] === [Health Check] Task Started === 
+2026-03-30 14:32:12 [INFO] === [Health Check] Summary === 
+2026-03-30 14:32:12 [INFO] Total files scanned:  7 
+2026-03-30 14:32:12 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 14:36:29 [INFO] Starting daily consistency check... 
+2026-03-30 14:36:29 [INFO] === [Health Check] Task Started === 
+2026-03-30 14:36:30 [INFO] === [Health Check] Summary === 
+2026-03-30 14:36:30 [INFO] Total files scanned:  7 
+2026-03-30 14:36:30 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 14:39:05 [INFO] Starting daily consistency check... 
+2026-03-30 14:39:05 [INFO] === [Health Check] Task Started === 
+2026-03-30 14:39:06 [INFO] === [Health Check] Summary === 
+2026-03-30 14:39:06 [INFO] Total files scanned:  7 
+2026-03-30 14:39:06 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 14:51:20 [INFO] Starting daily consistency check... 
+2026-03-30 14:51:20 [INFO] === [Health Check] Task Started === 
+2026-03-30 14:51:21 [INFO] === [Health Check] Summary === 
+2026-03-30 14:51:21 [INFO] Total files scanned:  7 
+2026-03-30 14:51:21 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 14:58:11 [ERROR] Redis connection invalid, non-exist 
+2026-03-30 14:58:11 [ERROR] Redis connection invalid, non-exist 
+2026-03-30 14:58:11 [ERROR] Redis connection invalid, non-exist 
+2026-03-30 14:58:11 [ERROR] Redis connection invalid, non-exist 
+2026-03-30 14:58:11 [ERROR] Redis connection invalid, non-exist 
+2026-03-30 15:01:36 [INFO] Starting daily consistency check... 
+2026-03-30 15:01:36 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:01:37 [INFO] === [Health Check] Summary === 
+2026-03-30 15:01:37 [INFO] Total files scanned:  8 
+2026-03-30 15:01:37 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:11:16 [INFO] Health Check task exited safely. 
+2026-03-30 15:20:20 [INFO] Starting daily consistency check... 
+2026-03-30 15:20:20 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:20:21 [INFO] === [Health Check] Summary === 
+2026-03-30 15:20:21 [INFO] Total files scanned:  7 
+2026-03-30 15:20:21 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:24:22 [INFO] Starting daily consistency check... 
+2026-03-30 15:24:22 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:24:23 [INFO] === [Health Check] Summary === 
+2026-03-30 15:24:23 [INFO] Total files scanned:  7 
+2026-03-30 15:24:23 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:27:12 [INFO] Starting daily consistency check... 
+2026-03-30 15:27:12 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:27:13 [INFO] === [Health Check] Summary === 
+2026-03-30 15:27:13 [INFO] Total files scanned:  7 
+2026-03-30 15:27:13 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:28:19 [INFO] Health Check task exited safely. 
+2026-03-30 15:32:54 [INFO] Starting daily consistency check... 
+2026-03-30 15:32:54 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:32:55 [INFO] === [Health Check] Summary === 
+2026-03-30 15:32:55 [INFO] Total files scanned:  7 
+2026-03-30 15:32:55 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:37:12 [INFO] Starting daily consistency check... 
+2026-03-30 15:37:12 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:37:13 [INFO] === [Health Check] Summary === 
+2026-03-30 15:37:13 [INFO] Total files scanned:  7 
+2026-03-30 15:37:13 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:43:58 [INFO] Starting daily consistency check... 
+2026-03-30 15:43:58 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:43:59 [INFO] === [Health Check] Summary === 
+2026-03-30 15:43:59 [INFO] Total files scanned:  7 
+2026-03-30 15:43:59 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:46:33 [INFO] Starting daily consistency check... 
+2026-03-30 15:46:33 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:46:34 [INFO] === [Health Check] Summary === 
+2026-03-30 15:46:34 [INFO] Total files scanned:  8 
+2026-03-30 15:46:34 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:46:48 [INFO] Health Check task exited safely. 
+2026-03-30 15:48:05 [INFO] Starting daily consistency check... 
+2026-03-30 15:48:05 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:48:06 [INFO] === [Health Check] Summary === 
+2026-03-30 15:48:06 [INFO] Total files scanned:  8 
+2026-03-30 15:48:06 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:50:14 [INFO] Starting daily consistency check... 
+2026-03-30 15:50:14 [INFO] === [Health Check] Task Started === 
+2026-03-30 15:50:15 [INFO] === [Health Check] Summary === 
+2026-03-30 15:50:15 [INFO] Total files scanned:  8 
+2026-03-30 15:50:15 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-30 15:51:20 [ERROR] Redis GET failed: no value or invalid type for key:  md5:e038aff0047653443a8b78e460ed5c77 
+2026-03-31 15:50:15 [INFO] Starting daily consistency check... 
+2026-03-31 15:50:15 [INFO] === [Health Check] Task Started === 
+2026-03-31 15:50:15 [ERROR] Query batch failed:  The client was disconnected by the server because of inactivity. See wait_timeout and interactive_timeout for configuring this behavior. 
+2026-03-31 15:50:15 [INFO] === [Health Check] Summary === 
+2026-03-31 15:50:15 [INFO] Total files scanned:  0 
+2026-03-31 15:50:15 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-31 22:13:59 [ERROR] Redis connection invalid, non-exist 
+2026-03-31 22:13:59 [ERROR] Redis connection invalid, non-exist 
+2026-03-31 22:13:59 [ERROR] Redis connection invalid, non-exist 
+2026-03-31 22:13:59 [ERROR] Redis connection invalid, non-exist 
+2026-03-31 22:13:59 [ERROR] Redis connection invalid, non-exist 
+2026-03-31 22:13:59 [ERROR] MySQL select user  zhangyunc   passwd failed:  mysql_stmt_prepare() failed: The client was disconnected by the server because of inactivity. See wait_timeout and interactive_timeout for configuring this behavior. 
+2026-03-31 22:14:06 [ERROR] MySQL select user  zhangyunc   passwd failed:  mysql_stmt_prepare() failed: Lost connection to MySQL server during query 
+2026-03-31 22:14:26 [ERROR] MySQL select user  zhangyc   passwd failed:  mysql_stmt_prepare() failed: Lost connection to MySQL server during query 
+2026-03-31 22:16:24 [ERROR] MySQL select user  zhangyunc   passwd failed:  mysql_stmt_prepare() failed: Lost connection to MySQL server during query 
+2026-03-31 22:17:08 [ERROR] MySQL select user  zhangyunc   passwd failed:  mysql_stmt_prepare() failed: Lost connection to MySQL server during query 
+2026-03-31 22:18:02 [ERROR] MySQL select user  zhangyunc   passwd failed:  mysql_stmt_prepare() failed: Lost connection to MySQL server during query 
+2026-03-31 22:29:07 [ERROR] Redis connection invalid, non-exist 
+2026-03-31 22:29:07 [ERROR] MySQL select user  zhangyunc   passwd failed:  mysql_stmt_prepare() failed: Lost connection to MySQL server during query 
+2026-03-31 22:36:17 [INFO] Health Check task exited safely. 
+2026-03-31 22:37:21 [INFO] Starting daily consistency check... 
+2026-03-31 22:37:21 [INFO] === [Health Check] Task Started === 
+2026-03-31 22:37:22 [INFO] === [Health Check] Summary === 
+2026-03-31 22:37:22 [INFO] Total files scanned:  9 
+2026-03-31 22:37:22 [INFO] Result: ALL DATA HEALTHY. 
+2026-03-31 22:40:40 [INFO] Health Check task exited safely. 
+2026-05-08 16:10:12 [INFO] Starting daily consistency check... 
+2026-05-08 16:10:12 [INFO] === [Health Check] Task Started === 
+2026-05-08 16:10:13 [INFO] === [Health Check] Summary === 
+2026-05-08 16:10:13 [INFO] Total files scanned:  9 
+2026-05-08 16:10:13 [INFO] Result: ALL DATA HEALTHY. 
