@@ -131,26 +131,6 @@ docker-compose -d up
 ```
 也可以修改自行的 账户 密码
 
-### Pistache / bcrypt
-突然发现这两个文件夹下面是空的，只能手动下载一下了
-*pistache*
-```
-git clone https://github.com/pistacheio/pistache.git
-cd pistache
-mkdir build && cd build
-cmake -DPISTACHE_BUILD_TESTS=OFF ..
-make -j$(nproc)
-sudo make install
-```
-- 通常库文件在：/usr/local/lib
-- 头文件在：/usr/local/include/pistache
-
-*bcrypt*
-这个库不太好找，所以在 lib/database 分支里面
-我提供了 .a 与 .c文件，但只支持 加密 和 解密 两个操作。
-
-得到之后记得改改 CMakeLists里面的路径
-
 ### 邮件服务
 - 这里的邮件服务使用了腾讯云的API，需要腾讯云相关密钥
 - 没有腾讯云也没关系，我上传的版本屏蔽了相关代码，可以自行修改
