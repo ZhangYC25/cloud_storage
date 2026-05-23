@@ -187,7 +187,7 @@ bool Mysql::insertUser(const std::string& username, const std::string& password_
         
         bind[4].buffer_type = MYSQL_TYPE_STRING;
         bind[4].buffer = const_cast<char*>(timestamp.c_str());
-        bind[5].buffer_length = timestamp.length();
+        bind[4].buffer_length = timestamp.length();
 
 
         // 4. 执行参数绑定
