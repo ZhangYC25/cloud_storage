@@ -18,16 +18,23 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/database # database子目录
     ${CMAKE_CURRENT_SOURCE_DIR}/myfastdfs # myfastdfs子目录
     ${CMAKE_CURRENT_SOURCE_DIR}/server
+    ${CMAKE_CURRENT_SOURCE_DIR}/server/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/server/handlers
     ${CMAKE_CURRENT_SOURCE_DIR}/utils
+)
+
+# 项目根目录第三方头文件（pistache / bcrypt）
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(
+    ${PROJECT_ROOT}/pistache
+    ${PROJECT_ROOT}/bcrypt
 )
 
 # 系统/第三方头文件
 include_directories(
-    /usr/local/include                   # Pistache头文件
     /usr/include/mysql                   # MySQL头文件
     /usr/include/fastcommon              # fastcommon头文件
     /usr/include/fastdfs                 # fastdfs头文件
-    /usr/local/include/bcrypt   # bcrypt头文件
     /usr/include/x86_64-linux-gnu #curl
     /home/zhangyc/tencentcloud-sdk-cpp/core/include
 )
@@ -41,6 +48,11 @@ set(SOURCES
     main.cpp
     server/server.cpp
     server/api.cpp
+    server/common/session_auth.cpp
+    server/common/fdfs_ops.cpp
+    server/handlers/auth_handler.cpp
+    server/handlers/file_handler.cpp
+    server/handlers/upload_handler.cpp
     server/session.cpp
     server/email.cpp
     # database子目录下的源文件
@@ -72,7 +84,7 @@ target_link_libraries(cloud_storage_server
         redis               # Redis动态库
         fastcommon          # fastcommon库
         fdfsclient          # fastdfs客户端库
-        /usr/local/lib/bcrypt.a # bcrypt静态库
+        ${PROJECT_ROOT}/bcrypt/bcrypt.a
         /usr/lib/x86_64-linux-gnu/libcurl.so # curl 动态库
 )
 

@@ -1,5 +1,8 @@
 #include "fdfsClient.h"
 
+#include <cerrno>
+#include <cstring>
+
 FdfsClient::FdfsClient():conf_path("/etc/fdfs/client.conf"), pTrackerServer(nullptr){
     createConnection();
 }
@@ -36,6 +39,13 @@ void FdfsClient::closeConnection() {
 
 ConnectionInfo* FdfsClient::getPtrackerServer(){return pTrackerServer;};
 
+bool FdfsClient::ensureConnection() {
+    if (pTrackerServer != nullptr && pTrackerServer->sock >= 0) {
+        return true;
+    }
+    return createConnection();
+}
+
 std::string FdfsClient::upload_file_to_fastdfs(const char* local_path, const char* file_ext){
     ConnectionInfo storageServer;
 	memset(&storageServer, 0, sizeof(storageServer));
@@ -49,8 +59,8 @@ std::string FdfsClient::upload_file_to_fastdfs(const char* local_path, const cha
 	int result = tracker_query_storage_store(pTrackerServer, &storageServer,
 			group_name, &store_path_index);
 	if (result != 0) {
-		tracker_close_connection_ex(pTrackerServer,true);
-		fdfs_client_destroy();
+		closeConnection();
+		MY_LOG_ERROR("Fdfs tracker_query_storage_store failed, code=", result);
 		return "";
 	}
 
@@ -100,32 +110,26 @@ std::string FdfsClient::create_temp_file(std::string_view data) {
     return std::string(temp_template);
 }
 
-bool FdfsClient::delete_file_from_fastdfs(const std::string& group_name, const std::string& file){
-    ConnectionInfo storageServer;
-	memset(&storageServer, 0, sizeof(storageServer));
-
-    int result = tracker_query_storage_update(
-        pTrackerServer,
-        &storageServer,
-        group_name.c_str(),
-        file.c_str()
-    );
-    if (result != 0) {
-        // std::cerr << "Failed to query storage server for file: " 
-        //           << group_name << "/" << file 
-        //           << ", error code: " << result << std::endl;
-        MY_LOG_ERROR("Fdfs Query file: ",group_name, 
-                    "/", file, "failed , error code: ", result);
+bool FdfsClient::delete_file_from_fastdfs(const std::string& file_id){
+    if (file_id.empty()) {
+        MY_LOG_ERROR("Fdfs delete skipped: empty file_id");
         return false;
     }
-    if(storage_delete_file(pTrackerServer,&storageServer,
-        group_name.c_str(), file.c_str())) {
-            //std::cerr << "delete fdfs error" << std::endl;
-            MY_LOG_ERROR("Fdfs Delete file", group_name, "/",file, " failed");
-            return false;
+
+    if (!ensureConnection()) {
+        MY_LOG_ERROR("Fdfs delete failed: tracker connection unavailable");
+        return false;
+    }
+
+    int result = storage_delete_file1(pTrackerServer, nullptr, file_id.c_str());
+    if (result != 0) {
+        MY_LOG_ERROR("Fdfs Delete file ", file_id, " failed, code=", result);
+        if (result == ECONNREFUSED || result == ENOENT) {
+            closeConnection();
         }
+        return false;
+    }
     return true;
-    
 }
 
 

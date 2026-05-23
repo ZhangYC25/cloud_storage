@@ -219,3 +219,120 @@
 2026-05-08 16:10:13 [INFO] === [Health Check] Summary === 
 2026-05-08 16:10:13 [INFO] Total files scanned:  9 
 2026-05-08 16:10:13 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-09 10:17:32 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  1 
+2026-05-09 10:17:32 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-09 10:17:32 [ERROR] Redis connection invalid, non-exist 
+2026-05-09 10:17:32 [ERROR] Redis connection invalid, non-exist 
+2026-05-09 10:17:32 [ERROR] Redis connection invalid, non-exist 
+2026-05-09 10:17:32 [ERROR] Redis connection invalid, non-exist 
+2026-05-09 10:17:32 [ERROR] Redis connection invalid, non-exist 
+2026-05-09 16:10:13 [INFO] Starting daily consistency check... 
+2026-05-09 16:10:13 [INFO] === [Health Check] Task Started === 
+2026-05-09 16:10:14 [INFO] === [Health Check] Summary === 
+2026-05-09 16:10:14 [INFO] Total files scanned:  9 
+2026-05-09 16:10:14 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-10 16:10:14 [INFO] Starting daily consistency check... 
+2026-05-10 16:10:14 [INFO] === [Health Check] Task Started === 
+2026-05-10 16:10:14 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-10 16:10:15 [INFO] === [Health Check] Summary === 
+2026-05-10 16:10:15 [INFO] Total files scanned:  9 
+2026-05-10 16:10:15 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-11 16:10:15 [INFO] Starting daily consistency check... 
+2026-05-11 16:10:15 [INFO] === [Health Check] Task Started === 
+2026-05-11 16:10:15 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-11 16:10:16 [INFO] === [Health Check] Summary === 
+2026-05-11 16:10:16 [INFO] Total files scanned:  9 
+2026-05-11 16:10:16 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-12 16:10:16 [INFO] Starting daily consistency check... 
+2026-05-12 16:10:16 [INFO] === [Health Check] Task Started === 
+2026-05-12 16:10:16 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-12 16:10:17 [INFO] === [Health Check] Summary === 
+2026-05-12 16:10:17 [INFO] Total files scanned:  9 
+2026-05-12 16:10:17 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-13 15:13:46 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-13 15:13:46 [ERROR] Redis connection invalid, non-exist 
+2026-05-13 16:10:17 [INFO] Starting daily consistency check... 
+2026-05-13 16:10:17 [INFO] === [Health Check] Task Started === 
+2026-05-13 16:10:18 [INFO] === [Health Check] Summary === 
+2026-05-13 16:10:18 [INFO] Total files scanned:  9 
+2026-05-13 16:10:18 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-13 19:15:40 [ERROR] Redis connection invalid, non-exist 
+2026-05-13 19:34:09 [ERROR] Redis connection invalid, non-exist 
+2026-05-13 19:34:31 [ERROR] queryUserFiles invalid session:   
+2026-05-13 19:34:51 [ERROR] Upload request missing session cookie 
+2026-05-13 19:34:54 [ERROR] deleteCheck invalid session:   
+2026-05-13 19:34:54 [ERROR] Redis GET failed: no value or invalid type for key:  user: 
+2026-05-13 19:34:57 [ERROR] deleteCheck invalid session:   
+2026-05-13 19:34:57 [ERROR] Redis GET failed: no value or invalid type for key:  user: 
+2026-05-14 16:10:18 [INFO] Starting daily consistency check... 
+2026-05-14 16:10:18 [INFO] === [Health Check] Task Started === 
+2026-05-14 16:10:19 [INFO] === [Health Check] Summary === 
+2026-05-14 16:10:19 [INFO] Total files scanned:  9 
+2026-05-14 16:10:19 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-15 10:36:24 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  5 
+2026-05-16 14:48:08 [INFO] Starting daily consistency check... 
+2026-05-16 14:48:08 [INFO] === [Health Check] Task Started === 
+2026-05-16 14:48:09 [INFO] === [Health Check] Summary === 
+2026-05-16 14:48:09 [INFO] Total files scanned:  9 
+2026-05-16 14:48:09 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-17 14:48:09 [INFO] Starting daily consistency check... 
+2026-05-17 14:48:09 [INFO] === [Health Check] Task Started === 
+2026-05-17 14:48:09 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  1 
+2026-05-17 14:48:09 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-17 14:48:10 [INFO] === [Health Check] Summary === 
+2026-05-17 14:48:10 [INFO] Total files scanned:  9 
+2026-05-17 14:48:10 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-17 16:52:00 [ERROR] Redis connection invalid, non-exist 
+2026-05-17 16:52:00 [ERROR] Redis connection invalid, non-exist 
+2026-05-17 16:52:00 [ERROR] Redis connection invalid, non-exist 
+2026-05-17 16:52:00 [ERROR] Redis connection invalid, non-exist 
+2026-05-17 16:52:00 [ERROR] Redis connection invalid, non-exist 
+2026-05-18 14:48:10 [INFO] Starting daily consistency check... 
+2026-05-18 14:48:10 [INFO] === [Health Check] Task Started === 
+2026-05-18 14:48:10 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-18 14:48:11 [INFO] === [Health Check] Summary === 
+2026-05-18 14:48:11 [INFO] Total files scanned:  9 
+2026-05-18 14:48:11 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-19 14:48:11 [INFO] Starting daily consistency check... 
+2026-05-19 14:48:11 [INFO] === [Health Check] Task Started === 
+2026-05-19 14:48:11 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-19 14:48:12 [INFO] === [Health Check] Summary === 
+2026-05-19 14:48:12 [INFO] Total files scanned:  9 
+2026-05-19 14:48:12 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-20 14:48:12 [INFO] Starting daily consistency check... 
+2026-05-20 14:48:12 [INFO] === [Health Check] Task Started === 
+2026-05-20 14:48:12 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-20 14:48:13 [INFO] === [Health Check] Summary === 
+2026-05-20 14:48:13 [INFO] Total files scanned:  9 
+2026-05-20 14:48:13 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-21 14:48:13 [INFO] Starting daily consistency check... 
+2026-05-21 14:48:13 [INFO] === [Health Check] Task Started === 
+2026-05-21 14:48:13 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-21 14:48:14 [INFO] === [Health Check] Summary === 
+2026-05-21 14:48:14 [INFO] Total files scanned:  9 
+2026-05-21 14:48:14 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-22 14:48:14 [INFO] Starting daily consistency check... 
+2026-05-22 14:48:14 [INFO] === [Health Check] Task Started === 
+2026-05-22 14:48:14 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-22 14:48:15 [INFO] === [Health Check] Summary === 
+2026-05-22 14:48:15 [INFO] Total files scanned:  9 
+2026-05-22 14:48:15 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-23 09:38:32 [INFO] Health Check task exited safely. 
+2026-05-23 09:42:04 [INFO] Starting daily consistency check... 
+2026-05-23 09:42:04 [INFO] === [Health Check] Task Started === 
+2026-05-23 09:42:05 [INFO] === [Health Check] Summary === 
+2026-05-23 09:42:05 [INFO] Total files scanned:  9 
+2026-05-23 09:42:05 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-23 10:07:01 [INFO] Fdfs Delete file success:  group1/M00/00/01/kjjCYGoRC76AaD31AAKYfBmYi7A749.pdf 
+2026-05-23 10:07:15 [INFO] Starting daily consistency check... 
+2026-05-23 10:07:15 [INFO] === [Health Check] Task Started === 
+2026-05-23 10:07:16 [INFO] === [Health Check] Summary === 
+2026-05-23 10:07:16 [INFO] Total files scanned:  9 
+2026-05-23 10:07:16 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-23 10:20:03 [INFO] Health Check task exited safely. 
+2026-05-23 10:20:38 [INFO] Fdfs Delete file success:  group1/M00/00/01/kjjCYGoRDvKANCzyAAKYfBmYi7A822.pdf 
+2026-05-23 10:21:06 [INFO] Starting daily consistency check... 
+2026-05-23 10:21:06 [INFO] === [Health Check] Task Started === 
+2026-05-23 10:21:07 [INFO] === [Health Check] Summary === 
+2026-05-23 10:21:07 [INFO] Total files scanned:  9 
+2026-05-23 10:21:07 [INFO] Result: ALL DATA HEALTHY. 

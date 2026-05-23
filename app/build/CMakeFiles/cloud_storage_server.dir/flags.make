@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/zhangyc/cloud_storage/app -I/home/zhangyc/cloud_storage/app/database -I/home/zhangyc/cloud_storage/app/myfastdfs -I/home/zhangyc/cloud_storage/app/server -I/home/zhangyc/cloud_storage/app/utils -I/usr/include/mysql -I/usr/include/fastcommon -I/usr/include/fastdfs -I/usr/local/include/bcrypt -I/home/zhangyc/tencentcloud-sdk-cpp/core/include
+CXX_INCLUDES = -I/home/zhangyc/cloud_storage/app -I/home/zhangyc/cloud_storage/app/database -I/home/zhangyc/cloud_storage/app/myfastdfs -I/home/zhangyc/cloud_storage/app/server -I/home/zhangyc/cloud_storage/app/server/common -I/home/zhangyc/cloud_storage/app/server/handlers -I/home/zhangyc/cloud_storage/app/utils -I/home/zhangyc/cloud_storage/app/../pistache -I/home/zhangyc/cloud_storage/app/../bcrypt -I/usr/include/mysql -I/usr/include/fastcommon -I/usr/include/fastdfs -I/home/zhangyc/tencentcloud-sdk-cpp/core/include
 
 CXX_FLAGS = -g -std=c++17
 

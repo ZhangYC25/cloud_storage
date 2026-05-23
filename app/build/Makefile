@@ -321,6 +321,54 @@ server/api.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/api.cpp.s
 .PHONY : server/api.cpp.s
 
+server/common/fdfs_ops.o: server/common/fdfs_ops.cpp.o
+.PHONY : server/common/fdfs_ops.o
+
+# target to build an object file
+server/common/fdfs_ops.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.o
+.PHONY : server/common/fdfs_ops.cpp.o
+
+server/common/fdfs_ops.i: server/common/fdfs_ops.cpp.i
+.PHONY : server/common/fdfs_ops.i
+
+# target to preprocess a source file
+server/common/fdfs_ops.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.i
+.PHONY : server/common/fdfs_ops.cpp.i
+
+server/common/fdfs_ops.s: server/common/fdfs_ops.cpp.s
+.PHONY : server/common/fdfs_ops.s
+
+# target to generate assembly for a file
+server/common/fdfs_ops.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.s
+.PHONY : server/common/fdfs_ops.cpp.s
+
+server/common/session_auth.o: server/common/session_auth.cpp.o
+.PHONY : server/common/session_auth.o
+
+# target to build an object file
+server/common/session_auth.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.o
+.PHONY : server/common/session_auth.cpp.o
+
+server/common/session_auth.i: server/common/session_auth.cpp.i
+.PHONY : server/common/session_auth.i
+
+# target to preprocess a source file
+server/common/session_auth.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.i
+.PHONY : server/common/session_auth.cpp.i
+
+server/common/session_auth.s: server/common/session_auth.cpp.s
+.PHONY : server/common/session_auth.s
+
+# target to generate assembly for a file
+server/common/session_auth.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.s
+.PHONY : server/common/session_auth.cpp.s
+
 server/email.o: server/email.cpp.o
 .PHONY : server/email.o
 
@@ -344,6 +392,78 @@ server/email.s: server/email.cpp.s
 server/email.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/email.cpp.s
 .PHONY : server/email.cpp.s
+
+server/handlers/auth_handler.o: server/handlers/auth_handler.cpp.o
+.PHONY : server/handlers/auth_handler.o
+
+# target to build an object file
+server/handlers/auth_handler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/auth_handler.cpp.o
+.PHONY : server/handlers/auth_handler.cpp.o
+
+server/handlers/auth_handler.i: server/handlers/auth_handler.cpp.i
+.PHONY : server/handlers/auth_handler.i
+
+# target to preprocess a source file
+server/handlers/auth_handler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/auth_handler.cpp.i
+.PHONY : server/handlers/auth_handler.cpp.i
+
+server/handlers/auth_handler.s: server/handlers/auth_handler.cpp.s
+.PHONY : server/handlers/auth_handler.s
+
+# target to generate assembly for a file
+server/handlers/auth_handler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/auth_handler.cpp.s
+.PHONY : server/handlers/auth_handler.cpp.s
+
+server/handlers/file_handler.o: server/handlers/file_handler.cpp.o
+.PHONY : server/handlers/file_handler.o
+
+# target to build an object file
+server/handlers/file_handler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/file_handler.cpp.o
+.PHONY : server/handlers/file_handler.cpp.o
+
+server/handlers/file_handler.i: server/handlers/file_handler.cpp.i
+.PHONY : server/handlers/file_handler.i
+
+# target to preprocess a source file
+server/handlers/file_handler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/file_handler.cpp.i
+.PHONY : server/handlers/file_handler.cpp.i
+
+server/handlers/file_handler.s: server/handlers/file_handler.cpp.s
+.PHONY : server/handlers/file_handler.s
+
+# target to generate assembly for a file
+server/handlers/file_handler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/file_handler.cpp.s
+.PHONY : server/handlers/file_handler.cpp.s
+
+server/handlers/upload_handler.o: server/handlers/upload_handler.cpp.o
+.PHONY : server/handlers/upload_handler.o
+
+# target to build an object file
+server/handlers/upload_handler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/upload_handler.cpp.o
+.PHONY : server/handlers/upload_handler.cpp.o
+
+server/handlers/upload_handler.i: server/handlers/upload_handler.cpp.i
+.PHONY : server/handlers/upload_handler.i
+
+# target to preprocess a source file
+server/handlers/upload_handler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/upload_handler.cpp.i
+.PHONY : server/handlers/upload_handler.cpp.i
+
+server/handlers/upload_handler.s: server/handlers/upload_handler.cpp.s
+.PHONY : server/handlers/upload_handler.s
+
+# target to generate assembly for a file
+server/handlers/upload_handler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/handlers/upload_handler.cpp.s
+.PHONY : server/handlers/upload_handler.cpp.s
 
 server/server.o: server/server.cpp.o
 .PHONY : server/server.o
@@ -498,9 +618,24 @@ help:
 	@echo "... server/api.o"
 	@echo "... server/api.i"
 	@echo "... server/api.s"
+	@echo "... server/common/fdfs_ops.o"
+	@echo "... server/common/fdfs_ops.i"
+	@echo "... server/common/fdfs_ops.s"
+	@echo "... server/common/session_auth.o"
+	@echo "... server/common/session_auth.i"
+	@echo "... server/common/session_auth.s"
 	@echo "... server/email.o"
 	@echo "... server/email.i"
 	@echo "... server/email.s"
+	@echo "... server/handlers/auth_handler.o"
+	@echo "... server/handlers/auth_handler.i"
+	@echo "... server/handlers/auth_handler.s"
+	@echo "... server/handlers/file_handler.o"
+	@echo "... server/handlers/file_handler.i"
+	@echo "... server/handlers/file_handler.s"
+	@echo "... server/handlers/upload_handler.o"
+	@echo "... server/handlers/upload_handler.i"
+	@echo "... server/handlers/upload_handler.s"
 	@echo "... server/server.o"
 	@echo "... server/server.i"
 	@echo "... server/server.s"

@@ -1,103 +1,34 @@
 CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /home/zhangyc/cloud_storage/app/server/api.cpp \
- /usr/include/stdc-predef.h /usr/include/x86_64-linux-gnu/curl/curl.h \
- /usr/include/x86_64-linux-gnu/curl/curlver.h \
- /usr/include/x86_64-linux-gnu/curl/system.h \
- /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/features.h \
- /usr/include/features-time64.h \
+ /usr/include/stdc-predef.h /usr/include/c++/11/iostream \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
+ /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/bits/timesize.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/long-double.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h \
- /usr/include/x86_64-linux-gnu/bits/time64.h \
- /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-intn.h /usr/include/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endianness.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap.h \
- /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
- /usr/include/x86_64-linux-gnu/sys/select.h \
- /usr/include/x86_64-linux-gnu/bits/select.h \
- /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
- /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
- /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
- /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
- /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
- /usr/include/x86_64-linux-gnu/sys/socket.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
- /usr/include/x86_64-linux-gnu/bits/socket.h \
- /usr/include/x86_64-linux-gnu/bits/socket_type.h \
- /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
- /usr/include/x86_64-linux-gnu/asm/socket.h \
- /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h \
- /usr/include/x86_64-linux-gnu/asm/posix_types.h \
- /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
- /usr/include/asm-generic/posix_types.h \
- /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h \
- /usr/include/x86_64-linux-gnu/asm/sockios.h \
- /usr/include/asm-generic/sockios.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
- /usr/include/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
- /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
- /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
- /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
- /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/floatn.h \
- /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
- /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
- /usr/include/x86_64-linux-gnu/bits/local_lim.h \
- /usr/include/linux/limits.h \
- /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
- /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
- /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
- /usr/include/x86_64-linux-gnu/bits/uio_lim.h /usr/include/time.h \
- /usr/include/x86_64-linux-gnu/bits/time.h \
- /usr/include/x86_64-linux-gnu/bits/timex.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
- /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/x86_64-linux-gnu/sys/time.h \
- /usr/include/x86_64-linux-gnu/curl/easy.h \
- /usr/include/x86_64-linux-gnu/curl/multi.h \
- /usr/include/x86_64-linux-gnu/curl/curl.h \
- /usr/include/x86_64-linux-gnu/curl/urlapi.h \
- /usr/include/x86_64-linux-gnu/curl/options.h \
- /usr/include/c++/11/iostream \
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
  /usr/include/c++/11/pstl/pstl_config.h /usr/include/c++/11/ostream \
  /usr/include/c++/11/ios /usr/include/c++/11/iosfwd \
  /usr/include/c++/11/bits/stringfwd.h \
  /usr/include/c++/11/bits/memoryfwd.h /usr/include/c++/11/bits/postypes.h \
  /usr/include/c++/11/cwchar /usr/include/wchar.h \
+ /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
  /usr/include/c++/11/exception /usr/include/c++/11/bits/exception.h \
  /usr/include/c++/11/bits/exception_ptr.h \
  /usr/include/c++/11/bits/exception_defines.h \
@@ -121,21 +52,44 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/c++/11/bits/ptr_traits.h /usr/include/c++/11/debug/debug.h \
  /usr/include/c++/11/bits/predefined_ops.h /usr/include/c++/11/cstdint \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+ /usr/include/x86_64-linux-gnu/bits/time64.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /usr/include/c++/11/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h \
  /usr/include/c++/11/clocale /usr/include/locale.h \
  /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/11/cctype \
- /usr/include/ctype.h /usr/include/c++/11/bits/ios_base.h \
- /usr/include/c++/11/ext/atomicity.h \
+ /usr/include/ctype.h /usr/include/x86_64-linux-gnu/bits/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endianness.h \
+ /usr/include/c++/11/bits/ios_base.h /usr/include/c++/11/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h \
  /usr/include/pthread.h /usr/include/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
  /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
- /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
+ /usr/include/x86_64-linux-gnu/bits/cpu-set.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+ /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
+ /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h \
  /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
  /usr/include/c++/11/bits/locale_classes.h /usr/include/c++/11/string \
@@ -156,9 +110,20 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/c++/11/bits/string_view.tcc \
  /usr/include/c++/11/ext/string_conversions.h /usr/include/c++/11/cstdlib \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
- /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+ /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+ /usr/include/x86_64-linux-gnu/sys/select.h \
+ /usr/include/x86_64-linux-gnu/bits/select.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+ /usr/include/alloca.h /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/c++/11/bits/std_abs.h /usr/include/c++/11/cstdio \
+ /usr/include/stdio.h /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/c++/11/cerrno /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
@@ -182,9 +147,10 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
  /home/zhangyc/cloud_storage/app/server/api.h \
- /usr/local/include/pistache/endpoint.h \
- /usr/local/include/pistache/http.h /usr/include/c++/11/algorithm \
- /usr/include/c++/11/utility /usr/include/c++/11/bits/stl_relops.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/endpoint.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http.h \
+ /usr/include/c++/11/algorithm /usr/include/c++/11/utility \
+ /usr/include/c++/11/bits/stl_relops.h \
  /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_heap.h \
@@ -224,9 +190,17 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h /usr/include/c++/11/sstream \
  /usr/include/c++/11/bits/sstream.tcc \
- /usr/local/include/pistache/eventmeth.h \
- /usr/local/include/pistache/winornix.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/signal.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/eventmeth.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/winornix.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
+ /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/uio_lim.h /usr/include/signal.h \
  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
  /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
  /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \
@@ -258,29 +232,31 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
  /usr/include/x86_64-linux-gnu/asm/param.h \
  /usr/include/asm-generic/param.h \
- /usr/local/include/pistache/emosandlibevdefs.h \
- /usr/local/include/pistache/em_socket_t.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/emosandlibevdefs.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/em_socket_t.h \
  /usr/include/x86_64-linux-gnu/sys/eventfd.h \
  /usr/include/x86_64-linux-gnu/bits/eventfd.h \
  /usr/include/x86_64-linux-gnu/sys/timerfd.h \
  /usr/include/x86_64-linux-gnu/bits/timerfd.h \
- /usr/local/include/pistache/async.h /usr/local/include/pistache/typeid.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/async.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/typeid.h \
  /usr/include/c++/11/cstddef /usr/include/c++/11/atomic \
  /usr/include/c++/11/condition_variable \
  /usr/include/c++/11/bits/std_mutex.h \
  /usr/include/c++/11/bits/unique_lock.h /usr/include/c++/11/mutex \
- /usr/local/include/pistache/cookie.h /usr/include/c++/11/list \
- /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
- /usr/include/c++/11/map /usr/include/c++/11/bits/stl_tree.h \
- /usr/include/c++/11/bits/stl_map.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/cookie.h \
+ /usr/include/c++/11/list /usr/include/c++/11/bits/stl_list.h \
+ /usr/include/c++/11/bits/list.tcc /usr/include/c++/11/map \
+ /usr/include/c++/11/bits/stl_tree.h /usr/include/c++/11/bits/stl_map.h \
  /usr/include/c++/11/bits/stl_multimap.h /usr/include/c++/11/optional \
  /usr/include/c++/11/unordered_set \
  /usr/include/c++/11/bits/unordered_set.h \
- /usr/local/include/pistache/http_defs.h \
- /usr/local/include/pistache/http_headers.h \
- /usr/local/include/pistache/http_header.h \
- /usr/local/include/pistache/mime.h /usr/include/c++/11/cassert \
- /usr/include/assert.h /usr/include/c++/11/cmath /usr/include/math.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http_defs.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http_headers.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http_header.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/mime.h \
+ /usr/include/c++/11/cassert /usr/include/assert.h \
+ /usr/include/c++/11/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
@@ -302,41 +278,62 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/c++/11/tr1/poly_hermite.tcc \
  /usr/include/c++/11/tr1/poly_laguerre.tcc \
  /usr/include/c++/11/tr1/riemann_zeta.tcc \
- /usr/local/include/pistache/net.h /usr/include/c++/11/cstring \
- /usr/include/string.h /usr/include/strings.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/bits/in.h \
- /usr/include/rpc/netdb.h /usr/include/x86_64-linux-gnu/bits/netdb.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/net.h \
+ /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+ /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
+ /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
+ /usr/include/x86_64-linux-gnu/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h \
+ /usr/include/x86_64-linux-gnu/asm/posix_types.h \
+ /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h \
+ /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/x86_64-linux-gnu/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
+ /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/rpc/netdb.h \
+ /usr/include/x86_64-linux-gnu/bits/netdb.h \
  /usr/include/x86_64-linux-gnu/sys/un.h \
- /usr/local/include/pistache/type_checkers.h \
- /usr/local/include/pistache/meta.h /usr/local/include/pistache/stream.h \
- /usr/local/include/pistache/os.h /usr/local/include/pistache/common.h \
- /usr/local/include/pistache/pist_check.h \
- /usr/local/include/pistache/pist_quote.h \
- /usr/local/include/pistache/pist_syslog.h /usr/include/syslog.h \
- /usr/include/x86_64-linux-gnu/sys/syslog.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/type_checkers.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/meta.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/stream.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/os.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/common.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_check.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_quote.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_syslog.h \
+ /usr/include/syslog.h /usr/include/x86_64-linux-gnu/sys/syslog.h \
  /usr/include/x86_64-linux-gnu/bits/syslog-path.h \
- /usr/local/include/pistache/pist_syslog.h \
- /usr/local/include/pistache/config.h /usr/local/include/pistache/flags.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_syslog.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/config.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/flags.h \
  /usr/include/c++/11/climits /usr/include/c++/11/bitset \
- /usr/local/include/pistache/tcp.h \
- /usr/local/include/pistache/prototype.h \
- /usr/local/include/pistache/transport.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/tcp.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/prototype.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/transport.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_rusage.h \
- /usr/local/include/pistache/mailbox.h \
- /usr/local/include/pistache/pist_timelog.h \
- /usr/local/include/pistache/ps_strl.h \
- /usr/local/include/pistache/reactor.h /usr/include/c++/11/thread \
- /usr/include/c++/11/bits/std_thread.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/mailbox.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_timelog.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/ps_strl.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/reactor.h \
+ /usr/include/c++/11/thread /usr/include/c++/11/bits/std_thread.h \
  /usr/include/c++/11/bits/this_thread_sleep.h /usr/include/c++/11/deque \
  /usr/include/c++/11/bits/stl_deque.h /usr/include/c++/11/bits/deque.tcc \
- /usr/local/include/pistache/listener.h /usr/local/include/pistache/log.h \
- /usr/local/include/pistache/string_logger.h \
- /usr/local/include/pistache/ssl_wrappers.h \
- /usr/local/include/pistache/router.h /usr/include/c++/11/regex \
- /usr/include/c++/11/iterator /usr/include/c++/11/bits/stream_iterator.h \
- /usr/include/c++/11/locale \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/listener.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/log.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/string_logger.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/ssl_wrappers.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/router.h \
+ /usr/include/c++/11/regex /usr/include/c++/11/iterator \
+ /usr/include/c++/11/bits/stream_iterator.h /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
@@ -354,7 +351,7 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/c++/11/bits/regex_compiler.tcc \
  /usr/include/c++/11/bits/regex.h /usr/include/c++/11/bits/regex.tcc \
  /usr/include/c++/11/bits/regex_executor.h \
- /usr/include/c++/11/bits/regex_executor.tcc /usr/local/include/bcrypt.h \
+ /usr/include/c++/11/bits/regex_executor.tcc \
  /usr/include/nlohmann/json.hpp /usr/include/c++/11/numeric \
  /usr/include/c++/11/bits/stl_numeric.h \
  /usr/include/c++/11/pstl/glue_numeric_defs.h \
@@ -431,10 +428,6 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc \
- /home/zhangyc/cloud_storage/app/server/../database/redisConnPool.h \
- /home/zhangyc/cloud_storage/app/server/../database/redis.h \
- /usr/include/redis/hiredis.h /usr/include/redis/read.h \
- /usr/include/redis/sds.h /usr/include/c++/11/cstdarg \
  /home/zhangyc/cloud_storage/app/server/../myfastdfs/fdfsConnPool.h \
  /home/zhangyc/cloud_storage/app/server/../myfastdfs/fdfsClient.h \
  /usr/include/fastdfs/fdfs_client.h /usr/include/fastcommon/shared_func.h \
@@ -447,6 +440,7 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/statx-generic.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_statx.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/fastcommon/common_define.h /usr/include/inttypes.h \
  /usr/include/arpa/inet.h /usr/include/fastcommon/_os_define.h \
  /usr/include/fastcommon/ini_file_reader.h /usr/include/fastcommon/hash.h \
@@ -467,10 +461,12 @@ CMakeFiles/cloud_storage_server.dir/server/api.cpp.o: \
  /usr/include/fastdfs/fdfs_server_id_func.h \
  /usr/include/fastdfs/storage_client.h /usr/include/fastdfs/client_func.h \
  /usr/include/fastdfs/storage_client1.h \
+ /usr/include/fastdfs/storage_client1.h \
  /home/zhangyc/cloud_storage/app/server/../utils/threadPool.h \
- /home/zhangyc/cloud_storage/app/server/session.h \
- /usr/include/c++/11/random /usr/include/c++/11/bits/random.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/opt_random.h \
- /usr/include/c++/11/bits/random.tcc \
- /home/zhangyc/cloud_storage/app/server/../utils/utils.h \
- /home/zhangyc/cloud_storage/app/server/../utils/file.hpp
+ /home/zhangyc/cloud_storage/app/server/handlers/auth_handler.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/../../database/redisConnPool.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/../../database/redis.h \
+ /usr/include/redis/hiredis.h /usr/include/redis/read.h \
+ /usr/include/redis/sds.h /usr/include/c++/11/cstdarg \
+ /home/zhangyc/cloud_storage/app/server/handlers/file_handler.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/upload_handler.h

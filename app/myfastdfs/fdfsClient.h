@@ -8,6 +8,7 @@
 
 extern "C" {
     #include "fastdfs/fdfs_client.h"
+    #include "fastdfs/storage_client1.h"
     #include "fastcommon/logger.h"
 }
 
@@ -26,11 +27,12 @@ public:
     std::string create_temp_file(std::string_view data);
     std::string upload_file_to_fastdfs(const char* local_path, const char* file_ext);
 
-    bool delete_file_from_fastdfs(const std::string& group_name, const std::string& file);
+    bool delete_file_from_fastdfs(const std::string& file_id);
 
     bool check_file_exists(const std::string& file_id);
 
 private:
+    bool ensureConnection();
     const char* conf_path;
     ConnectionInfo* pTrackerServer;
 

@@ -5,9 +5,12 @@
 #include <unordered_set>
 #include <iomanip>
 #include <random>
-#include <cctype>
+#include <sstream>
+#include <algorithm>
 
-bool isValidEmail(const std::string& email){
+#include <cstdio>
+
+inline bool isValidEmail(const std::string& email){
     static const std::regex pattern(
         R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"
     );
@@ -15,7 +18,7 @@ bool isValidEmail(const std::string& email){
 }
 
 // 辅助函数：检查密码强度（放在类外或作为私有静态函数）
-bool isStrongPassword(const std::string& passwd) {
+inline bool isStrongPassword(const std::string& passwd) {
     if (passwd.length() < 8) {
         return false;
     }
@@ -36,7 +39,7 @@ bool isStrongPassword(const std::string& passwd) {
 }
 
 // 可选：黑名单弱密码（简单示例，生产环境可加载文件或查表）
-bool isWeakPassword(const std::string& passwd) {
+inline bool isWeakPassword(const std::string& passwd) {
     static const std::unordered_set<std::string> weakPasswords = {
         "123456", "password", "123456789", "12345678", "12345",
         "1234567", "1234567890", "qwerty", "abc123", "password123"
@@ -47,7 +50,7 @@ bool isWeakPassword(const std::string& passwd) {
     return weakPasswords.count(lowerPasswd) > 0;
 }
 
-std::string generateSixDigitCode() {
+inline std::string generateSixDigitCode() {
     static std::random_device rd;  // 仅用于种子
     static std::mt19937 gen(rd()); // 随机数生成器（静态，避免重复初始化）
     static std::uniform_int_distribution<> dis(0, 999999); // 均匀分布 [0, 999999]
@@ -73,7 +76,7 @@ static std::string generate_upload_id() {
 }
 
 
-std::string url_decode(const std::string& src) {
+inline std::string url_decode(const std::string& src) {
     std::string ret;
     ret.reserve(src.size());
 
@@ -93,7 +96,7 @@ std::string url_decode(const std::string& src) {
 }
 
 
-void merge_and_upload_to_fastdfs(const std::string& upload_id, const std::string& temp_dir, const int& total_chunks) {
+inline void merge_and_upload_to_fastdfs(const std::string& upload_id, const std::string& temp_dir, const int& total_chunks) {
     try {
         // 1. 拼接文件
         std::string final_file = temp_dir + "/__final__.tmp";

@@ -185,9 +185,9 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/c++/11/stdexcept /usr/include/c++/11/bits/std_mutex.h \
  /usr/include/c++/11/bits/unique_lock.h \
  /home/zhangyc/cloud_storage/app/server/api.h \
- /usr/local/include/pistache/endpoint.h \
- /usr/local/include/pistache/http.h /usr/include/c++/11/algorithm \
- /usr/include/c++/11/bits/stl_algo.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/endpoint.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http.h \
+ /usr/include/c++/11/algorithm /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_heap.h \
  /usr/include/c++/11/bits/uniform_int_dist.h \
@@ -218,8 +218,8 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/c++/11/bits/ostream.tcc \
  /usr/include/c++/11/bits/istream.tcc \
  /usr/include/c++/11/bits/sstream.tcc \
- /usr/local/include/pistache/eventmeth.h \
- /usr/local/include/pistache/winornix.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/eventmeth.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/winornix.h \
  /usr/include/x86_64-linux-gnu/sys/param.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
@@ -232,27 +232,29 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
  /usr/include/x86_64-linux-gnu/asm/param.h \
  /usr/include/asm-generic/param.h \
- /usr/local/include/pistache/emosandlibevdefs.h \
- /usr/local/include/pistache/em_socket_t.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/emosandlibevdefs.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/em_socket_t.h \
  /usr/include/x86_64-linux-gnu/sys/eventfd.h \
  /usr/include/x86_64-linux-gnu/bits/eventfd.h \
  /usr/include/x86_64-linux-gnu/sys/timerfd.h \
  /usr/include/x86_64-linux-gnu/bits/timerfd.h \
- /usr/local/include/pistache/async.h /usr/local/include/pistache/typeid.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/async.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/typeid.h \
  /usr/include/c++/11/cstddef /usr/include/c++/11/atomic \
  /usr/include/c++/11/condition_variable \
- /usr/local/include/pistache/cookie.h /usr/include/c++/11/list \
- /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
- /usr/include/c++/11/map /usr/include/c++/11/bits/stl_tree.h \
- /usr/include/c++/11/bits/stl_map.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/cookie.h \
+ /usr/include/c++/11/list /usr/include/c++/11/bits/stl_list.h \
+ /usr/include/c++/11/bits/list.tcc /usr/include/c++/11/map \
+ /usr/include/c++/11/bits/stl_tree.h /usr/include/c++/11/bits/stl_map.h \
  /usr/include/c++/11/bits/stl_multimap.h /usr/include/c++/11/optional \
  /usr/include/c++/11/unordered_set \
  /usr/include/c++/11/bits/unordered_set.h \
- /usr/local/include/pistache/http_defs.h \
- /usr/local/include/pistache/http_headers.h \
- /usr/local/include/pistache/http_header.h \
- /usr/local/include/pistache/mime.h /usr/include/c++/11/cassert \
- /usr/include/assert.h /usr/include/c++/11/cmath /usr/include/math.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http_defs.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http_headers.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/http_header.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/mime.h \
+ /usr/include/c++/11/cassert /usr/include/assert.h \
+ /usr/include/c++/11/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
@@ -274,9 +276,10 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/c++/11/tr1/poly_hermite.tcc \
  /usr/include/c++/11/tr1/poly_laguerre.tcc \
  /usr/include/c++/11/tr1/riemann_zeta.tcc \
- /usr/local/include/pistache/net.h /usr/include/c++/11/cstring \
- /usr/include/string.h /usr/include/strings.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/net.h \
+ /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
  /usr/include/x86_64-linux-gnu/bits/socket_type.h \
@@ -295,36 +298,41 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/rpc/netdb.h \
  /usr/include/x86_64-linux-gnu/bits/netdb.h \
  /usr/include/x86_64-linux-gnu/sys/un.h \
- /usr/local/include/pistache/type_checkers.h \
- /usr/local/include/pistache/meta.h /usr/local/include/pistache/stream.h \
- /usr/local/include/pistache/os.h /usr/local/include/pistache/common.h \
- /usr/include/c++/11/iostream /usr/local/include/pistache/pist_check.h \
- /usr/local/include/pistache/pist_quote.h \
- /usr/local/include/pistache/pist_syslog.h /usr/include/syslog.h \
- /usr/include/x86_64-linux-gnu/sys/syslog.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/type_checkers.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/meta.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/stream.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/os.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/common.h \
+ /usr/include/c++/11/iostream \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_check.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_quote.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_syslog.h \
+ /usr/include/syslog.h /usr/include/x86_64-linux-gnu/sys/syslog.h \
  /usr/include/x86_64-linux-gnu/bits/syslog-path.h \
- /usr/local/include/pistache/pist_syslog.h \
- /usr/local/include/pistache/config.h /usr/local/include/pistache/flags.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_syslog.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/config.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/flags.h \
  /usr/include/c++/11/climits /usr/include/c++/11/bitset \
- /usr/local/include/pistache/tcp.h \
- /usr/local/include/pistache/prototype.h \
- /usr/local/include/pistache/transport.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/tcp.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/prototype.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/transport.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_rusage.h \
- /usr/local/include/pistache/mailbox.h \
- /usr/local/include/pistache/pist_timelog.h \
- /usr/local/include/pistache/ps_strl.h \
- /usr/local/include/pistache/reactor.h /usr/include/c++/11/thread \
- /usr/include/c++/11/bits/std_thread.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/mailbox.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/pist_timelog.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/ps_strl.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/reactor.h \
+ /usr/include/c++/11/thread /usr/include/c++/11/bits/std_thread.h \
  /usr/include/c++/11/bits/this_thread_sleep.h /usr/include/c++/11/deque \
  /usr/include/c++/11/bits/stl_deque.h /usr/include/c++/11/bits/deque.tcc \
- /usr/local/include/pistache/listener.h /usr/local/include/pistache/log.h \
- /usr/local/include/pistache/string_logger.h \
- /usr/local/include/pistache/ssl_wrappers.h \
- /usr/local/include/pistache/router.h /usr/include/c++/11/regex \
- /usr/include/c++/11/iterator /usr/include/c++/11/bits/stream_iterator.h \
- /usr/include/c++/11/locale \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/listener.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/log.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/string_logger.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/ssl_wrappers.h \
+ /home/zhangyc/cloud_storage/app/../pistache/pistache/router.h \
+ /usr/include/c++/11/regex /usr/include/c++/11/iterator \
+ /usr/include/c++/11/bits/stream_iterator.h /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
@@ -342,7 +350,7 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/c++/11/bits/regex_compiler.tcc \
  /usr/include/c++/11/bits/regex.h /usr/include/c++/11/bits/regex.tcc \
  /usr/include/c++/11/bits/regex_executor.h \
- /usr/include/c++/11/bits/regex_executor.tcc /usr/local/include/bcrypt.h \
+ /usr/include/c++/11/bits/regex_executor.tcc \
  /usr/include/nlohmann/json.hpp /usr/include/c++/11/numeric \
  /usr/include/c++/11/bits/stl_numeric.h \
  /usr/include/c++/11/pstl/glue_numeric_defs.h \
@@ -419,11 +427,6 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc \
- /home/zhangyc/cloud_storage/app/server/../database/redisConnPool.h \
- /home/zhangyc/cloud_storage/app/server/../database/redis.h \
- /usr/include/redis/hiredis.h /usr/include/redis/read.h \
- /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/redis/sds.h \
- /usr/include/c++/11/cstdarg \
  /home/zhangyc/cloud_storage/app/server/../myfastdfs/fdfsConnPool.h \
  /home/zhangyc/cloud_storage/app/server/../myfastdfs/fdfsClient.h \
  /usr/include/fastdfs/fdfs_client.h /usr/include/fastcommon/shared_func.h \
@@ -436,6 +439,7 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/statx-generic.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_statx.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/fastcommon/common_define.h /usr/include/inttypes.h \
  /usr/include/arpa/inet.h /usr/include/fastcommon/_os_define.h \
  /usr/include/fastcommon/ini_file_reader.h /usr/include/fastcommon/hash.h \
@@ -456,4 +460,12 @@ CMakeFiles/cloud_storage_server.dir/main.cpp.o: \
  /usr/include/fastdfs/fdfs_server_id_func.h \
  /usr/include/fastdfs/storage_client.h /usr/include/fastdfs/client_func.h \
  /usr/include/fastdfs/storage_client1.h \
- /home/zhangyc/cloud_storage/app/server/../utils/threadPool.h
+ /usr/include/fastdfs/storage_client1.h \
+ /home/zhangyc/cloud_storage/app/server/../utils/threadPool.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/auth_handler.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/../../database/redisConnPool.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/../../database/redis.h \
+ /usr/include/redis/hiredis.h /usr/include/redis/read.h \
+ /usr/include/redis/sds.h /usr/include/c++/11/cstdarg \
+ /home/zhangyc/cloud_storage/app/server/handlers/file_handler.h \
+ /home/zhangyc/cloud_storage/app/server/handlers/upload_handler.h
