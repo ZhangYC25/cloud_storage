@@ -2,35 +2,30 @@
 
 #include <string>
 
-/*
-home/zhangyc/tencentcloud-sdk-cpp/core/include/tencentcloud/core/profile/HttpProfile.h
-home/zhangyc/tencentcloud-sdk-cpp/core/include/tencentcloud/core/profile/ClientProfile.h
-home/zhangyc/tencentcloud-sdk-cpp/ses/include/tencentcloud/ses/v20201002/SesClient.h
-home/zhangyc/tencentcloud-sdk-cpp/ses/include/tencentcloud/ses/v20201002/model/SendEmailRequest.h
-*/
-
-class Email{
+class Email {
 public:
-    Email(const std::string&, const std::string&, const std::string&);
-    ~Email();
-    
+    Email(const std::string& toEmail, const std::string& username, const std::string& code);
+    ~Email() = default;
+
     std::string sendTencentSESEmail();
 
-    std::string httpGet(const std::string &url);
-    // 4. libcurl的回调函数（接收HTTP响应）
-    static size_t writeCallback(void *contents, size_t size, size_t nmemb, void *response);
-
-    // 3. 生成腾讯云API签名函数
-    std::string generateTencentCloudSignature(const std::string &secretKey, const std::string &signStr);
-    // 2. Base64编码函数（签名结果需要Base64编码）
-    std::string base64Encode(const unsigned char *data, size_t length);
-    // 1. URL编码函数（腾讯云API要求参数值URL编码）
-    std::string urlEncode(const std::string &str);
 private:
+    static std::string loadConfigValue(const std::string& key);
+    static std::string sha256Hex(const std::string& data);
+    static std::string hmacSha256Raw(const std::string& key, const std::string& data);
+    static std::string bytesToHex(const unsigned char* data, size_t length);
+    static std::string httpPost(const std::string& url,
+                                const std::string& body,
+                                const std::string& authorization,
+                                int64_t timestamp,
+                                const std::string& region);
+    static size_t writeCallback(void* contents, size_t size, size_t nmemb, void* response);
+
     std::string secretId;
     std::string secretKey;
     std::string templateID;
     std::string fromEmail;
+    std::string region;
     std::string _toEmail;
     std::string _username;
     std::string _code;

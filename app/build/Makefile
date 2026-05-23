@@ -345,30 +345,6 @@ server/common/fdfs_ops.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.s
 .PHONY : server/common/fdfs_ops.cpp.s
 
-server/common/session_auth.o: server/common/session_auth.cpp.o
-.PHONY : server/common/session_auth.o
-
-# target to build an object file
-server/common/session_auth.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.o
-.PHONY : server/common/session_auth.cpp.o
-
-server/common/session_auth.i: server/common/session_auth.cpp.i
-.PHONY : server/common/session_auth.i
-
-# target to preprocess a source file
-server/common/session_auth.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.i
-.PHONY : server/common/session_auth.cpp.i
-
-server/common/session_auth.s: server/common/session_auth.cpp.s
-.PHONY : server/common/session_auth.s
-
-# target to generate assembly for a file
-server/common/session_auth.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_storage_server.dir/build.make CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.s
-.PHONY : server/common/session_auth.cpp.s
-
 server/email.o: server/email.cpp.o
 .PHONY : server/email.o
 
@@ -621,9 +597,6 @@ help:
 	@echo "... server/common/fdfs_ops.o"
 	@echo "... server/common/fdfs_ops.i"
 	@echo "... server/common/fdfs_ops.s"
-	@echo "... server/common/session_auth.o"
-	@echo "... server/common/session_auth.i"
-	@echo "... server/common/session_auth.s"
 	@echo "... server/email.o"
 	@echo "... server/email.i"
 	@echo "... server/email.s"

@@ -17,8 +17,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.o.d"
-  "CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.o"
-  "CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o"
   "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o.d"
   "CMakeFiles/cloud_storage_server.dir/server/handlers/auth_handler.cpp.o"

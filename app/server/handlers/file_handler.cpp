@@ -4,7 +4,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../common/session_auth.h"
+#include "../session.h"
 #include "../common/fdfs_ops.h"
 #include "../../utils/asyncLogger.h"
 
@@ -29,7 +29,7 @@ void FileHandler::queryFileURL(const Pistache::Rest::Request& req,
         std::string upload_user_key = md5 + upload_id + ":ID";
 
         std::string user = "";
-        if (!session_auth::validateUploadSession(req, upload_user_key, redis_ptr, user)) {
+        if (!Session::validateUploadSession(req, upload_user_key, redis_ptr, user)) {
             response.send(Pistache::Http::Code::Bad_Request,
                           R"({"success":false,"message":"invalid session"})",
                           MIME(Application, Json));
@@ -71,12 +71,9 @@ void FileHandler::queryUserFiles(const Pistache::Http::Request& req,
     using json = nlohmann::json;
 
     try {
-        auto& cookies = req.cookies();
-        std::string sessionId = "";
-        if (cookies.has("session")) {
-            sessionId = cookies.get("session").value;
-        } else {
-            MY_LOG_ERROR("queryUserFiles invalid session: ", sessionId);
+        std::string sessionId = Session::getSessionIdFromCookies(req.cookies());
+        if (sessionId.empty()) {
+            MY_LOG_ERROR("queryUserFiles invalid session");
             response.send(Pistache::Http::Code::Bad_Request,
                           R"({"success":false,"message":"invalid session!"})",
                           MIME(Application, Json));
@@ -84,10 +81,15 @@ void FileHandler::queryUserFiles(const Pistache::Http::Request& req,
         }
 
         std::shared_ptr<Redis> redis_ptr = _redisPool->getConnection();
-        std::string uses_key = "user:" + sessionId;
-        std::string username = redis_ptr->get(uses_key);
-        redis_ptr->expire(uses_key, 600);
+        std::string username = Session::getSessionUser(sessionId, redis_ptr);
         _redisPool->releaseConnection(redis_ptr);
+
+        if (username.empty()) {
+            response.send(Pistache::Http::Code::Bad_Request,
+                          R"({"success":false,"message":"invalid session!"})",
+                          MIME(Application, Json));
+            return;
+        }
 
         json array = json::array();
 
@@ -122,12 +124,9 @@ void FileHandler::deleteCheck(const Pistache::Rest::Request& req,
         }
         std::string md5 = idOpt.value();
 
-        auto& cookies = req.cookies();
-        std::string sessionId = "";
-        if (cookies.has("session")) {
-            sessionId = cookies.get("session").value;
-        } else {
-            MY_LOG_ERROR("deleteCheck invalid session: ", sessionId);
+        std::string sessionId = Session::getSessionIdFromCookies(req.cookies());
+        if (sessionId.empty()) {
+            MY_LOG_ERROR("deleteCheck invalid session");
             response.send(Pistache::Http::Code::Bad_Request,
                           R"({"success":false,"message":"invalid session!"})",
                           MIME(Application, Json));
@@ -136,9 +135,7 @@ void FileHandler::deleteCheck(const Pistache::Rest::Request& req,
             return;
         }
 
-        std::string uses_key = "user:" + sessionId;
-        std::string user = redis_ptr->get(uses_key);
-        redis_ptr->expire(uses_key, 600);
+        std::string user = Session::getSessionUser(sessionId, redis_ptr);
 
         if (user.empty() || md5.empty()) {
             response.send(Pistache::Http::Code::Bad_Request, "Missing user or id");

@@ -17,7 +17,6 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zhangyc/cloud_storage/app/myfastdfs/fdfsConnPool.cpp" "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/myfastdfs/fdfsConnPool.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/api.cpp" "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/api.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/common/fdfs_ops.cpp" "CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/common/fdfs_ops.cpp.o.d"
-  "/home/zhangyc/cloud_storage/app/server/common/session_auth.cpp" "CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/common/session_auth.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/email.cpp" "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/email.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/handlers/auth_handler.cpp" "CMakeFiles/cloud_storage_server.dir/server/handlers/auth_handler.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/handlers/auth_handler.cpp.o.d"
   "/home/zhangyc/cloud_storage/app/server/handlers/file_handler.cpp" "CMakeFiles/cloud_storage_server.dir/server/handlers/file_handler.cpp.o" "gcc" "CMakeFiles/cloud_storage_server.dir/server/handlers/file_handler.cpp.o.d"

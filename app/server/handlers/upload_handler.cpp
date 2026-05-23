@@ -5,7 +5,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../common/session_auth.h"
+#include "../session.h"
 #include "../common/fdfs_ops.h"
 #include "../../utils/utils.h"
 #include "../../utils/file.hpp"
@@ -28,7 +28,7 @@ void UploadHandler::uploadCheck(const  Pistache::Rest::Request& req, Pistache::H
 		std::string md5 = j.value("md5","");
 
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, "", redis_ptr, user)){
+		if (!Session::validateUploadSession(req, "", redis_ptr, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
@@ -111,7 +111,7 @@ void UploadHandler::upload(const Pistache::Rest::Request& req, Pistache::Http::R
 		
 		auto& cookies = req.cookies();
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, "", redis_ptr, user)){
+		if (!Session::validateUploadSession(req, "", redis_ptr, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
@@ -218,7 +218,7 @@ void UploadHandler::largeInit(const Pistache::Rest::Request& req, Pistache::Http
 	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection(); 
 	try {
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, "", redis_ptr, user)) {
+		if (!Session::validateUploadSession(req, "", redis_ptr, user)) {
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session"})",
                     MIME(Application, Json));
@@ -299,7 +299,7 @@ void UploadHandler::largeFileUpload(const Pistache::Rest::Request& req, Pistache
 		std::string upload_user_key = md5 + upload_id + ":ID";
 
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, upload_user_key, redis_ptr, user)) {
+		if (!Session::validateUploadSession(req, upload_user_key, redis_ptr, user)) {
         	response.send(Pistache::Http::Code::Unauthorized,
                       R"({"success":false,"message":"invalid session"})",
                       MIME(Application, Json));
@@ -380,7 +380,7 @@ void UploadHandler::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pi
 
 		auto& cookies = req.cookies();
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, upload_user_key, redis_ptr, user)){
+		if (!Session::validateUploadSession(req, upload_user_key, redis_ptr, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
 					R"({"success":false,"message":"invalid session"})",
 					MIME(Application, Json));
