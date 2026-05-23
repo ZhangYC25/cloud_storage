@@ -170,7 +170,13 @@ async function uploadLargeFile(file, md5) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({md5, upload_id })
     });
-    if (!finishRes.ok) throw new Error((await finishRes.json().catch(() => ({}))).message || "合并失败");
+    const finishData = await finishRes.json().catch(() => ({}));
+    if (!finishRes.ok || finishData.success === false) {
+        throw new Error(finishData.message || finishData.error || "合并失败");
+    }
+    if (finishData.status === "finish" && finishData.url) {
+        return finishData;
+    }
 
     // 轮询获取最终 URL
     const MAX_RETRIES = 20;

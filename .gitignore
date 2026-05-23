@@ -3,6 +3,8 @@ app/build/
 *.o
 *.d
 
+app/build/*
+
 app/log/error.log
 
 

@@ -5,11 +5,60 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../common/session_auth.h"
+#include "../session.h"
 #include "../common/fdfs_ops.h"
 #include "../../utils/utils.h"
 #include "../../utils/file.hpp"
 #include "../../utils/asyncLogger.h"
+
+namespace {
+
+struct MysqlGuard {
+    MySQLConnPool* pool = nullptr;
+    std::shared_ptr<Mysql> conn;
+
+    MysqlGuard(MySQLConnPool* p, std::shared_ptr<Mysql> c) : pool(p), conn(std::move(c)) {}
+    ~MysqlGuard() {
+        if (pool && conn) {
+            pool->releaseConnection(conn);
+        }
+    }
+
+    MysqlGuard(const MysqlGuard&) = delete;
+    MysqlGuard& operator=(const MysqlGuard&) = delete;
+};
+
+struct RedisGuard {
+    RedisConnPool* pool = nullptr;
+    std::shared_ptr<Redis> conn;
+
+    RedisGuard(RedisConnPool* p, std::shared_ptr<Redis> c) : pool(p), conn(std::move(c)) {}
+    ~RedisGuard() {
+        if (pool && conn) {
+            pool->releaseConnection(conn);
+        }
+    }
+
+    RedisGuard(const RedisGuard&) = delete;
+    RedisGuard& operator=(const RedisGuard&) = delete;
+};
+
+struct FdfsGuard {
+    FdfsConnPool* pool = nullptr;
+    std::shared_ptr<FdfsClient> conn;
+
+    FdfsGuard(FdfsConnPool* p, std::shared_ptr<FdfsClient> c) : pool(p), conn(std::move(c)) {}
+    ~FdfsGuard() {
+        if (pool && conn) {
+            pool->releaseConnection(conn);
+        }
+    }
+
+    FdfsGuard(const FdfsGuard&) = delete;
+    FdfsGuard& operator=(const FdfsGuard&) = delete;
+};
+
+}  // namespace
 
 UploadHandler::UploadHandler()
     : _mysqlPool(MySQLConnPool::getInstance()),
@@ -19,8 +68,8 @@ UploadHandler::UploadHandler()
 // =========== POST / up and check
 void UploadHandler::uploadCheck(const  Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
 	std::cout<<"uploadCheck start"<<std::endl;
-	std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
-	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+	MysqlGuard mysql{_mysqlPool, _mysqlPool->getConnection()};
+	RedisGuard redis{_redisPool, _redisPool->getConnection()};
 	try{
 		auto body = req.body(); //filename md5 filesize;
 		nlohmann::json j = nlohmann::json::parse(body);
@@ -28,50 +77,50 @@ void UploadHandler::uploadCheck(const  Pistache::Rest::Request& req, Pistache::H
 		std::string md5 = j.value("md5","");
 
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, "", redis_ptr, user)){
+		if (!Session::validateUploadSession(req, "", redis.conn, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
-			_redisPool -> releaseConnection(redis_ptr);
 			return;
 		}
 
-		if (mysql_ptr -> isInUserList(md5, user)) { // 先查 userfile 命中的话其他根本不用查。
+		if (mysql.conn -> isInUserList(md5, user)) { // 先查 userfile 命中的话其他根本不用查。
 			std::cerr<<"[UploadCheck INFO] "<<"user: "<<user<<" already owned File"<<std::endl;
 			//MY_LOG_INFO("UploadCheck user: ", user, "already owned File");
 				response.send(Pistache::Http::Code::Ok,
                     R"({"success":true,"status":"already_owned"})",
                     MIME(Application, Json));
-		} else if (mysql_ptr -> isInMySQL(md5)) { //能找到这里说明 用户肯定没有这个文件 在查 系统表有没有这个文件，有的话
+		} else if (mysql.conn -> isInMySQL(md5)) { //能找到这里说明 用户肯定没有这个文件 在查 系统表有没有这个文件，有的话
 			std::string md5_key = "md5:" + md5;
-			if (redis_ptr->get(md5_key)== "") { // 在查 redis 有没有这个文件，没有就重新插进去
+			if (redis.conn->get(md5_key)== "") { // 在查 redis 有没有这个文件，没有就重新插进去
 				int count = 0;
 				std::string url = "";
-				mysql_ptr -> getCount(md5, count, url);
-				redis_ptr -> set(md5_key,url, 3600);
+				mysql.conn -> getCount(md5, count, url);
+				redis.conn -> set(md5_key,url, 3600);
 			}
 			// 秒传，count + 1
-			if (!(mysql_ptr -> beginTransaction())) {
-					_mysqlPool->releaseConnection(mysql_ptr);
-					_redisPool -> releaseConnection(redis_ptr);
+			if (!(mysql.conn -> beginTransaction())) {
+					response.send(Pistache::Http::Code::Internal_Server_Error,
+						R"({"success":false,"message":"数据库事务开启失败"})",
+						MIME(Application, Json));
 					return;
 				}
 
-				if (!(mysql_ptr -> insertUserFile(md5, user, filename))) {
+				if (!(mysql.conn -> insertUserFile(md5, user, filename))) {
 					// std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<
 					// user<<"file: "<<filename<<"to user_file_list"<<std::endl;
 					//MY_LOG_ERROR("MySQL Failed Insert file for user: ")
 				}
-				if (!(mysql_ptr -> updateCount(md5, 1))){
+				if (!(mysql.conn -> updateCount(md5, 1))){
 					//std::cerr<<"[MySQL ERROR]  Failed Update count for file: "<<filename<<std::endl;
 				}
 				bool db_success = true;
-				if (!(mysql_ptr -> commit())) {
+				if (!(mysql.conn -> commit())) {
 					db_success = false;
 					//std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
 				}
 				if (!db_success) {
-					mysql_ptr->rollback();
+					mysql.conn->rollback();
 					//std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
 					response.send(Pistache::Http::Code::Internal_Server_Error,
 						R"({"success":false,"message":"数据库操作失败或事务提交失败，文件已回滚"})",
@@ -85,9 +134,6 @@ void UploadHandler::uploadCheck(const  Pistache::Rest::Request& req, Pistache::H
         	R"({"success":true,"status":"need_upload"})",
         	MIME(Application, Json));
 		}
-		_mysqlPool-> releaseConnection(mysql_ptr);
-		_redisPool -> releaseConnection(redis_ptr);
-		return;
 	}catch (const std::exception& e) {
 			response.send(Pistache::Http::Code::Bad_Request, R"({"error": "invalid json"})");
 		}
@@ -95,7 +141,7 @@ void UploadHandler::uploadCheck(const  Pistache::Rest::Request& req, Pistache::H
 
 // ================= POST / upload 
 void UploadHandler::upload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+	RedisGuard redis{_redisPool, _redisPool->getConnection()};
 	try {	
 		auto file_name_header = req.headers().tryGetRaw("X-Filename");
 		auto file_md5 = req.headers().tryGetRaw("X-File-MD5");
@@ -109,88 +155,81 @@ void UploadHandler::upload(const Pistache::Rest::Request& req, Pistache::Http::R
 		std::string file_name   = url_decode(file_name_header -> value());
 		std::string md5         = file_md5 -> value();
 		
-		auto& cookies = req.cookies();
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, "", redis_ptr, user)){
+		if (!Session::validateUploadSession(req, "", redis.conn, user)){
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session!"})",
                     MIME(Application, Json));
-			_redisPool -> releaseConnection(redis_ptr);
 			return;
 		}
 
 		auto body = req.body();
 
-		std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
+		MysqlGuard mysql{_mysqlPool, _mysqlPool->getConnection()};
 
-		if (!mysql_ptr->beginTransaction()) {
-			// 事务开启失败，需要清理 FastDFS 上已上传的文件
-			//fdfs_ptr -> delete_file_from_fastdfs();
-			_mysqlPool->releaseConnection(mysql_ptr);
+		if (!mysql.conn->beginTransaction()) {
+			response.send(Pistache::Http::Code::Internal_Server_Error,
+				R"({"success":false,"message":"数据库事务开启失败"})",
+				MIME(Application, Json));
 			return;
 		}
-		//入数据库
-		std::shared_ptr<FdfsClient> fdfs_ptr = _fdfsPool -> getConnection();
-		std::string temp_path = fdfs_ptr -> create_temp_file(body);
-		if (temp_path.empty()) {
-           response.send(Pistache::Http::Code::Bad_Request,
-                R"({"success":false,"message":"/write /tmp/ false"})",
-                MIME(Application, Json));
-            return;
-        }
+
 		const char* ext = strrchr(file_name.c_str(),'.');
-		const char* file_ext = ext?ext+1:"";
-		//upload
-		std::string fastdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str(), file_ext);
-		if (fastdfs_path.empty()) {
-			_fdfsPool -> releaseConnection(fdfs_ptr);
-           	response.send(Pistache::Http::Code::Bad_Request,
-                R"({"success":false,"message":"upload to fastdfs false"})",
-                MIME(Application, Json));
-            return;
-        }
-		//delete tem file
-		std::filesystem::remove(temp_path);
-		_fdfsPool -> releaseConnection(fdfs_ptr);
+		const char* file_ext = ext ? ext + 1 : "";
+
+		std::string fastdfs_path;
+		{
+			FdfsGuard fdfs{_fdfsPool, _fdfsPool->getConnection()};
+			std::string temp_path = fdfs.conn -> create_temp_file(body);
+			if (temp_path.empty()) {
+				mysql.conn->rollback();
+				response.send(Pistache::Http::Code::Bad_Request,
+					R"({"success":false,"message":"/write /tmp/ false"})",
+					MIME(Application, Json));
+				return;
+			}
+			fastdfs_path = fdfs.conn -> upload_file_to_fastdfs(temp_path.c_str(), file_ext);
+			if (fastdfs_path.empty()) {
+				mysql.conn->rollback();
+				response.send(Pistache::Http::Code::Bad_Request,
+					R"({"success":false,"message":"upload to fastdfs false"})",
+					MIME(Application, Json));
+				return;
+			}
+			std::filesystem::remove(temp_path);
+		}
 
 		bool db_success = false;
-		if (!(mysql_ptr -> insertUserFile(md5, user, file_name))){
+		if (!(mysql.conn -> insertUserFile(md5, user, file_name))){
 			//std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<user<<"file: "<<filename<<"to user_file_list"<<std::endl;
 		}
-		if (!(mysql_ptr -> insertFileInfo(md5, fastdfs_path, file_ext))){
+		if (!(mysql.conn -> insertFileInfo(md5, fastdfs_path, file_ext))){
 			//std::cerr<<"[MySQL ERROE] Failed Insert file: "<<filename<<"to file_info" <<std::endl;
 		}
 		db_success = true;
 		
 
-		if (!(mysql_ptr -> commit())) {
+		if (!(mysql.conn -> commit())) {
 			db_success = false;
 			//std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
 		}
 		if (!db_success) {
-			mysql_ptr->rollback();
+			mysql.conn->rollback();
 			//std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
-			//std::string url = fastdfs_path;
 			fdfs_ops::deleteFile(_fdfsPool, fastdfs_path); 
-			_mysqlPool -> releaseConnection(mysql_ptr);
 			response.send(Pistache::Http::Code::Internal_Server_Error,
 				R"({"success":false,"message":"数据库操作失败或事务提交失败，文件已回滚"})",
 				MIME(Application, Json));
+			return;
 		}
 
-		_mysqlPool -> releaseConnection(mysql_ptr);
-
-		//std::shared_ptr<Redis> redisConn = _redisPool->getConnection();
-		//std::cout << fastdfs_path << std::endl;
-		if (!(redis_ptr -> set(md5, fastdfs_path, 3600))) {
-			_redisPool -> releaseConnection(redis_ptr);
+		if (!(redis.conn -> set(md5, fastdfs_path, 3600))) {
 			response.send(Pistache::Http::Code::Bad_Request,
              R"({"success":false,"message":"请先调用 /upload/check"})",
              MIME(Application, Json));
              return;
 		}
-		_redisPool -> releaseConnection(redis_ptr);
-		// 构造 JSON 对象
+
 		nlohmann::json responseJson = {
     		{"success", true},
     		{"message", "file uploaded successfully"},
@@ -215,14 +254,13 @@ void UploadHandler::upload(const Pistache::Rest::Request& req, Pistache::Http::R
 // ===============================POST / large upload
 // ============== 可以做断点续传 =============
 void UploadHandler::largeInit(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection(); 
+	RedisGuard redis{_redisPool, _redisPool->getConnection()}; 
 	try {
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, "", redis_ptr, user)) {
+		if (!Session::validateUploadSession(req, "", redis.conn, user)) {
 			response.send(Pistache::Http::Code::Bad_Request,
                     R"({"success":false,"message":"invalid session"})",
                     MIME(Application, Json));
-			_redisPool -> releaseConnection(redis_ptr);
 			return;
 		}
 
@@ -237,7 +275,6 @@ void UploadHandler::largeInit(const Pistache::Rest::Request& req, Pistache::Http
         	response.send(Pistache::Http::Code::Bad_Request, 
 				R"({"success":false,"message":"size is null"})",
                     MIME(Application, Json));
-			_redisPool -> releaseConnection(redis_ptr);
         	return;
     	}
 
@@ -249,14 +286,14 @@ void UploadHandler::largeInit(const Pistache::Rest::Request& req, Pistache::Http
 		std::string status_key = "upload:" + upload_id + ":status";
 		std::string upload_user_key = md5 + upload_id + ":ID";
 
-		redis_ptr -> set(upload_user_key, user, 3600);
-		redis_ptr -> set(status_key, "initial", 3600);
+		redis.conn -> set(upload_user_key, user, 3600);
+		redis.conn -> set(status_key, "initial", 3600);
 
-		if (redis_ptr -> hset(info_key, "filename", filename) &&
-        	redis_ptr -> hset(info_key, "temp_dir", temp_dir) &&
-        	redis_ptr -> hset(info_key, "total_chunks", std::to_string(total_chunks)) &&
-        	redis_ptr -> hset(info_key, "md5", md5) &&
-			redis_ptr -> hset(info_key, "file_ext", file_ext)) {
+		if (redis.conn -> hset(info_key, "filename", filename) &&
+        	redis.conn -> hset(info_key, "temp_dir", temp_dir) &&
+        	redis.conn -> hset(info_key, "total_chunks", std::to_string(total_chunks)) &&
+        	redis.conn -> hset(info_key, "md5", md5) &&
+			redis.conn -> hset(info_key, "file_ext", file_ext)) {
 			nlohmann::json res;
 			res["upload_id"] = upload_id;
 			response.send(Pistache::Http::Code::Ok, res.dump(), MIME(Application, Json));
@@ -270,14 +307,12 @@ void UploadHandler::largeInit(const Pistache::Rest::Request& req, Pistache::Http
                       R"({"success":false,"message":"Server error"})",
                       MIME(Application, Json));
     }
-	_redisPool -> releaseConnection(redis_ptr);
-	return;
 }
 
 //std::chrono::_V2::system_clock::time_point responseTime;
 
 void UploadHandler::largeFileUpload(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response){
-	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
+	RedisGuard redis{_redisPool, _redisPool->getConnection()};
 	try {
 		auto upload_id_header = req.headers().tryGetRaw("X-Upload-ID");
 		auto index_header = req.headers().tryGetRaw("X-Chunk-Index");
@@ -299,37 +334,34 @@ void UploadHandler::largeFileUpload(const Pistache::Rest::Request& req, Pistache
 		std::string upload_user_key = md5 + upload_id + ":ID";
 
 		std::string user = "";
-		if (!session_auth::validateUploadSession(req, upload_user_key, redis_ptr, user)) {
+		if (!Session::validateUploadSession(req, upload_user_key, redis.conn, user)) {
         	response.send(Pistache::Http::Code::Unauthorized,
                       R"({"success":false,"message":"invalid session"})",
                       MIME(Application, Json));
         	return;
     	}
 
-		if (!redis_ptr->exists(info_key)) {
-			_redisPool -> releaseConnection(redis_ptr);
+		if (!redis.conn->exists(info_key)) {
             response.send(Pistache::Http::Code::Not_Found,
                           R"({"success":false,"message":"Upload session not found"})",
                           MIME(Application, Json));
             return;
         }
 
-		std::string temp_dir = redis_ptr -> hget(info_key, "temp_dir");
+		std::string temp_dir = redis.conn -> hget(info_key, "temp_dir");
 
 		if (temp_dir.empty()) {
-			_redisPool -> releaseConnection(redis_ptr);
             response.send(Pistache::Http::Code::Internal_Server_Error,
                           R"({"success":false,"message":"Corrupted session data"})",
                           MIME(Application, Json));
             return;
         }
-		redis_ptr->expire(info_key, 3600);
+		redis.conn->expire(info_key, 3600);
 
 		auto body = req.body();
 		
 		if (body.size() > CHUNK_SIZE + 1024) { // 允许一点余量
 			response.send(Pistache::Http::Code::Bad_Request, "Chunk too large");
-			_redisPool -> releaseConnection(redis_ptr);
 			return;
 		}
 
@@ -337,20 +369,20 @@ void UploadHandler::largeFileUpload(const Pistache::Rest::Request& req, Pistache
 		//std::string chunk_path = temp_dir + "/chunk_" + chunk_index;
 		
 		//写入失败了怎么办？
-		if (redis_ptr->sadd(chunks_key, chunk_index) == 1) {
+		if (redis.conn->sadd(chunks_key, chunk_index) == 1) {
 			// 成功加入集合 → 说明是首次
 			std::string chunk_path = temp_dir + "/chunk_" + chunk_index;
 			std::ofstream ofs(chunk_path, std::ios::binary);
 			ofs.write(body.data(), body.size());
 
-			redis_ptr->expire(chunks_key, 3600);
+			redis.conn->expire(chunks_key, 3600);
 			nlohmann::json res;
         	res["status"] = "ok";
 			response.send(Pistache::Http::Code::Ok, res.dump(), MIME(Application, Json));
 		}
 		
-		redis_ptr -> set(status_key, "upload", 3600);
-		redis_ptr->expire(status_key, 3600);
+		redis.conn -> set(status_key, "upload", 3600);
+		redis.conn->expire(status_key, 3600);
 	} catch (const std::exception& e) {
         response.send(Pistache::Http::Code::Internal_Server_Error,
                       R"({"success":false,"message":"Server exception"})",
@@ -360,74 +392,124 @@ void UploadHandler::largeFileUpload(const Pistache::Rest::Request& req, Pistache
                       R"({"success":false,"message":"Unknown error"})",
                       MIME(Application, Json));
     }
-	_redisPool -> releaseConnection(redis_ptr);
 	//responseTime = std::chrono::system_clock::now();
 }
 
 void UploadHandler::uploadLargeFileFinish(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response) {
-	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
-	try{
-		auto body = req.body(); //filename md5 filesize;
+	RedisGuard redis{_redisPool, _redisPool->getConnection()};
+	try {
+		auto body = req.body();
 		nlohmann::json j = nlohmann::json::parse(body);
-		std::string md5 = j.value("md5","");
-		std::string upload_id = j.value("upload_id","");
+		std::string md5 = j.value("md5", "");
+		std::string upload_id = j.value("upload_id", "");
 
-		std::string chunks_key = "upload:" + upload_id + ":chunks";
-		std::string upload_user_key = md5 + upload_id + ":ID";
-		std::string status_key = "upload:" + upload_id + ":status";
-		
-		redis_ptr -> set(status_key, "mergeing", 3600);
-
-		auto& cookies = req.cookies();
-		std::string user = "";
-		if (!session_auth::validateUploadSession(req, upload_user_key, redis_ptr, user)){
+		if (md5.empty() || upload_id.empty()) {
 			response.send(Pistache::Http::Code::Bad_Request,
-					R"({"success":false,"message":"invalid session"})",
-					MIME(Application, Json));
-			_redisPool -> releaseConnection(redis_ptr);
+				R"({"success":false,"message":"missing md5 or upload_id"})",
+				MIME(Application, Json));
 			return;
 		}
 
-		response.send(Pistache::Http::Code::Ok,
-                    R"({"success":true,"status":"already_owned"})",
-                    MIME(Application, Json));
+		std::string info_key = "upload:" + upload_id + ":info";
+		std::string status_key = "upload:" + upload_id + ":status";
+		std::string chunks_key = "upload:" + upload_id + ":chunks";
+		std::string upload_user_key = md5 + upload_id + ":ID";
 
-		// auto responseDuration = std::chrono::system_clock::now() - responseTime;
-		// auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(responseDuration).count();
-		// std::cout<<"response time: "<<ms<<std::endl;
+		std::string user = "";
+		if (!Session::validateUploadSession(req, upload_user_key, redis.conn, user)) {
+			response.send(Pistache::Http::Code::Bad_Request,
+				R"({"success":false,"message":"invalid session"})",
+				MIME(Application, Json));
+			return;
+		}
 
-		_pthreadPool -> submit([upload_id, user, this](){
-			//auto startTime = std::chrono::system_clock::now();
-			//sleep(1);
+		if (!redis.conn->exists(info_key)) {
+			response.send(Pistache::Http::Code::Not_Found,
+				R"({"success":false,"message":"upload session not found"})",
+				MIME(Application, Json));
+			return;
+		}
+
+		std::string stored_md5 = redis.conn->hget(info_key, "md5");
+		if (!stored_md5.empty() && stored_md5 != md5) {
+			response.send(Pistache::Http::Code::Bad_Request,
+				R"({"success":false,"message":"md5 mismatch"})",
+				MIME(Application, Json));
+			return;
+		}
+
+		std::string current_status = redis.conn->get(status_key);
+		if (current_status == "finish") {
+			nlohmann::json res;
+			res["success"] = true;
+			res["status"] = "finish";
+			std::string url = redis.conn->get(md5);
+			if (!url.empty()) {
+				res["url"] = "https://goodfloat.cloud/" + url;
+			}
+			response.send(Pistache::Http::Code::Ok, res.dump(), MIME(Application, Json));
+			return;
+		}
+		if (current_status == "mergeing") {
+			response.send(Pistache::Http::Code::Ok,
+				R"({"success":true,"status":"mergeing"})",
+				MIME(Application, Json));
+			return;
+		}
+		if (current_status == "uploadfail") {
+			response.send(Pistache::Http::Code::Ok,
+				R"({"success":false,"message":"文件合并失败，请重新上传"})",
+				MIME(Application, Json));
+			return;
+		}
+
+		int total_chunks = std::stoi(redis.conn->hget(info_key, "total_chunks"));
+		if (total_chunks != redis.conn->scard(chunks_key)) {
+			response.send(Pistache::Http::Code::Bad_Request,
+				R"({"success":false,"message":"分片不完整，无法合并"})",
+				MIME(Application, Json));
+			return;
+		}
+
+		redis.conn->set(status_key, "mergeing", 3600);
+
+		_pthreadPool->submit([upload_id, user, this]() {
 			mergeChunksAndUpload(upload_id, user);
-			// auto endTime = std::chrono::system_clock::now();
-			// auto workMS = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - responseTime).count();
-			// auto threadMS = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-			// std::cout<<"work time: "<<workMS<<std::endl;
-			// std::cout<<"thread time: "<<threadMS<<std::endl;
 		});
-	} catch(...){}
-	_redisPool -> releaseConnection(redis_ptr);
+
+		response.send(Pistache::Http::Code::Ok,
+			R"({"success":true,"status":"mergeing"})",
+			MIME(Application, Json));
+	} catch (const nlohmann::json::parse_error&) {
+		response.send(Pistache::Http::Code::Bad_Request,
+			R"({"success":false,"message":"invalid json"})",
+			MIME(Application, Json));
+	} catch (const std::exception& e) {
+		MY_LOG_ERROR("uploadLargeFileFinish failed: ", e.what());
+		response.send(Pistache::Http::Code::Internal_Server_Error,
+			R"({"success":false,"message":"server error"})",
+			MIME(Application, Json));
+	}
 }
 
 // ====================== Merge =======================
 void UploadHandler::mergeChunksAndUpload(const std::string& upload_id, const std::string& user){
-	std::shared_ptr<FdfsClient> fdfs_ptr = _fdfsPool -> getConnection();
-	std::shared_ptr<Redis> redis_ptr = _redisPool -> getConnection();
-	std::shared_ptr<Mysql> mysql_ptr = _mysqlPool -> getConnection();
+	FdfsGuard fdfs{_fdfsPool, _fdfsPool->getConnection()};
+	RedisGuard redis{_redisPool, _redisPool->getConnection()};
+	MysqlGuard mysql{_mysqlPool, _mysqlPool->getConnection()};
+
+	std::string status_key = "upload:" + upload_id + ":status";
 
 	try {
 		std::string info_key   = "upload:" + upload_id + ":info";
-		std::string status_key = "upload:" + upload_id + ":status";
 		std::string chunks_key = "upload:" + upload_id + ":chunks";
 
-		std::string temp_dir = redis_ptr -> hget(info_key, "temp_dir");
-		int total_chunks = std::stoi(redis_ptr -> hget(info_key, "total_chunks"));
+		std::string temp_dir = redis.conn -> hget(info_key, "temp_dir");
+		int total_chunks = std::stoi(redis.conn -> hget(info_key, "total_chunks"));
 
 
-		if (total_chunks != redis_ptr -> scard(chunks_key)){ //数量相同默认上传成功
-			redis_ptr -> set(status_key, "uploadfail", 3600);
-			_redisPool -> releaseConnection(redis_ptr);
+		if (total_chunks != redis.conn -> scard(chunks_key)){ //数量相同默认上传成功
+			redis.conn -> set(status_key, "uploadfail", 3600);
 			return;
 		}
 
@@ -443,83 +525,57 @@ void UploadHandler::mergeChunksAndUpload(const std::string& upload_id, const std
         }
 
         // 3. 上传 FastDFS
-        char file_id[256] = {0};
-		
-		std::string file_ext = redis_ptr -> hget(info_key, "file_ext");
-		std::string fdfs_path = fdfs_ptr -> upload_file_to_fastdfs(temp_path.c_str(), file_ext.c_str());
-		if (!mysql_ptr -> beginTransaction()) {
-			fdfs_ptr -> delete_file_from_fastdfs(fdfs_path);
-			_fdfsPool -> releaseConnection(fdfs_ptr);
-			_redisPool -> releaseConnection(redis_ptr);
-			_mysqlPool->releaseConnection(mysql_ptr);
-			return;
-		}
-// ================= 下面只是能用， 细节还需打磨 ========================
+		std::string file_ext = redis.conn -> hget(info_key, "file_ext");
+		std::string fdfs_path = fdfs.conn -> upload_file_to_fastdfs(temp_path.c_str(), file_ext.c_str());
 		if (fdfs_path.empty()) {
-			_fdfsPool -> releaseConnection(fdfs_ptr);
-           	// response.send(Pistache::Http::Code::Bad_Request,
-            //     R"({"success":false,"message":"upload to fastdfs false"})",
-            //     MIME(Application, Json));
-			_redisPool -> releaseConnection(redis_ptr);
-			_mysqlPool -> releaseConnection(mysql_ptr);
+			redis.conn -> set(status_key, "uploadfail", 3600);
 			std::cerr << "上传失败, 路径为空" << std::endl;
             return;
         }
 
-		//delete tem file
-		std::filesystem::remove(temp_path);
-		std::filesystem::remove_all(temp_dir);  // 递归删除整个目录树！
-		_fdfsPool -> releaseConnection(fdfs_ptr);
+		if (!mysql.conn -> beginTransaction()) {
+			fdfs.conn -> delete_file_from_fastdfs(fdfs_path);
+			redis.conn -> set(status_key, "uploadfail", 3600);
+			return;
+		}
 
-		std::string md5 = redis_ptr -> hget(info_key, "md5");
-		std::string filename = redis_ptr -> hget(info_key, "filename");
+		std::filesystem::remove(temp_path);
+		std::filesystem::remove_all(temp_dir);
+
+		std::string md5 = redis.conn -> hget(info_key, "md5");
+		std::string filename = redis.conn -> hget(info_key, "filename");
 
 		bool db_success = false;
-		if (!(mysql_ptr -> insertUserFile(md5, user, filename))){
+		if (!(mysql.conn -> insertUserFile(md5, user, filename))){
 			//std::cerr<<"[MySQL ERROR]  Failed Insert file for user: "<<user<<"file: "<<filename<<"to user_file_list"<<std::endl;
 		}
-		if (!(mysql_ptr -> insertFileInfo(md5, fdfs_path, file_ext))){
+		if (!(mysql.conn -> insertFileInfo(md5, fdfs_path, file_ext))){
 			//std::cerr<<"[MySQL ERROE] Failed Insert file: "<<filename<<"to file_info" <<std::endl;
 		}
 		db_success = true;
 
-		if (!(mysql_ptr -> commit())) {
+		if (!(mysql.conn -> commit())) {
 			db_success = false;
 			//std::cerr << "[MySQL ERROR] Failed to commit transaction." << std::endl;
 		}
 		if (!db_success) {
-			mysql_ptr->rollback();
-			//std::cerr << "[MySQL INFO] Transaction rolled back." << std::endl;
-			//std::string url = fastdfs_path;
-			fdfs_ops::deleteFile(_fdfsPool, fdfs_path); 
-			_mysqlPool -> releaseConnection(mysql_ptr);
-			// response.send(Pistache::Http::Code::Internal_Server_Error,
-			// 	R"({"success":false,"message":"数据库操作失败或事务提交失败，文件已回滚"})",
-			// 	MIME(Application, Json));
+			mysql.conn->rollback();
+			fdfs_ops::deleteFile(_fdfsPool, fdfs_path);
+			redis.conn -> set(status_key, "uploadfail", 3600);
+			return;
 		}
 
-		_mysqlPool -> releaseConnection(mysql_ptr);
-
-		if (!(redis_ptr -> set(md5, fdfs_path, 3600))) {
-			_redisPool -> releaseConnection(redis_ptr);
-			// response.send(Pistache::Http::Code::Bad_Request,
-            //  R"({"success":false,"message":"请先调用 /upload/check"})",
-            //  MIME(Application, Json));
-             return;
+		if (!(redis.conn -> set(md5, fdfs_path, 3600))) {
+			redis.conn -> set(status_key, "uploadfail", 3600);
+			return;
 		}
-		//_redisPool -> releaseConnection(redis_ptr);
 
+		redis.conn -> set(status_key, "finish", 3600);
 
     } catch (const std::exception& e) {
-        MY_LOG_ERROR("", e.what());
+        MY_LOG_ERROR("mergeChunksAndUpload failed: ", e.what());
+		try {
+			redis.conn -> set(status_key, "uploadfail", 3600);
+		} catch (...) {}
     }
-
-    // 5. 清理
-    try {
-		//不用清理等他自动过期，更新redis状态才对
-		
-		std::string status_key = "upload:" + upload_id + ":status";
-		redis_ptr -> set(status_key, "finish", 3600);
-		_redisPool -> releaseConnection(redis_ptr);
-    } catch (...) {}
 }

@@ -336,3 +336,8 @@
 2026-05-23 10:21:07 [INFO] === [Health Check] Summary === 
 2026-05-23 10:21:07 [INFO] Total files scanned:  9 
 2026-05-23 10:21:07 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
+2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
+2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
+2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
+2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 

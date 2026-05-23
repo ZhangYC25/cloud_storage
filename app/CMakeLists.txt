@@ -48,7 +48,6 @@ set(SOURCES
     main.cpp
     server/server.cpp
     server/api.cpp
-    server/common/session_auth.cpp
     server/common/fdfs_ops.cpp
     server/handlers/auth_handler.cpp
     server/handlers/file_handler.cpp
