@@ -3,6 +3,17 @@
 let countdown = 60; // 验证码倒计时秒数
 let countdownInterval = null; // 倒计时定时器
 
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/files', { credentials: 'include' });
+        if (res.ok) {
+            window.location.replace('/updown.html');
+        }
+    } catch (err) {
+        // 未登录或网络异常，留在登录页
+    }
+});
+
 /**
  * 切换密码可见性
  */
@@ -68,6 +79,7 @@ async function login() {
         const res = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ name, password })
         });
 

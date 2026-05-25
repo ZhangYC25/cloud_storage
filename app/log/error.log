@@ -341,3 +341,38 @@
 2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
 2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
 2026-05-23 17:13:12 [ERROR] Redis connection invalid, non-exist 
+2026-05-23 17:59:00 [INFO] Starting daily consistency check... 
+2026-05-23 17:59:00 [INFO] === [Health Check] Task Started === 
+2026-05-23 17:59:01 [INFO] === [Health Check] Summary === 
+2026-05-23 17:59:01 [INFO] Total files scanned:  9 
+2026-05-23 17:59:01 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-24 17:59:01 [INFO] Starting daily consistency check... 
+2026-05-24 17:59:01 [INFO] === [Health Check] Task Started === 
+2026-05-24 17:59:01 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  1 
+2026-05-24 17:59:01 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-24 17:59:02 [INFO] === [Health Check] Summary === 
+2026-05-24 17:59:02 [INFO] Total files scanned:  9 
+2026-05-24 17:59:02 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-25 15:21:18 [ERROR] MySQLConnPool Found invalid conn, discard it. CurrentConn=  0 
+2026-05-25 15:21:18 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:21:18 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:21:18 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:21:18 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:21:18 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:21:59 [ERROR] queryUserFiles invalid session 
+2026-05-25 15:22:01 [ERROR] queryUserFiles invalid session 
+2026-05-25 15:33:33 [INFO] Health Check task exited safely. 
+2026-05-25 15:34:41 [INFO] Starting daily consistency check... 
+2026-05-25 15:34:41 [INFO] === [Health Check] Task Started === 
+2026-05-25 15:34:42 [INFO] === [Health Check] Summary === 
+2026-05-25 15:34:42 [INFO] Total files scanned:  9 
+2026-05-25 15:34:42 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-25 15:36:23 [INFO] Health Check task exited safely. 
+2026-05-25 15:40:13 [ERROR] queryUserFiles invalid session 
+2026-05-25 15:40:44 [ERROR] queryUserFiles invalid session 
+2026-05-25 15:40:44 [ERROR] queryUserFiles invalid session 
+2026-05-25 15:40:59 [INFO] Starting daily consistency check... 
+2026-05-25 15:40:59 [INFO] === [Health Check] Task Started === 
+2026-05-25 15:41:00 [INFO] === [Health Check] Summary === 
+2026-05-25 15:41:00 [INFO] Total files scanned:  9 
+2026-05-25 15:41:00 [INFO] Result: ALL DATA HEALTHY. 

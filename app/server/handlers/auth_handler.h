@@ -13,6 +13,7 @@ public:
     void loginUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
     void registerEmail(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
     void registerUser(const Pistache::Rest::Request& req, Pistache::Http::ResponseWriter response);
+    void checkSession(const Pistache::Http::Request& req, Pistache::Http::ResponseWriter response);
 
 private:
     MySQLConnPool* _mysqlPool;

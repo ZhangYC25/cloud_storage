@@ -52,7 +52,27 @@ function displayResult(success, message, url) {
  * 页面初始化与导航
  * ===============================================
  */
-document.addEventListener('DOMContentLoaded', () => {
+
+const FETCH_OPTIONS = { credentials: 'include' };
+
+async function requireLogin() {
+    try {
+        // 使用已部署的 /api/files 校验 session，避免 /api/me 未编译或未配 nginx 时误判
+        const res = await fetch('/api/files', FETCH_OPTIONS);
+        if (res.ok) {
+            return true;
+        }
+        window.location.replace('/index.html');
+        return false;
+    } catch (err) {
+        console.error('session check failed:', err);
+        window.location.replace('/index.html');
+        return false;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!(await requireLogin())) return;
     switchPage('uploadPage');
 });
 
@@ -128,6 +148,7 @@ async function uploadLargeFile(file, md5) {
 
     // 初始化
     const initRes = await fetch("/api/upload/init", {
+        ...FETCH_OPTIONS,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename: file.name, size: totalChunks, md5, ext })
@@ -142,6 +163,7 @@ async function uploadLargeFile(file, md5) {
         const chunk = file.slice(start, end);
 
         const res = await fetch("/api/upload/chunk", {
+            ...FETCH_OPTIONS,
             method: "POST",
             headers: {
                 "X-Upload-ID": upload_id,
@@ -166,6 +188,7 @@ async function uploadLargeFile(file, md5) {
     // 完成合并
     uploadBtn.textContent = "合并文件...";
     const finishRes = await fetch("/api/upload/finish", {
+        ...FETCH_OPTIONS,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({md5, upload_id })
@@ -185,6 +208,7 @@ async function uploadLargeFile(file, md5) {
     while (retries < MAX_RETRIES) {
         try {
             const queryRes = await fetch("/api/upload/query", {
+                ...FETCH_OPTIONS,
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ md5, upload_id })
@@ -224,6 +248,7 @@ async function uploadFile() {
         const md5 = await calcFileMD5(file);
 
         const checkRes = await fetch("/api/upload/check", {
+            ...FETCH_OPTIONS,
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ filename: file.name, md5 })
@@ -243,6 +268,7 @@ async function uploadFile() {
         let uploadData;
         if (file.size < LARGE_FILE_THRESHOLD) {
             const uploadRes = await fetch("/api/upload/file", {
+                ...FETCH_OPTIONS,
                 method: "POST",
         	    headers: {
             		"Content-Type": "application/octet-stream",
@@ -280,7 +306,7 @@ function escapeHtml(text) {
 }
 
 function loadFiles() {
-    fetch(`/api/files`)
+    fetch(`/api/files`, FETCH_OPTIONS)
         .then(res => {
             if (!res.ok) throw new Error("加载失败");
             return res.json();
@@ -303,7 +329,7 @@ function loadFiles() {
 }
 
 function deleteFile(id) {
-    fetch(`/api/delete?id=${encodeURIComponent(id)}`, { method: "DELETE" })
+    fetch(`/api/delete?id=${encodeURIComponent(id)}`, { ...FETCH_OPTIONS, method: "DELETE" })
         .then(res => {
             if (!res.ok) throw new Error(`请求失败，状态码：${res.status}`);
             return res.json();
