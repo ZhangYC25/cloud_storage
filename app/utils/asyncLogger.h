@@ -11,6 +11,7 @@
 #include <atomic>
 #include <chrono>
 #include <iomanip>
+#include <ctime>
 
 
 #define MY_LOG_INFO(...) AsyncLogger::getInstance() -> log("INFO", ##__VA_ARGS__);
@@ -51,17 +52,20 @@ private:
     ~AsyncLogger() { stop(); }  // 析构时自动停止
     std::string get_current_time();
     void flush_queue(std::queue<std::string>& q);
+    void pruneOldLogs(int retention_days = 30);
+    static bool parseLogTimestamp(const std::string& line, std::tm& out_tm);
 
     void run();
 private:
+    std::string _log_path;
     std::ofstream _file;
     std::queue<std::string> _write_queue;
-    //std::queue<std::string> _read_queue;
 
     std::mutex _mtx;
     std::condition_variable _cv;
     std::thread worker;
     std::atomic<bool> running{false};
+    std::chrono::steady_clock::time_point _last_prune_time{};
 
     static AsyncLogger* _instance;
 };

@@ -9,6 +9,7 @@
 
 
 const size_t CHUNK_SIZE = 256 * 1024; // 256KB
+const size_t MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10MB
 const std::string TEMP_BASE_DIR = "/tmp/uploads";
 
 class UploadFile {

@@ -1,7 +1,14 @@
 
 #include "asyncLogger.h"
 
+#include <cstdio>
+
 AsyncLogger* AsyncLogger::_instance = nullptr;
+
+namespace {
+constexpr int kLogRetentionDays = 30;
+constexpr auto kPruneInterval = std::chrono::hours(24);
+}  // namespace
 
 AsyncLogger* AsyncLogger::getInstance(){
     // static AsyncLogger inst;
@@ -19,11 +26,14 @@ AsyncLogger* AsyncLogger::getInstance(){
 
 void AsyncLogger::start(const std::string& path){
     if (running.load(std::memory_order_acquire)) return;
+    _log_path = path;
+    pruneOldLogs(kLogRetentionDays);
     _file.open(path, std::ios::app);
     if (!_file.is_open()) {
         std::cerr << "无法打开日志文件: " << path << std::endl;
         return;
     }
+    _last_prune_time = std::chrono::steady_clock::now();
     running.store(true, std::memory_order_release);
     worker = std::thread(&AsyncLogger::run, this);
 }
@@ -51,6 +61,23 @@ void AsyncLogger::run(){
         flush_queue(tmp_queue);
         if (_file.is_open()) {
             _file.flush();
+        }
+
+        const auto now = std::chrono::steady_clock::now();
+        if (!_log_path.empty() &&
+            now - _last_prune_time >= kPruneInterval) {
+            std::queue<std::string> pending;
+            {
+                std::lock_guard<std::mutex> lock(_mtx);
+                std::swap(_write_queue, pending);
+            }
+            flush_queue(pending);
+            if (_file.is_open()) {
+                _file.close();
+            }
+            pruneOldLogs(kLogRetentionDays);
+            _file.open(_log_path, std::ios::app);
+            _last_prune_time = now;
         }
     }
 }
@@ -83,14 +110,65 @@ void AsyncLogger::flush_queue(std::queue<std::string>& q){
 std::string AsyncLogger::get_current_time(){
     auto now = std::chrono::system_clock::now();
     auto tt = std::chrono::system_clock::to_time_t(now);
-    //auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-        //now.time_since_epoch()) % 1000;
     
-    // 线程安全
     std::tm tm_local{};
     localtime_r(&tt, &tm_local);
     std::ostringstream oss;
     oss << std::put_time(&tm_local, "%Y-%m-%d %H:%M:%S");
-        //<< '.' << std::setfill('0') << std::setw(3) << ms.count();
     return oss.str();
+}
+
+bool AsyncLogger::parseLogTimestamp(const std::string& line, std::tm& out_tm) {
+    if (line.size() < 19) {
+        return false;
+    }
+
+    std::istringstream iss(line.substr(0, 19));
+    iss >> std::get_time(&out_tm, "%Y-%m-%d %H:%M:%S");
+    return !iss.fail();
+}
+
+void AsyncLogger::pruneOldLogs(int retention_days) {
+    if (_log_path.empty()) {
+        return;
+    }
+
+    std::ifstream in(_log_path);
+    if (!in.is_open()) {
+        return;
+    }
+
+    const auto cutoff_time = std::chrono::system_clock::now() -
+                             std::chrono::hours(24 * retention_days);
+    const std::time_t cutoff = std::chrono::system_clock::to_time_t(cutoff_time);
+
+    const std::string temp_path = _log_path + ".tmp";
+    std::ofstream out(temp_path, std::ios::trunc);
+    if (!out.is_open()) {
+        return;
+    }
+
+    std::string line;
+    while (std::getline(in, line)) {
+        if (line.empty()) {
+            continue;
+        }
+
+        std::tm line_tm{};
+        if (!parseLogTimestamp(line, line_tm)) {
+            out << line << '\n';
+            continue;
+        }
+
+        if (std::mktime(&line_tm) >= cutoff) {
+            out << line << '\n';
+        }
+    }
+
+    in.close();
+    out.close();
+
+    if (std::rename(temp_path.c_str(), _log_path.c_str()) != 0) {
+        std::remove(temp_path.c_str());
+    }
 }

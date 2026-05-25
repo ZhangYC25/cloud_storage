@@ -17,8 +17,8 @@ Server& Server::getInstance() {
 // 初始化服务器
 bool Server::init(uint16_t port, int threads, size_t maxReqSize) {
     try {
-        // 创建地址和Endpoint
-        Pistache::Address addr(Pistache::Ipv4::any(), Pistache::Port(port));
+        // 仅监听本机，外网只能通过 nginx 反向代理访问
+        Pistache::Address addr(Pistache::Ipv4::loopback(), Pistache::Port(port));
         m_server = std::make_shared<Pistache::Http::Endpoint>(addr);
 
         // 配置服务器选项

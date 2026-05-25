@@ -376,3 +376,29 @@
 2026-05-25 15:41:00 [INFO] === [Health Check] Summary === 
 2026-05-25 15:41:00 [INFO] Total files scanned:  9 
 2026-05-25 15:41:00 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-25 15:48:33 [ERROR] queryUserFiles invalid session 
+2026-05-25 15:49:45 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:49:45 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:49:45 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:49:45 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:49:45 [ERROR] Redis connection invalid, non-exist 
+2026-05-25 15:51:01 [INFO] Health Check task exited safely. 
+2026-05-25 15:53:05 [INFO] Health Check task exited safely. 
+2026-05-25 15:58:09 [INFO] Fdfs Delete file success:  group1/M00/00/01/kjjCYGoUAQ2AGuZ_AAKYfBmYi7A934.pdf 
+2026-05-25 15:58:09 [INFO] deleteCheck purged file: user= zhangyunc  md5= 91cb69c2b65ca8c21a0244218d4b2958 
+2026-05-25 15:58:26 [INFO] Starting daily consistency check... 
+2026-05-25 15:58:26 [INFO] === [Health Check] Task Started === 
+2026-05-25 15:58:27 [INFO] === [Health Check] Summary === 
+2026-05-25 15:58:27 [INFO] Total files scanned:  9 
+2026-05-25 15:58:27 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-25 15:58:52 [INFO] Fdfs Delete file success:  group1/M00/00/01/kjjCYGoUAS2AG1HyADQaA9Odqbo799.pdf 
+2026-05-25 15:58:52 [INFO] deleteCheck purged file: user= zhangyunc  md5= f202fb7339eb58391c5effed9aef50a2 
+2026-05-25 16:17:01 [INFO] Health Check task exited safely. 
+2026-05-25 16:17:18 [ERROR] Redis GET failed: no value or invalid type for key:  user:3b3ec1a8504a55b38987e74619398879 
+2026-05-25 16:18:02 [INFO] Starting daily consistency check... 
+2026-05-25 16:18:02 [INFO] === [Health Check] Task Started === 
+2026-05-25 16:18:03 [INFO] === [Health Check] Summary === 
+2026-05-25 16:18:03 [INFO] Total files scanned:  9 
+2026-05-25 16:18:03 [INFO] Result: ALL DATA HEALTHY. 
+2026-05-25 16:26:38 [ERROR] queryUserFiles invalid session 
+2026-05-25 16:26:39 [ERROR] queryUserFiles invalid session 

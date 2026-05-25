@@ -139,6 +139,7 @@ function getFileExtension(file) {
  */
 const LARGE_FILE_THRESHOLD = 1024 * 1024; // 1MB
 const CHUNK_SIZE = 256 * 1024; // 256KB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_CONCURRENT = 4;
 
 async function uploadLargeFile(file, md5) {
@@ -151,7 +152,7 @@ async function uploadLargeFile(file, md5) {
         ...FETCH_OPTIONS,
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, size: totalChunks, md5, ext })
+        body: JSON.stringify({ filename: file.name, size: totalChunks, md5, ext, filesize: file.size })
     });
     if (!initRes.ok) throw new Error((await initRes.json().catch(() => ({}))).message || "初始化上传失败");
     const { upload_id } = await initRes.json();
@@ -240,6 +241,10 @@ async function uploadFile() {
 
     document.getElementById('uploadResult').classList.add('hidden');
     if (!file) return alert("请先选择文件！");
+    if (file.size > MAX_FILE_SIZE) {
+        displayResult(false, "文件大小不能超过 10MB，不然我的机器扛不住", null);
+        return;
+    }
 
     uploadBtn.disabled = true;
     uploadBtn.textContent = "上传中...";
@@ -251,7 +256,7 @@ async function uploadFile() {
             ...FETCH_OPTIONS,
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filename: file.name, md5 })
+            body: JSON.stringify({ filename: file.name, md5, filesize: file.size })
         });
         const checkData = await checkRes.json();
 

@@ -36,7 +36,7 @@ public:
     }
 
     // 初始化服务器（配置端口、线程数、最大请求大小等）
-    bool init(uint16_t port = 2048, int threads = 4, size_t maxReqSize = 1024 * 512);
+    bool init(uint16_t port = 2048, int threads = 4, size_t maxReqSize = 1024 * 1024);
     
     // 注册路由（外部调用，传入路由配置逻辑）
     void setRoutes();

@@ -122,13 +122,6 @@ void Api::setupRoutes(){
             return Route::Result::Ok;
         }
     );
-
-    Routes::Get(router, "/api/me",
-        [this](const Pistache::Http::Request& req, ResponseWriter response) -> Route::Result {
-            _auth.checkSession(req, std::move(response));
-            return Route::Result::Ok;
-        }
-    );
     
     Routes::Post(router, "/api/upload/file", 
         [this](const Request& req, ResponseWriter response) -> Route::Result {

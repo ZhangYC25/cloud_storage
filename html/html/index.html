@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/index.css">
 </head>
-<body>
 
+<body>
 <div class="container" id="login-box">
     <h2>锦云存储</h2>
     <p class="slogan">锦云所托，轻而可存。</p>
@@ -47,11 +47,11 @@
             <i class="password-toggle fa-solid fa-eye" onclick="togglePasswordVisibility('reg-password', this)"></i>
         </div>
     </div>
-    <div class="input-group">
-    <!--<div class="code-wrapper">
-        <input id="reg-code" type="text" placeholder="邮箱验证码" maxlength="6" autocomplete="off">
+    <!--<div class="input-group">
+        <div class="code-wrapper">
+            <input id="reg-code" type="text" placeholder="邮箱验证码" maxlength="6" autocomplete="off">
         <button type="button" id="send-code-btn" onclick="sendVerificationCode()">获取验证码</button>
-    </div>
+        </div>
     </div>-->
     <button onclick="registerUser()" id="register-button">注册</button>
 
@@ -59,9 +59,8 @@
         已有账号？<a onclick="showLogin()">返回登录</a>
     </div>
 </div>
-
 <!-- 以下 script 完全保留，未做任何修改 -->
-<script src="js/login.js"><script>
+<script src="js/login.js"></script>
 
 </body>
 </html>
